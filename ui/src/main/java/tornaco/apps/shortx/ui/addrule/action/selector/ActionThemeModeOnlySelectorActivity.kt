@@ -25,6 +25,7 @@ import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortXAppBarScaffold
 import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import javax.inject.Inject
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class ActionThemeModeOnlySelectorActivity : BaseSelectorActivity<Action>() {
@@ -72,7 +73,7 @@ private fun BaseSelectorActivity<Action>.Selector(currentAction: Action?) {
     val state by vm.state.collectAsState()
 
     ShortXAppBarScaffold(
-        title = LocalI18N.current["ui.settings.theme.mode"],
+        title = LocalI18N.current[I18N_R.UI_SETTINGS_THEME_MODE],
         onBackPressed = { cancelAndFinish() },
         actions = {
             IconButton(onClick = { setResultAndFinish(vm.buildAction()) }) {

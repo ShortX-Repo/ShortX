@@ -21,6 +21,7 @@ import tornaco.apps.shortx.ui.base.ListItem
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXDialog
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 class UserDialogState(
@@ -51,7 +52,7 @@ fun UserSelectorDialog(state: UserDialogState) {
     if (state.isShowing) {
         ShortXDialog(
             title = {
-                DialogTitle(LocalI18N.current["ui.common.user.id"])
+                DialogTitle(LocalI18N.current[I18N_R.UI_COMMON_USER_ID])
             },
             onDismissRequest = { state.dismiss() }) {
             UserSelector(state)

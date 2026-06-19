@@ -16,6 +16,7 @@ import tornaco.apps.shortx.core.util.BitmapUtils
 import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.ShortXDialog
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 class ImagePreviewDialogState(
@@ -54,7 +55,7 @@ fun ImagePreviewDialog(state: ImagePreviewDialogState) {
                     state.dismiss()
                     state.edit()
                 }) {
-                    Text(text = LocalI18N.current["ui.common.edit"])
+                    Text(text = LocalI18N.current[I18N_R.UI_COMMON_EDIT])
                 }
             }
         ) {

@@ -38,6 +38,7 @@ import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class MapQueryBusDialogState(
     val onSelected: (Action.MapQueryBus) -> Unit
@@ -84,7 +85,7 @@ private fun MapQueryBusSelector(dialogState: MapQueryBusDialogState) {
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(i18N["ui.action.map.nav.bus.query"]) },
+                        title = { Text(i18N[I18N_R.UI_ACTION_MAP_NAV_BUS_QUERY]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 dialogState.dismiss()
@@ -122,15 +123,15 @@ private fun MapQueryBusSelector(dialogState: MapQueryBusDialogState) {
                         .animateContentSize()
                         .verticalScroll(rememberScrollState())
                 ) {
-                    FieldTitle(text = LocalI18N.current["ui.action.map"])
+                    FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_MAP])
                     SmallSpacer()
                     ListItem(title = when (dialogState.mapApp) {
                         MapApp.Gaode -> {
-                            i18N["ui.action.map.gaode"]
+                            i18N[I18N_R.UI_ACTION_MAP_GAODE]
                         }
 
                         MapApp.Baidu -> {
-                            i18N["ui.action.map.baidu"]
+                            i18N[I18N_R.UI_ACTION_MAP_BAIDU]
                         }
 
                         else -> {
@@ -146,14 +147,14 @@ private fun MapQueryBusSelector(dialogState: MapQueryBusDialogState) {
                     StandardSpacer()
                     StandardSpacer()
 
-                    FieldTitle(text = LocalI18N.current["ui.action.map.nav.bus.query.city"] + " & " + LocalI18N.current["ui.action.map.nav.bus.query.bus"])
+                    FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_MAP_NAV_BUS_QUERY_CITY] + " & " + LocalI18N.current[I18N_R.UI_ACTION_MAP_NAV_BUS_QUERY_BUS])
                     SmallSpacer()
-                    TipRow(text = LocalI18N.current["ui.action.map.nav.bus.query.city.placeholder"])
+                    TipRow(text = LocalI18N.current[I18N_R.UI_ACTION_MAP_NAV_BUS_QUERY_CITY_PLACEHOLDER])
                     SmallSpacer()
                     ShortXTextField(modifier = Modifier.fillMaxWidth(),
                         value = dialogState.city,
                         label = {
-                            Text(text = i18N["ui.action.map.nav.bus.query.city"])
+                            Text(text = i18N[I18N_R.UI_ACTION_MAP_NAV_BUS_QUERY_CITY])
                         },
                         onValueChange = {
                             dialogState.city = it
@@ -163,7 +164,7 @@ private fun MapQueryBusSelector(dialogState: MapQueryBusDialogState) {
                     ShortXTextField(modifier = Modifier.fillMaxWidth(),
                         value = dialogState.bus,
                         label = {
-                            Text(text = i18N["ui.action.map.nav.bus.query.bus"])
+                            Text(text = i18N[I18N_R.UI_ACTION_MAP_NAV_BUS_QUERY_BUS])
                         },
                         onValueChange = {
                             dialogState.bus = it

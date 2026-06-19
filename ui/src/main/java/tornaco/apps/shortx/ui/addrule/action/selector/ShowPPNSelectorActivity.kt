@@ -51,6 +51,7 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.SwitchRow
 import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class ShowPPNSelectorActivity : BaseSelectorActivity<Action.ShowPPN>() {
@@ -79,7 +80,7 @@ private fun BaseSelectorActivity<Action.ShowPPN>.ShowPPNSelector(currentAction: 
         topBar = {
             ShortXTopAppBar(
                 modifier = Modifier,
-                title = { Text(LocalI18N.current["ui.action.show.ppn"]) },
+                title = { Text(LocalI18N.current[I18N_R.UI_ACTION_SHOW_PPN]) },
                 navigationIcon = {
                     IconButton(onClick = {
                         cancelAndFinish()
@@ -118,9 +119,9 @@ private fun Content(paddingValues: PaddingValues, vm: ShowPPNSelectorViewModel) 
             Column(verticalArrangement = Arrangement.Center) {
                 FieldTitle(
                     modifier = Modifier,
-                    LocalI18N.current["ui.action.post.notification.tag"]
+                    LocalI18N.current[I18N_R.UI_ACTION_POST_NOTIFICATION_TAG]
                 )
-                TipBody(LocalI18N.current["ui.action.post.notification.tag.description"])
+                TipBody(LocalI18N.current[I18N_R.UI_ACTION_POST_NOTIFICATION_TAG_DESCRIPTION])
                 MediumSpacer()
                 ShortXTextField(
                     modifier = Modifier.fillMaxWidth(),
@@ -135,7 +136,7 @@ private fun Content(paddingValues: PaddingValues, vm: ShowPPNSelectorViewModel) 
         Column(verticalArrangement = Arrangement.Center) {
             FieldTitle(
                 modifier = Modifier,
-                LocalI18N.current["ui.action.post.notification.title"]
+                LocalI18N.current[I18N_R.UI_ACTION_POST_NOTIFICATION_TITLE]
             )
             MediumSpacer()
             ShortXTextField(
@@ -150,7 +151,7 @@ private fun Content(paddingValues: PaddingValues, vm: ShowPPNSelectorViewModel) 
         Column(verticalArrangement = Arrangement.Center) {
             FieldTitle(
                 modifier = Modifier,
-                LocalI18N.current["ui.action.post.notification.message"]
+                LocalI18N.current[I18N_R.UI_ACTION_POST_NOTIFICATION_MESSAGE]
             )
             MediumSpacer()
             ShortXTextField(
@@ -165,7 +166,7 @@ private fun Content(paddingValues: PaddingValues, vm: ShowPPNSelectorViewModel) 
         Column(verticalArrangement = Arrangement.Center) {
             FieldTitle(
                 modifier = Modifier,
-                LocalI18N.current["ui.action.post.notification.small.icon"]
+                LocalI18N.current[I18N_R.UI_ACTION_POST_NOTIFICATION_SMALL_ICON]
             )
             MediumSpacer()
 
@@ -194,7 +195,7 @@ private fun Content(paddingValues: PaddingValues, vm: ShowPPNSelectorViewModel) 
 
         SectionSpacer()
         SwitchRow(
-            text = LocalI18N.current["ui.action.post.notification.sound"],
+            text = LocalI18N.current[I18N_R.UI_ACTION_POST_NOTIFICATION_SOUND],
             isChecked = state.sound,
             onCheckChange = {
                 vm.setSound(it)
@@ -202,21 +203,21 @@ private fun Content(paddingValues: PaddingValues, vm: ShowPPNSelectorViewModel) 
 
         SectionSpacer()
         SwitchRow(
-            text = LocalI18N.current["ui.action.post.notification.vibrate"],
+            text = LocalI18N.current[I18N_R.UI_ACTION_POST_NOTIFICATION_VIBRATE],
             isChecked = state.vibrate,
             onCheckChange = {
                 vm.setVibrate(it)
             })
 
         SectionSpacer()
-        FieldTitle(text = LocalI18N.current["ui.action.post.notification.on.click"])
+        FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_POST_NOTIFICATION_ON_CLICK])
         val onClickHandler = remember(state) { state.onClickHandler }
         val handlerState by onClickHandler.state.collectAsState()
         tornaco.apps.shortx.ui.addrule.action.ActionContent(
             header = {
                 SmallTitle(
                     modifier = Modifier.padding(vertical = 12.dp),
-                    text = LocalI18N.current["ui.action.post.notification.on.click"]
+                    text = LocalI18N.current[I18N_R.UI_ACTION_POST_NOTIFICATION_ON_CLICK]
                 )
             },
             actions = handlerState.actions,
@@ -226,7 +227,7 @@ private fun Content(paddingValues: PaddingValues, vm: ShowPPNSelectorViewModel) 
         )
 
         SectionSpacer()
-        FieldTitle(text = LocalI18N.current["ui.action.post.notification.button"])
+        FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_POST_NOTIFICATION_BUTTON])
         MediumSpacer()
         Column {
             state.buttonAndHandlers.forEachIndexed { index, button ->
@@ -248,7 +249,7 @@ private fun Content(paddingValues: PaddingValues, vm: ShowPPNSelectorViewModel) 
                 onClick = {
                     vm.newButton()
                 }) {
-                Text(text = LocalI18N.current["ui.action.show.add.button"])
+                Text(text = LocalI18N.current[I18N_R.UI_ACTION_SHOW_ADD_BUTTON])
             }
         }
 
@@ -275,7 +276,7 @@ private fun ButtonListItem(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 MediumTitle(
-                    text = LocalI18N.current["ui.action.show.overlay.button.of", mapOf(
+                    text = LocalI18N.current[I18N_R.UI_ACTION_SHOW_OVERLAY_BUTTON_OF, mapOf(
                         "index" to "${index + 1}"
                     )]
                 )
@@ -291,7 +292,7 @@ private fun ButtonListItem(
             Column(verticalArrangement = Arrangement.Center) {
                 SmallTitle(
                     modifier = Modifier.padding(vertical = 12.dp),
-                    LocalI18N.current["ui.action.post.notification.button.text"]
+                    LocalI18N.current[I18N_R.UI_ACTION_POST_NOTIFICATION_BUTTON_TEXT]
                 )
                 ShortXTextField(value = buttonAndHandler.label, onValueChange = {
                     updateLabel(index, it)
@@ -305,7 +306,7 @@ private fun ButtonListItem(
                 header = {
                     SmallTitle(
                         modifier = Modifier.padding(vertical = 12.dp),
-                        text = LocalI18N.current["ui.actions.single.click.title"]
+                        text = LocalI18N.current[I18N_R.UI_ACTIONS_SINGLE_CLICK_TITLE]
                     )
                 },
                 actions = actionState.actions,

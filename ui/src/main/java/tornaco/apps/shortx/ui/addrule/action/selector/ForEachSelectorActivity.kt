@@ -48,6 +48,7 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.StateViewModel
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.util.ClipboardUtils
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class ForEachSelectorActivity : BaseSelectorActivity<Action.ForEach>() {
@@ -143,7 +144,7 @@ private fun BaseSelectorActivity<Action.ForEach>.ForEachSelectorDialogSelector(c
         topBar = {
             ShortXTopAppBar(
                 modifier = Modifier,
-                title = { Text(LocalI18N.current["ui.action.for.each"]) },
+                title = { Text(LocalI18N.current[I18N_R.UI_ACTION_FOR_EACH]) },
                 navigationIcon = {
                     IconButton(onClick = {
                         cancelAndFinish()
@@ -175,7 +176,7 @@ private fun BaseSelectorActivity<Action.ForEach>.ForEachSelectorDialogSelector(c
                 .animateContentSize()
                 .verticalScroll(rememberScrollState())
         ) {
-            FieldTitle(text = LocalI18N.current["ui.action.for.each.data"])
+            FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_FOR_EACH_DATA])
             SmallSpacer()
             ShortXTextField(
                 modifier = Modifier.fillMaxWidth(),
@@ -185,7 +186,7 @@ private fun BaseSelectorActivity<Action.ForEach>.ForEachSelectorDialogSelector(c
                 })
             StandardSpacer()
 
-            FieldTitle(text = LocalI18N.current["ui.action.for.each.delimiters"])
+            FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_FOR_EACH_DELIMITERS])
             SmallSpacer()
             ShortXTextField(
                 modifier = Modifier.fillMaxWidth(),
@@ -200,7 +201,7 @@ private fun BaseSelectorActivity<Action.ForEach>.ForEachSelectorDialogSelector(c
                 header = {
                     SmallTitle(
                         modifier = Modifier.padding(vertical = 12.dp),
-                        text = LocalI18N.current["ui.action.for.each.action"]
+                        text = LocalI18N.current[I18N_R.UI_ACTION_FOR_EACH_ACTION]
                     )
                 },
                 summary = {
@@ -213,7 +214,7 @@ private fun BaseSelectorActivity<Action.ForEach>.ForEachSelectorDialogSelector(c
                             )
                         }) {
                             Text(
-                                text = LocalI18N.current["ui.action.for.each.action.context.data.loop.index", mapOf(
+                                text = LocalI18N.current[I18N_R.UI_ACTION_FOR_EACH_ACTION_CONTEXT_DATA_LOOP_INDEX, mapOf(
                                     "index" to "{${ContextDataMapping.ForEach.foreachIndex.name}}"
                                 )]
                             )
@@ -227,7 +228,7 @@ private fun BaseSelectorActivity<Action.ForEach>.ForEachSelectorDialogSelector(c
                             )
                         }) {
                             Text(
-                                text = LocalI18N.current["ui.action.for.each.action.context.data.loop.data",
+                                text = LocalI18N.current[I18N_R.UI_ACTION_FOR_EACH_ACTION_CONTEXT_DATA_LOOP_DATA,
                                     mapOf(
                                         "data" to "{${ContextDataMapping.ForEach.foreachData.name}}"
                                     )]

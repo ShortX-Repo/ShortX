@@ -18,6 +18,7 @@ import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 @Composable
@@ -38,7 +39,7 @@ fun funcActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -
     ReplaceRegexSelectorDialog(state = replaceRegexState)
 
     val setFunctionReturnValueState = rememberTextInputState(
-        title = LocalI18N.current["ui.action.set.function.return.value"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_SET_FUNCTION_RETURN_VALUE],
         message = null,
         inputValidator = { InputValidateResult.OK },
         onSelected = {

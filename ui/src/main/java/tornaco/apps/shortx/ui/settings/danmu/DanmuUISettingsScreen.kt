@@ -58,6 +58,7 @@ import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class DanmuUISettingsActivity : BaseActivity() {
@@ -105,7 +106,7 @@ fun DanmuUISettingsScreen(back: () -> Unit) {
                     ShortXMediumTopAppBar(
                         title = {
                             Text(
-                                text = LocalI18N.current["ui.settings.danmu"]
+                                text = LocalI18N.current[I18N_R.UI_SETTINGS_DANMU]
                             )
                         },
                         navigationIcon = {

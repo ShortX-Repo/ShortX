@@ -40,6 +40,7 @@ import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class InputSwipeSelectorState(
     val onSelected: (Action.InputSwipe) -> Unit
@@ -96,7 +97,7 @@ private fun InputSwipeSelector(
             Scaffold(modifier = Modifier, topBar = {
                 ShortXTopAppBar(
                     modifier = Modifier,
-                    title = { Text(text = LocalI18N.current["ui.action.input.swipe"]) },
+                    title = { Text(text = LocalI18N.current[I18N_R.UI_ACTION_INPUT_SWIPE]) },
                     navigationIcon = {
                         IconButton(onClick = {
                             state.dismiss()
@@ -135,7 +136,7 @@ private fun InputSwipeSelector(
                 ) {
                     SmallTitle(
                         modifier = Modifier.padding(vertical = 12.dp),
-                        text = LocalI18N.current["ui.action.input.swipe.start.pos"]
+                        text = LocalI18N.current[I18N_R.UI_ACTION_INPUT_SWIPE_START_POS]
                     )
                     ShortXTextField(
                         modifier = Modifier.fillMaxWidth(),
@@ -144,7 +145,7 @@ private fun InputSwipeSelector(
                             state.startX = it
                         },
                         label = {
-                            Text(LocalI18N.current["ui.action.input.swipe.start.x"])
+                            Text(LocalI18N.current[I18N_R.UI_ACTION_INPUT_SWIPE_START_X])
                         },
                         showSymbolButton = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
@@ -157,7 +158,7 @@ private fun InputSwipeSelector(
                             state.startY = it
                         },
                         label = {
-                            Text(LocalI18N.current["ui.action.input.swipe.start.y"])
+                            Text(LocalI18N.current[I18N_R.UI_ACTION_INPUT_SWIPE_START_Y])
                         },
                         showSymbolButton = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
@@ -168,7 +169,7 @@ private fun InputSwipeSelector(
                     // End
                     SmallTitle(
                         modifier = Modifier.padding(vertical = 12.dp),
-                        text = LocalI18N.current["ui.action.input.swipe.end.pos"]
+                        text = LocalI18N.current[I18N_R.UI_ACTION_INPUT_SWIPE_END_POS]
                     )
                     ShortXTextField(
                         modifier = Modifier.fillMaxWidth(),
@@ -177,7 +178,7 @@ private fun InputSwipeSelector(
                             state.endX = it
                         },
                         label = {
-                            Text(LocalI18N.current["ui.action.input.swipe.end.x"])
+                            Text(LocalI18N.current[I18N_R.UI_ACTION_INPUT_SWIPE_END_X])
                         },
                         showSymbolButton = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
@@ -190,7 +191,7 @@ private fun InputSwipeSelector(
                             state.endY = it
                         },
                         label = {
-                            Text(LocalI18N.current["ui.action.input.swipe.end.y"])
+                            Text(LocalI18N.current[I18N_R.UI_ACTION_INPUT_SWIPE_END_Y])
                         },
                         showSymbolButton = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
@@ -199,9 +200,9 @@ private fun InputSwipeSelector(
 
                     SmallTitle(
                         modifier = Modifier.padding(top = 12.dp),
-                        text = LocalI18N.current["ui.action.input.swipe.time"]
+                        text = LocalI18N.current[I18N_R.UI_ACTION_INPUT_SWIPE_TIME]
                     )
-                    TipBody(text = LocalI18N.current["ui.action.input.swipe.time.description"])
+                    TipBody(text = LocalI18N.current[I18N_R.UI_ACTION_INPUT_SWIPE_TIME_DESCRIPTION])
                     TinySpacer()
                     ShortXTextField(
                         modifier = Modifier.fillMaxWidth(),

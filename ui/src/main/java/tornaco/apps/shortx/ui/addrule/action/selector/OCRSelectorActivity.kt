@@ -36,6 +36,7 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class OCRSelectorActivity : BaseSelectorActivity<Action.OcrDetect>() {
@@ -57,7 +58,7 @@ private fun BaseSelectorActivity<Action.OcrDetect>.Selector(currentAction: Actio
     val state by vm.state.collectAsState()
 
     ShortXAppBarScaffold(
-        title = LocalI18N.current["ui.action.ocr.detect"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_OCR_DETECT],
         onBackPressed = { cancelAndFinish() },
         actions = {
             IconButton(onClick = {
@@ -69,7 +70,7 @@ private fun BaseSelectorActivity<Action.OcrDetect>.Selector(currentAction: Actio
     )
     {
         Column(Modifier.padding(horizontal = 16.dp)) {
-            FieldTitle(text = LocalI18N.current["ui.action.rect.src"])
+            FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_RECT_SRC])
             SmallSpacer()
 
             val context = LocalContext.current
@@ -77,14 +78,14 @@ private fun BaseSelectorActivity<Action.OcrDetect>.Selector(currentAction: Actio
             val showRectFormatError = {
                 Toast.makeText(
                     context,
-                    i18N["ui.action.rect.src.rect.format.error"],
+                    i18N[I18N_R.UI_ACTION_RECT_SRC_RECT_FORMAT_ERROR],
                     Toast.LENGTH_SHORT
                 ).show()
             }
 
             val rectInputDialogState = rememberTextInputState(
-                title = i18N["ui.action.rect.src.rect"],
-                message = i18N["ui.action.rect.src.rect.format"]
+                title = i18N[I18N_R.UI_ACTION_RECT_SRC_RECT],
+                message = i18N[I18N_R.UI_ACTION_RECT_SRC_RECT_FORMAT]
             ) {
                 val rect = kotlin.runCatching {
                     Rect.unflattenFromString(it)
@@ -99,7 +100,7 @@ private fun BaseSelectorActivity<Action.OcrDetect>.Selector(currentAction: Actio
             TextInputDialog(state = rectInputDialogState)
 
             val pathInputDialogState = rememberTextInputState(
-                title = i18N["ui.action.rect.src.path"],
+                title = i18N[I18N_R.UI_ACTION_RECT_SRC_PATH],
                 message = null
             ) {
                 vm.setSrc(Action.OcrDetect.RectSrc.FromPath(path = it))
@@ -115,7 +116,7 @@ private fun BaseSelectorActivity<Action.OcrDetect>.Selector(currentAction: Actio
                             }
                         },
                         titleLines = listOf(
-                            i18N["ui.action.rect.src.rect"],
+                            i18N[I18N_R.UI_ACTION_RECT_SRC_RECT],
                             currentSrc.rect.toAndroidRect().flattenToString()
                         ),
                         onClick = {
@@ -134,7 +135,7 @@ private fun BaseSelectorActivity<Action.OcrDetect>.Selector(currentAction: Actio
                             }
                         },
                         titleLines = listOf(
-                            i18N["ui.action.rect.src.path"],
+                            i18N[I18N_R.UI_ACTION_RECT_SRC_PATH],
                             currentSrc.path
                         ),
                         onClick = {
@@ -153,8 +154,8 @@ private fun BaseSelectorActivity<Action.OcrDetect>.Selector(currentAction: Actio
                             }
                         },
                         titleLines = listOf(
-                            i18N["ui.action.select.screen.area"],
-                            i18N["ui.action.select.screen.area.tip"],
+                            i18N[I18N_R.UI_ACTION_SELECT_SCREEN_AREA],
+                            i18N[I18N_R.UI_ACTION_SELECT_SCREEN_AREA_TIP],
                         )
                     )
                 }
@@ -167,7 +168,7 @@ private fun BaseSelectorActivity<Action.OcrDetect>.Selector(currentAction: Actio
                             }
                         },
                         titleLines = listOf(
-                            i18N["ui.action.rect.src.fullscreen"],
+                            i18N[I18N_R.UI_ACTION_RECT_SRC_FULLSCREEN],
                         )
                     )
                 }
@@ -175,20 +176,20 @@ private fun BaseSelectorActivity<Action.OcrDetect>.Selector(currentAction: Actio
 
             StandardSpacer()
 
-            FieldTitle(text = i18N["ui.action.ocr.output.type"])
+            FieldTitle(text = i18N[I18N_R.UI_ACTION_OCR_OUTPUT_TYPE])
             SmallSpacer()
             val outputTypeMenuState = rememberMenuDialogState<String>(
-                title = i18N["ui.action.ocr.output.type"],
+                title = i18N[I18N_R.UI_ACTION_OCR_OUTPUT_TYPE],
                 menuItems = listOf(
                     MenuDialogItem(
                         id = OcrDetectOutputType.OcrDetectOutputType_Text.name,
-                        title = i18N["ui.action.ocr.output.text"],
-                        summary = i18N["ui.action.ocr.output.text.summary"],
+                        title = i18N[I18N_R.UI_ACTION_OCR_OUTPUT_TEXT],
+                        summary = i18N[I18N_R.UI_ACTION_OCR_OUTPUT_TEXT_SUMMARY],
                     ),
                     MenuDialogItem(
                         id = OcrDetectOutputType.OcrDetectOutputType_Json.name,
-                        title = i18N["ui.action.ocr.output.json"],
-                        summary = i18N["ui.action.ocr.output.json.summary"],
+                        title = i18N[I18N_R.UI_ACTION_OCR_OUTPUT_JSON],
+                        summary = i18N[I18N_R.UI_ACTION_OCR_OUTPUT_JSON_SUMMARY],
                     ),
                 ),
                 onItemSelected = { _, id ->
@@ -212,18 +213,18 @@ private fun BaseSelectorActivity<Action.OcrDetect>.Selector(currentAction: Actio
                     }
                 },
                 titleLines = listOf(
-                    i18N["ui.action.ocr.output.type"],
+                    i18N[I18N_R.UI_ACTION_OCR_OUTPUT_TYPE],
                     when (state.outputType) {
                         OcrDetectOutputType.OcrDetectOutputType_Text ->
-                            i18N["ui.action.ocr.output.text"]
+                            i18N[I18N_R.UI_ACTION_OCR_OUTPUT_TEXT]
 
-                        else -> i18N["ui.action.ocr.output.json"]
+                        else -> i18N[I18N_R.UI_ACTION_OCR_OUTPUT_JSON]
                     },
                     when (state.outputType) {
                         OcrDetectOutputType.OcrDetectOutputType_Text ->
-                            i18N["ui.action.ocr.output.text.summary"]
+                            i18N[I18N_R.UI_ACTION_OCR_OUTPUT_TEXT_SUMMARY]
 
-                        else -> i18N["ui.action.ocr.output.json.summary"]
+                        else -> i18N[I18N_R.UI_ACTION_OCR_OUTPUT_JSON_SUMMARY]
                     },
                 ),
                 onClick = { outputTypeMenuState.show() }
@@ -232,23 +233,23 @@ private fun BaseSelectorActivity<Action.OcrDetect>.Selector(currentAction: Actio
             StandardSpacer()
 
             val srcMenuState = rememberMenuDialogState<String>(
-                title = i18N["ui.action.rect.src"],
+                title = i18N[I18N_R.UI_ACTION_RECT_SRC],
                 menuItems = listOf(
                     MenuDialogItem(
                         id = Action.OcrDetect.RectSrc.SelectScreenArea::class.java.name,
-                        title = i18N["ui.action.rect.src.select.screen"]
+                        title = i18N[I18N_R.UI_ACTION_RECT_SRC_SELECT_SCREEN]
                     ),
                     MenuDialogItem(
                         id = Action.OcrDetect.RectSrc.FromRect::class.java.name,
-                        title = i18N["ui.action.rect.src.rect"]
+                        title = i18N[I18N_R.UI_ACTION_RECT_SRC_RECT]
                     ),
                     MenuDialogItem(
                         id = Action.OcrDetect.RectSrc.FromPath::class.java.name,
-                        title = i18N["ui.action.rect.src.path"]
+                        title = i18N[I18N_R.UI_ACTION_RECT_SRC_PATH]
                     ),
                     MenuDialogItem(
                         id = Action.OcrDetect.RectSrc.FullScreen::class.java.name,
-                        title = i18N["ui.action.rect.src.fullscreen"]
+                        title = i18N[I18N_R.UI_ACTION_RECT_SRC_FULLSCREEN]
                     ),
                 ),
                 onItemSelected = { _, id ->
@@ -276,7 +277,7 @@ private fun BaseSelectorActivity<Action.OcrDetect>.Selector(currentAction: Actio
             Button(onClick = {
                 srcMenuState.show()
             }) {
-                Text(text = i18N["ui.common.edit"])
+                Text(text = i18N[I18N_R.UI_COMMON_EDIT])
             }
         }
     }

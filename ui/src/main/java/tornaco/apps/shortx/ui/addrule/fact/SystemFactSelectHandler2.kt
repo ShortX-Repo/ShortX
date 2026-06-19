@@ -32,14 +32,15 @@ import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberRegexTextInputState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.util.XposedScope
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @Composable
 fun systemFactSelectHandler2(addFact: (Fact) -> Unit): (FactSelectSource) -> Boolean {
     val context = LocalContext.current
 
     val batteryTempSelectorState = rememberTextInputState(
-        title = LocalI18N.current["ui.fact.battery.temp.changed"],
-        message = LocalI18N.current["ui.fact.battery.temp.changed.temp"],
+        title = LocalI18N.current[I18N_R.UI_FACT_BATTERY_TEMP_CHANGED],
+        message = LocalI18N.current[I18N_R.UI_FACT_BATTERY_TEMP_CHANGED_TEMP],
         inputValidator = {
             (it.isNotEmpty() && ((it.toFloatOrNull() ?: 0f) <= 100f)).select(
                 InputValidateResult.OK,
@@ -58,8 +59,8 @@ fun systemFactSelectHandler2(addFact: (Fact) -> Unit): (FactSelectSource) -> Boo
     TextInputDialog(state = batteryTempSelectorState)
 
     val broadcastSelectorState = rememberTextInputState(
-        title = LocalI18N.current["ui.fact.broadcast"],
-        message = LocalI18N.current["ui.common.action"],
+        title = LocalI18N.current[I18N_R.UI_FACT_BROADCAST],
+        message = LocalI18N.current[I18N_R.UI_COMMON_ACTION],
         showSymbolButton = false,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
         onSelected = { actionString ->
@@ -70,8 +71,8 @@ fun systemFactSelectHandler2(addFact: (Fact) -> Unit): (FactSelectSource) -> Boo
 
 
     val mediaInsertSelectorState = rememberRegexTextInputState(
-        title = LocalI18N.current["ui.fact.media.insert"],
-        message = "${LocalI18N.current["ui.fact.media.insert.summary", mapOf("mediaPkgName" to PackageNames.mediaProviderPackages.joinToString())]} \n\n ${LocalI18N.current["ui.fact.media.insert.input.path"]}",
+        title = LocalI18N.current[I18N_R.UI_FACT_MEDIA_INSERT],
+        message = "${LocalI18N.current[I18N_R.UI_FACT_MEDIA_INSERT_SUMMARY, mapOf("mediaPkgName" to PackageNames.mediaProviderPackages.joinToString())]} \n\n ${LocalI18N.current[I18N_R.UI_FACT_MEDIA_INSERT_INPUT_PATH]}",
         showSymbolButton = false,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
         onSelected = { pathString, options ->
@@ -90,8 +91,8 @@ fun systemFactSelectHandler2(addFact: (Fact) -> Unit): (FactSelectSource) -> Boo
     RegexTextInputDialog(state = mediaInsertSelectorState)
 
     val mediaDeleteSelectorState = rememberRegexTextInputState(
-        title = LocalI18N.current["ui.fact.media.delete"],
-        message = "${LocalI18N.current["ui.fact.media.delete.summary", mapOf("mediaPkgName" to PackageNames.mediaProviderPackages.joinToString())]} \n\n ${LocalI18N.current["ui.fact.media.delete.input.path"]}",
+        title = LocalI18N.current[I18N_R.UI_FACT_MEDIA_DELETE],
+        message = "${LocalI18N.current[I18N_R.UI_FACT_MEDIA_DELETE_SUMMARY, mapOf("mediaPkgName" to PackageNames.mediaProviderPackages.joinToString())]} \n\n ${LocalI18N.current[I18N_R.UI_FACT_MEDIA_DELETE_INPUT_PATH]}",
         showSymbolButton = false,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
         onSelected = { pathString, options ->
@@ -106,8 +107,8 @@ fun systemFactSelectHandler2(addFact: (Fact) -> Unit): (FactSelectSource) -> Boo
     RegexTextInputDialog(state = mediaDeleteSelectorState)
 
     val usbDeviceAttachState = rememberRegexTextInputState(
-        title = LocalI18N.current["ui.fact.usb.device.attached"],
-        message = LocalI18N.current["ui.fact.usb.device.name"],
+        title = LocalI18N.current[I18N_R.UI_FACT_USB_DEVICE_ATTACHED],
+        message = LocalI18N.current[I18N_R.UI_FACT_USB_DEVICE_NAME],
         showSymbolButton = false,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
         onSelected = { pathString, options ->
@@ -122,8 +123,8 @@ fun systemFactSelectHandler2(addFact: (Fact) -> Unit): (FactSelectSource) -> Boo
     RegexTextInputDialog(state = usbDeviceAttachState)
 
     val usbDeviceDetachState = rememberRegexTextInputState(
-        title = LocalI18N.current["ui.fact.usb.device.detached"],
-        message = LocalI18N.current["ui.fact.usb.device.name"],
+        title = LocalI18N.current[I18N_R.UI_FACT_USB_DEVICE_DETACHED],
+        message = LocalI18N.current[I18N_R.UI_FACT_USB_DEVICE_NAME],
         showSymbolButton = false,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
         onSelected = { pathString, options ->
@@ -138,7 +139,7 @@ fun systemFactSelectHandler2(addFact: (Fact) -> Unit): (FactSelectSource) -> Boo
     RegexTextInputDialog(state = usbDeviceDetachState)
 
     val onStartOpSelectorState = rememberAppOpSelectorState(
-        title = LocalI18N.current["ui.fact.op.start"],
+        title = LocalI18N.current[I18N_R.UI_FACT_OP_START],
         message = null,
         onSelected = {
             addFact(Fact.OnStartOp(apps = it.appList, pkgSets = it.pkgSetList, codes = it.opCodes))
@@ -146,7 +147,7 @@ fun systemFactSelectHandler2(addFact: (Fact) -> Unit): (FactSelectSource) -> Boo
     AppOpSelectorDialog(state = onStartOpSelectorState)
 
     val onFinishOpSelectorState = rememberAppOpSelectorState(
-        title = LocalI18N.current["ui.fact.op.finish"],
+        title = LocalI18N.current[I18N_R.UI_FACT_OP_FINISH],
         message = null,
         onSelected = {
             addFact(Fact.OnFinishOp(apps = it.appList, pkgSets = it.pkgSetList, codes = it.opCodes))
@@ -160,7 +161,7 @@ fun systemFactSelectHandler2(addFact: (Fact) -> Unit): (FactSelectSource) -> Boo
 
     val callStateSelectState =
         rememberMenuDialogState<String>(
-            title = LocalI18N.current["ui.fact.call.state.changed"],
+            title = LocalI18N.current[I18N_R.UI_FACT_CALL_STATE_CHANGED],
             menuItems =
                 CallState.entries.filterNot { it == CallState.UNRECOGNIZED }.map {
                     MenuDialogItem(
@@ -174,8 +175,8 @@ fun systemFactSelectHandler2(addFact: (Fact) -> Unit): (FactSelectSource) -> Boo
     MenuDialog(state = callStateSelectState)
 
     val clipboardRegexDialogState = rememberRegexTextInputState(
-        title = LocalI18N.current["ui.fact.clipboard.content.changed"],
-        message = LocalI18N.current["ui.fact.clipboard.content.changed.regex"],
+        title = LocalI18N.current[I18N_R.UI_FACT_CLIPBOARD_CONTENT_CHANGED],
+        message = LocalI18N.current[I18N_R.UI_FACT_CLIPBOARD_CONTENT_CHANGED_REGEX],
         inputValidator = {
             InputValidateResult.OK
         },
@@ -186,7 +187,7 @@ fun systemFactSelectHandler2(addFact: (Fact) -> Unit): (FactSelectSource) -> Boo
     RegexTextInputDialog(state = clipboardRegexDialogState)
 
     val screenRotateSelectorState = rememberMenuDialogState<String>(
-        title = LocalI18N.current["ui.fact.screen.rotate"],
+        title = LocalI18N.current[I18N_R.UI_FACT_SCREEN_ROTATE],
         menuItems = ScreenRotateDegree.entries.filterNot { it == ScreenRotateDegree.UNRECOGNIZED }
             .map {
                 MenuDialogItem(it.name, title = LocalI18N.current[it.factLabelKey()])
@@ -204,7 +205,7 @@ fun systemFactSelectHandler2(addFact: (Fact) -> Unit): (FactSelectSource) -> Boo
     ScreenOnTimeSelectorDialog(screenOnTimeState)
 
     val windowRotateSelectorState = rememberMenuDialogState<String>(
-        title = LocalI18N.current["ui.fact.window.rotate"],
+        title = LocalI18N.current[I18N_R.UI_FACT_WINDOW_ROTATE],
         menuItems = ScreenRotateDegree.entries.filterNot { it == ScreenRotateDegree.UNRECOGNIZED }
             .map {
                 MenuDialogItem(it.name, title = LocalI18N.current[it.factLabelKey()])
@@ -218,15 +219,15 @@ fun systemFactSelectHandler2(addFact: (Fact) -> Unit): (FactSelectSource) -> Boo
 
 
     val imeVisibilitySelectorState = rememberMenuDialogState<String>(
-        title = LocalI18N.current["ui.fact.ime.visibility.change"],
+        title = LocalI18N.current[I18N_R.UI_FACT_IME_VISIBILITY_CHANGE],
         menuItems = listOf(
             MenuDialogItem(
                 id = true.toString(),
-                title = LocalI18N.current["ui.fact.ime.visibility.show"],
+                title = LocalI18N.current[I18N_R.UI_FACT_IME_VISIBILITY_SHOW],
             ),
             MenuDialogItem(
                 id = false.toString(),
-                title = LocalI18N.current["ui.fact.ime.visibility.hide"],
+                title = LocalI18N.current[I18N_R.UI_FACT_IME_VISIBILITY_HIDE],
             ),
         ),
         onItemSelected = { data, id ->
@@ -237,8 +238,8 @@ fun systemFactSelectHandler2(addFact: (Fact) -> Unit): (FactSelectSource) -> Boo
     MenuDialog(state = imeVisibilitySelectorState)
 
     val connectedWifiSignalState = rememberTextInputState(
-        title = LocalI18N.current["ui.fact.wifi.signal.changed"],
-        message = LocalI18N.current["ui.fact.wifi.signal.changed.message", mapOf(
+        title = LocalI18N.current[I18N_R.UI_FACT_WIFI_SIGNAL_CHANGED],
+        message = LocalI18N.current[I18N_R.UI_FACT_WIFI_SIGNAL_CHANGED_MESSAGE, mapOf(
             "max" to shortXManager.getMaxSignalLevel().toString()
         )]
     ) {
@@ -252,7 +253,7 @@ fun systemFactSelectHandler2(addFact: (Fact) -> Unit): (FactSelectSource) -> Boo
     NFCTagSelectorDialog(state = nfcTagSelectorDialogState)
 
     val logcatRegexDialogState = rememberRegexTextInputState(
-        title = LocalI18N.current["ui.fact.logcat"],
+        title = LocalI18N.current[I18N_R.UI_FACT_LOGCAT],
         message = null
     ) { str, op ->
         addFact(Fact.Logcat(regex = str, regexMatchOptions = op))

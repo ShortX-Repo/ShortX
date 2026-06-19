@@ -44,6 +44,7 @@ import tornaco.apps.shortx.ui.base.ShortXFilledTonalButton
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class ConditionPkgAndUserListSelectorDialogState(
     val title: String,
@@ -159,7 +160,7 @@ private fun DialogContent(dialogState: ConditionPkgAndUserListSelectorDialogStat
                     ) {
                         Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                             MediumTitle(
-                                text = LocalI18N.current["ui.condition.selector.app.all.any.op.title"]
+                                text = LocalI18N.current[I18N_R.UI_CONDITION_SELECTOR_APP_ALL_ANY_OP_TITLE]
                             )
                             MediumSpacer()
                             val opSelectorDialogState: MenuDialogState<String> =
@@ -193,7 +194,7 @@ private fun DialogContent(dialogState: ConditionPkgAndUserListSelectorDialogStat
                     androidx.compose.material3.Button(onClick = {
                         singlePkgAndUserSelectState.show()
                     }) {
-                        Text(text = LocalI18N.current["ui.common.add"])
+                        Text(text = LocalI18N.current[I18N_R.UI_COMMON_ADD])
                     }
                     StandardSpacer()
                 }

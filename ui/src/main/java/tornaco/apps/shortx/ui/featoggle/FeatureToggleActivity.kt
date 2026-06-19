@@ -33,6 +33,7 @@ import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.main.BottomNavItem
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class FeatureToggleActivity : BaseActivity() {
     companion object {
@@ -60,7 +61,7 @@ class FeatureToggleActivity : BaseActivity() {
                     topBar = {
                         ShortXTopAppBar(
                             modifier = Modifier,
-                            title = { Text(text = i18N["ui.settings.feat.toggle"]) },
+                            title = { Text(text = i18N[I18N_R.UI_SETTINGS_FEAT_TOGGLE]) },
                             navigationIcon = {
                                 IconButton(onClick = {
                                     finish()

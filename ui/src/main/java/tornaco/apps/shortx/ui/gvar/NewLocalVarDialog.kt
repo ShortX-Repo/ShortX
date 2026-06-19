@@ -41,6 +41,7 @@ import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.base.UnderlineSmallText
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.util.ClipboardUtils
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class NewLocalVarState(
     val onSelected: (Pair<String, GlobalVarType>) -> Unit
@@ -76,7 +77,7 @@ fun Pair<String, GlobalVarType>.toLocalVar(): LocalVar =
 fun NewLocalVarDialog(state: NewLocalVarState) {
     if (state.isShowing) {
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
-            DialogTitle(text = LocalI18N.current["ui.local.var.title"])
+            DialogTitle(text = LocalI18N.current[I18N_R.UI_LOCAL_VAR_TITLE])
         }, buttons = {
             ShortXTextButton(onClick = {
                 if (state.name.isNotBlank()) {
@@ -93,10 +94,10 @@ fun NewLocalVarDialog(state: NewLocalVarState) {
 
                 SmallTitle(
                     modifier = Modifier.padding(vertical = 12.dp),
-                    text = LocalI18N.current["ui.local.var.name"]
+                    text = LocalI18N.current[I18N_R.UI_LOCAL_VAR_NAME]
                 )
                 SmallSpacer()
-                TipBody(text = LocalI18N.current["ui.local.var.name.description"])
+                TipBody(text = LocalI18N.current[I18N_R.UI_LOCAL_VAR_NAME_DESCRIPTION])
                 SmallSpacer()
                 ShortXTextField(
                     modifier = Modifier
@@ -115,12 +116,12 @@ fun NewLocalVarDialog(state: NewLocalVarState) {
                     )
                     Toast.makeText(
                         context,
-                        i18N["ui.common.copied.to.clipboard"],
+                        i18N[I18N_R.UI_COMMON_COPIED_TO_CLIPBOARD],
                         Toast.LENGTH_LONG
                     ).show()
                 }) {
                     UnderlineSmallText(
-                        text = LocalI18N.current["ui.local.var.access.help.message", mapOf(
+                        text = LocalI18N.current[I18N_R.UI_LOCAL_VAR_ACCESS_HELP_MESSAGE, mapOf(
                             "name" to "$LOCAL_VAR_REF_PREFIX${state.name}"
                         )]
                     )
@@ -131,7 +132,7 @@ fun NewLocalVarDialog(state: NewLocalVarState) {
 
                 SmallTitle(
                     modifier = Modifier.padding(vertical = 12.dp),
-                    text = LocalI18N.current["ui.local.var.type"]
+                    text = LocalI18N.current[I18N_R.UI_LOCAL_VAR_TYPE]
                 )
                 Box(modifier = Modifier) {
                     val typeDropdownState = rememberDropdownSelectorState()

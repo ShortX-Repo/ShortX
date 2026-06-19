@@ -18,6 +18,7 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortXAlertDialog
 import tornaco.apps.shortx.ui.base.ShortXTextButton
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 class DeleteSetConfirmDialogState(val setTitle: String, val itemsCount: Int) : CommonDialogState() {
@@ -64,11 +65,11 @@ fun DeleteSetConfirmDialog(
                 }
             },
             title = {
-                Text(text = i18N["ui.common.delete"])
+                Text(text = i18N[I18N_R.UI_COMMON_DELETE])
             },
             text = {
                 Column {
-                    Text(text = i18N["ui.delete.dialog.confirm", mapOf("wht" to state.setTitle)])
+                    Text(text = i18N[I18N_R.UI_DELETE_DIALOG_CONFIRM, mapOf("wht" to state.setTitle)])
                     AnimatedVisibility(visible = state.itemsCount > 0) {
                         SectionSpacer()
                         Row(
@@ -78,7 +79,7 @@ fun DeleteSetConfirmDialog(
                             Checkbox(
                                 checked = state.alsoDeleteItems,
                                 onCheckedChange = { state.alsoDeleteItems = it })
-                            Text(text = i18N["ui.delete.dialog.also.delete.item", mapOf("count" to state.itemsCount.toString())])
+                            Text(text = i18N[I18N_R.UI_DELETE_DIALOG_ALSO_DELETE_ITEM, mapOf("count" to state.itemsCount.toString())])
                         }
                     }
                 }

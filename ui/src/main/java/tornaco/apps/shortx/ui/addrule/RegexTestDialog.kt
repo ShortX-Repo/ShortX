@@ -43,6 +43,7 @@ import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class RegexTestDialogState(
 ) : CommonDialogState() {
@@ -94,7 +95,7 @@ private fun RegexTest(dialogState: RegexTestDialogState) {
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(text = LocalI18N.current["ui.tools.regex.test.title"]) },
+                        title = { Text(text = LocalI18N.current[I18N_R.UI_TOOLS_REGEX_TEST_TITLE]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 dialogState.dismiss()
@@ -128,7 +129,7 @@ private fun RegexTest(dialogState: RegexTestDialogState) {
                     arrayOf<@Composable () -> Unit>(
                         {
                             Column {
-                                FieldTitle(text = LocalI18N.current["ui.tools.regex.test.regex"])
+                                FieldTitle(text = LocalI18N.current[I18N_R.UI_TOOLS_REGEX_TEST_REGEX])
                                 MediumSpacer()
                                 ShortXTextField(
                                     modifier = Modifier.fillMaxWidth(),
@@ -144,7 +145,7 @@ private fun RegexTest(dialogState: RegexTestDialogState) {
                             }
                         },
                         {
-                            FieldTitle(text = LocalI18N.current["ui.tools.regex.test.string"])
+                            FieldTitle(text = LocalI18N.current[I18N_R.UI_TOOLS_REGEX_TEST_STRING])
                             MediumSpacer()
                             ShortXTextField(
                                 modifier = Modifier.fillMaxWidth(),
@@ -161,7 +162,7 @@ private fun RegexTest(dialogState: RegexTestDialogState) {
                                                 .fillMaxWidth()
                                                 .padding(16.dp)
                                         ) {
-                                            FieldTitle(text = LocalI18N.current["ui.tools.regex.test.result"])
+                                            FieldTitle(text = LocalI18N.current[I18N_R.UI_TOOLS_REGEX_TEST_RESULT])
                                             StandardSpacer()
                                             Text(dialogState.output)
                                         }

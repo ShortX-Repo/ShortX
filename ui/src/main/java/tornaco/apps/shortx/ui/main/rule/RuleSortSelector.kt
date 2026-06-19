@@ -17,6 +17,7 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.main.RuleSortBy
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @Composable
 fun RuleSortSelector(
@@ -46,14 +47,14 @@ fun RuleSortSelector(
                         text = {
                             Text(
                                 text = when (sortBy) {
-                                    RuleSortBy.Name -> i18n["ui.sort.by_name"]
-                                    RuleSortBy.NameReverse -> i18n["ui.sort.by_name_desc"]
-                                    RuleSortBy.CreateTime -> i18n["ui.sort.by_create_time"]
-                                    RuleSortBy.CreateTimeReverse -> i18n["ui.sort.by_create_time_desc"]
-                                    RuleSortBy.LastUpdateTime -> i18n["ui.sort.by_update_time"]
-                                    RuleSortBy.LastUpdateTimeReverse -> i18n["ui.sort.by_update_time_desc"]
-                                    RuleSortBy.EnableState -> i18n["ui.sort.by_enable_state"]
-                                    RuleSortBy.EnableStateReverse -> i18n["ui.sort.by_enable_state_desc"]
+                                    RuleSortBy.Name -> i18n[I18N_R.UI_SORT_BY_NAME]
+                                    RuleSortBy.NameReverse -> i18n[I18N_R.UI_SORT_BY_NAME_DESC]
+                                    RuleSortBy.CreateTime -> i18n[I18N_R.UI_SORT_BY_CREATE_TIME]
+                                    RuleSortBy.CreateTimeReverse -> i18n[I18N_R.UI_SORT_BY_CREATE_TIME_DESC]
+                                    RuleSortBy.LastUpdateTime -> i18n[I18N_R.UI_SORT_BY_UPDATE_TIME]
+                                    RuleSortBy.LastUpdateTimeReverse -> i18n[I18N_R.UI_SORT_BY_UPDATE_TIME_DESC]
+                                    RuleSortBy.EnableState -> i18n[I18N_R.UI_SORT_BY_ENABLE_STATE]
+                                    RuleSortBy.EnableStateReverse -> i18n[I18N_R.UI_SORT_BY_ENABLE_STATE_DESC]
                                 }
                             )
                         },

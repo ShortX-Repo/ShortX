@@ -45,6 +45,7 @@ import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.UnderlineSmallText
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.ClipboardUtils
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class NewMethodHookExpressionState(
     val onSelected: (MethodHookExpressions) -> Unit
@@ -139,12 +140,12 @@ fun NewMethodHookExpressionDialog(state: NewMethodHookExpressionState) {
                                 )
                                 Toast.makeText(
                                     context,
-                                    i18N["ui.common.copied.to.clipboard"],
+                                    i18N[I18N_R.UI_COMMON_COPIED_TO_CLIPBOARD],
                                     Toast.LENGTH_LONG
                                 ).show()
                             }) {
                                 UnderlineSmallText(
-                                    text = LocalI18N.current["ui.context.data.example", mapOf(
+                                    text = LocalI18N.current[I18N_R.UI_CONTEXT_DATA_EXAMPLE, mapOf(
                                         "eg" to state.contextKey.asAccessExample()
                                     )]
                                 )

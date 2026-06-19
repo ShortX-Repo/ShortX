@@ -50,6 +50,7 @@ import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.composeLogger
 import java.time.LocalTime
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @Composable
 fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Boolean {
@@ -114,7 +115,7 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     CornerSwipeToCenterSelector(cornerSwipeToCenterSelectorState)
 
     val screenGestureMenuState = rememberMenuDialogState<String>(
-        title = LocalI18N.current["ui.fact.screen.gesture"],
+        title = LocalI18N.current[I18N_R.UI_FACT_SCREEN_GESTURE],
         menuItems = Gesture.entries.filter { it != Gesture.UNRECOGNIZED }.map {
             MenuDialogItem(it.name, title = LocalI18N.current[it.displayNameKey()])
         },
@@ -146,16 +147,16 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     FixedPeriodSelector(fixedPeriodSelectorState)
 
     val wifiSelectorState =
-        rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.wifi.state.changed"]) {
+        rememberOnOffAnyStateSelectorState(title = LocalI18N.current[I18N_R.UI_FACT_WIFI_STATE_CHANGED]) {
             addFact(Fact.WifiStatusChanged(it))
         }
     OnOffAnyStateSelectorDialog(wifiSelectorState)
 
     val headsetPlugMenuState = rememberMenuDialogState<String>(
-        title = LocalI18N.current["ui.fact.headset.plug"],
+        title = LocalI18N.current[I18N_R.UI_FACT_HEADSET_PLUG],
         menuItems = listOf(
-            MenuDialogItem(id = "in", title = LocalI18N.current["ui.fact.headset.plug.in"]),
-            MenuDialogItem(id = "out", title = LocalI18N.current["ui.fact.headset.plug.out"]),
+            MenuDialogItem(id = "in", title = LocalI18N.current[I18N_R.UI_FACT_HEADSET_PLUG_IN]),
+            MenuDialogItem(id = "out", title = LocalI18N.current[I18N_R.UI_FACT_HEADSET_PLUG_OUT]),
         ),
         onItemSelected = { data, id ->
             addFact(Fact.HeadsetPlug(isPlug = id == "in"))
@@ -163,7 +164,7 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     MenuDialog(state = headsetPlugMenuState)
 
     val sunRiseSetState = rememberMenuDialogState<String>(
-        title = LocalI18N.current["ui.fact.sun.rise.set"],
+        title = LocalI18N.current[I18N_R.UI_FACT_SUN_RISE_SET],
         menuItems = listOf(
             SunRise.SunRise_Rise,
             SunRise.SunRise_Set
@@ -176,8 +177,8 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     MenuDialog(state = sunRiseSetState)
 
     val wifiConnectedToSelectorState = rememberWifiSSIDSelectorState(
-        title = LocalI18N.current["ui.fact.wifi.connect.to"],
-        message = LocalI18N.current["ui.fact.wifi.connect.to.input.ssid"],
+        title = LocalI18N.current[I18N_R.UI_FACT_WIFI_CONNECT_TO],
+        message = LocalI18N.current[I18N_R.UI_FACT_WIFI_CONNECT_TO_INPUT_SSID],
         loadSSID = {
             shortXManager.getWifiScanResults().filterNot { it.isBlank() }
         },
@@ -189,8 +190,8 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     WifiSSIDSelectorDialog(state = wifiConnectedToSelectorState)
 
     val wifiDisconnectedFromSelectorState = rememberWifiSSIDSelectorState(
-        title = LocalI18N.current["ui.fact.wifi.disconnected.from"],
-        message = LocalI18N.current["ui.fact.wifi.disconnected.from.input.ssid"],
+        title = LocalI18N.current[I18N_R.UI_FACT_WIFI_DISCONNECTED_FROM],
+        message = LocalI18N.current[I18N_R.UI_FACT_WIFI_DISCONNECTED_FROM_INPUT_SSID],
         loadSSID = {
             shortXManager.getWifiScanResults().filterNot { it.isBlank() }
         },
@@ -202,13 +203,13 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     WifiSSIDSelectorDialog(state = wifiDisconnectedFromSelectorState)
 
     val btSelectorState =
-        rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.bt.state.changed"]) {
+        rememberOnOffAnyStateSelectorState(title = LocalI18N.current[I18N_R.UI_FACT_BT_STATE_CHANGED]) {
             addFact(Fact.BTStatusChanged(it))
         }
     OnOffAnyStateSelectorDialog(btSelectorState)
 
     val btConnectedToState = rememberBTDeviceSelectorState(
-        title = LocalI18N.current["ui.fact.bt.connected.to"],
+        title = LocalI18N.current[I18N_R.UI_FACT_BT_CONNECTED_TO],
         onSelected = { name, address, timeout ->
             addFact(Fact.BTConnectedTo(devices = listOf(name)))
         }
@@ -216,7 +217,7 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     BTDeviceSelectorDialog(state = btConnectedToState)
 
     val btDisConnectedFromState = rememberBTDeviceSelectorState(
-        title = LocalI18N.current["ui.fact.bt.disconnected.from"],
+        title = LocalI18N.current[I18N_R.UI_FACT_BT_DISCONNECTED_FROM],
         onSelected = { name, address, timeout ->
             addFact(Fact.BTDisconnectedFrom(devices = listOf(name)))
         }
@@ -224,56 +225,56 @@ fun systemFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     BTDeviceSelectorDialog(state = btDisConnectedFromState)
 
     val dndSelectorState =
-        rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.dnd.state.changed"]) {
+        rememberOnOffAnyStateSelectorState(title = LocalI18N.current[I18N_R.UI_FACT_DND_STATE_CHANGED]) {
             addFact(Fact.DNDStatusChanged(it))
         }
     OnOffAnyStateSelectorDialog(dndSelectorState)
 
     val apmSelectorState =
-        rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.condition.apm.mode"]) {
+        rememberOnOffAnyStateSelectorState(title = LocalI18N.current[I18N_R.UI_CONDITION_APM_MODE]) {
             addFact(Fact.APMStatusChanged(it))
         }
     OnOffAnyStateSelectorDialog(apmSelectorState)
 
     val locationSelectorState =
-        rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.location.state.changed"]) {
+        rememberOnOffAnyStateSelectorState(title = LocalI18N.current[I18N_R.UI_FACT_LOCATION_STATE_CHANGED]) {
             addFact(Fact.LocationStatusChanged(it))
         }
     OnOffAnyStateSelectorDialog(locationSelectorState)
 
     val darkModeSelectorState =
-        rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.dark.mode.state.changed"]) {
+        rememberOnOffAnyStateSelectorState(title = LocalI18N.current[I18N_R.UI_FACT_DARK_MODE_STATE_CHANGED]) {
             addFact(Fact.DarkModeStatusChanged(it))
         }
     OnOffAnyStateSelectorDialog(darkModeSelectorState)
 
     val mobileDataSelectorState =
-        rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.mobile.data.state.changed"]) {
+        rememberOnOffAnyStateSelectorState(title = LocalI18N.current[I18N_R.UI_FACT_MOBILE_DATA_STATE_CHANGED]) {
             addFact(Fact.MobileDataStatusChanged(it))
         }
     OnOffAnyStateSelectorDialog(mobileDataSelectorState)
 
     val flashLightSelectorState =
-        rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.flash.light.state.changed"]) {
+        rememberOnOffAnyStateSelectorState(title = LocalI18N.current[I18N_R.UI_FACT_FLASH_LIGHT_STATE_CHANGED]) {
             addFact(Fact.FlashLightStatusChanged(it))
         }
     OnOffAnyStateSelectorDialog(flashLightSelectorState)
 
     val nfcSelectorState =
-        rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.nfc.state.changed"]) {
+        rememberOnOffAnyStateSelectorState(title = LocalI18N.current[I18N_R.UI_FACT_NFC_STATE_CHANGED]) {
             addFact(Fact.NFCStatusChanged(it))
         }
     OnOffAnyStateSelectorDialog(nfcSelectorState)
 
     val hotspotSelectorState =
-        rememberOnOffAnyStateSelectorState(title = LocalI18N.current["ui.fact.hotspot.state.changed"]) {
+        rememberOnOffAnyStateSelectorState(title = LocalI18N.current[I18N_R.UI_FACT_HOTSPOT_STATE_CHANGED]) {
             addFact(Fact.HotSpotStatusChanged(it))
         }
     OnOffAnyStateSelectorDialog(hotspotSelectorState)
 
     val batteryLevelSelectorState = rememberTextInputState(
-        title = LocalI18N.current["ui.fact.battery.level.changed"],
-        message = LocalI18N.current["ui.fact.battery.level.changed.level"],
+        title = LocalI18N.current[I18N_R.UI_FACT_BATTERY_LEVEL_CHANGED],
+        message = LocalI18N.current[I18N_R.UI_FACT_BATTERY_LEVEL_CHANGED_LEVEL],
         inputValidator = {
             val isOK = (it.isNotEmpty() && it.isDigitsOnly() && ((it.toIntOrNull() ?: 0) <= 100))
             isOK.select(InputValidateResult.OK, InputValidateResult.Error(""))

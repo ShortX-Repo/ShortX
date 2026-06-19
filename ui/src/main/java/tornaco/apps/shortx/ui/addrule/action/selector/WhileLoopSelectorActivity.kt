@@ -48,6 +48,7 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.StateViewModel
 import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class WhileLoopSelectorActivity : BaseSelectorActivity<Action.WhileLoop>() {
@@ -150,7 +151,7 @@ private fun BaseSelectorActivity<Action.WhileLoop>.WhileLoopSelectorDialogSelect
         topBar = {
             ShortXTopAppBar(
                 modifier = Modifier,
-                title = { Text(LocalI18N.current["ui.action.while.loop"]) },
+                title = { Text(LocalI18N.current[I18N_R.UI_ACTION_WHILE_LOOP]) },
                 navigationIcon = {
                     IconButton(onClick = {
                         cancelAndFinish()
@@ -186,13 +187,13 @@ private fun BaseSelectorActivity<Action.WhileLoop>.WhileLoopSelectorDialogSelect
         ) {
             SmallTitle(
                 modifier = Modifier.padding(vertical = 12.dp),
-                text = LocalI18N.current["ui.action.while.loop.repeat"]
+                text = LocalI18N.current[I18N_R.UI_ACTION_WHILE_LOOP_REPEAT]
             )
             ShortXTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = dialogState.repeat.toString(),
                 label = {
-                    Text(LocalI18N.current["ui.action.while.loop.repeat.message"])
+                    Text(LocalI18N.current[I18N_R.UI_ACTION_WHILE_LOOP_REPEAT_MESSAGE])
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 showSymbolButton = false,
@@ -203,13 +204,13 @@ private fun BaseSelectorActivity<Action.WhileLoop>.WhileLoopSelectorDialogSelect
 
             SmallTitle(
                 modifier = Modifier.padding(vertical = 12.dp),
-                text = LocalI18N.current["ui.action.while.loop.delay"]
+                text = LocalI18N.current[I18N_R.UI_ACTION_WHILE_LOOP_DELAY]
             )
             ShortXTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = dialogState.delay.toString(),
                 label = {
-                    Text(LocalI18N.current["ui.action.while.loop.delay.message"])
+                    Text(LocalI18N.current[I18N_R.UI_ACTION_WHILE_LOOP_DELAY_MESSAGE])
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 showSymbolButton = false,
@@ -222,9 +223,9 @@ private fun BaseSelectorActivity<Action.WhileLoop>.WhileLoopSelectorDialogSelect
                 header = {
                     SmallTitle(
                         modifier = Modifier.padding(vertical = 12.dp),
-                        LocalI18N.current["ui.action.while.loop.condition.title"]
+                        LocalI18N.current[I18N_R.UI_ACTION_WHILE_LOOP_CONDITION_TITLE]
                     )
-                    TipRow(text = LocalI18N.current["ui.action.while.loop.condition.message"])
+                    TipRow(text = LocalI18N.current[I18N_R.UI_ACTION_WHILE_LOOP_CONDITION_MESSAGE])
                     MediumSpacer()
                 },
                 state = conditionState,
@@ -236,7 +237,7 @@ private fun BaseSelectorActivity<Action.WhileLoop>.WhileLoopSelectorDialogSelect
                 header = {
                     SmallTitle(
                         modifier = Modifier.padding(vertical = 12.dp),
-                        LocalI18N.current["ui.action.while.loop.action.message"]
+                        LocalI18N.current[I18N_R.UI_ACTION_WHILE_LOOP_ACTION_MESSAGE]
                     )
                 },
                 actions = actionState.actions,

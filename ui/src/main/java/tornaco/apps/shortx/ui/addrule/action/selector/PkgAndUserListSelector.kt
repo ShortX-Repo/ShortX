@@ -31,6 +31,7 @@ import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class PkgAndUserListSelectorDialogState(
     val title: String,
@@ -144,7 +145,7 @@ private fun DialogContent(dialogState: PkgAndUserListSelectorDialogState) {
                     androidx.compose.material3.Button(onClick = {
                         singlePkgAndUserSelectState.show()
                     }) {
-                        Text(text = LocalI18N.current["ui.common.add"])
+                        Text(text = LocalI18N.current[I18N_R.UI_COMMON_ADD])
                     }
                     StandardSpacer()
                 }

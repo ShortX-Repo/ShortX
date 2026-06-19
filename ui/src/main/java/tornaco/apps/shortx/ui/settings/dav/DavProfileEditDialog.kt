@@ -34,6 +34,7 @@ import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 class DavProfileEditDialogState(val save: (WebDavProfile) -> Unit) : CommonDialogState() {
@@ -110,7 +111,7 @@ fun DavProfileEditDialog(state: DavProfileEditDialogState) {
                                     .padding(16.dp)
                                     .verticalScroll(rememberScrollState())
                             ) {
-                                FieldTitle(text = LocalI18N.current["ui.settings.webdav.profile.alias"])
+                                FieldTitle(text = LocalI18N.current[I18N_R.UI_SETTINGS_WEBDAV_PROFILE_ALIAS])
                                 SmallSpacer()
                                 ShortXTextField(
                                     modifier = Modifier.fillMaxWidth(),
@@ -122,7 +123,7 @@ fun DavProfileEditDialog(state: DavProfileEditDialogState) {
                                 )
                                 StandardSpacer()
 
-                                FieldTitle(text = LocalI18N.current["ui.settings.webdav.profile.user.name"])
+                                FieldTitle(text = LocalI18N.current[I18N_R.UI_SETTINGS_WEBDAV_PROFILE_USER_NAME])
                                 SmallSpacer()
                                 ShortXTextField(
                                     modifier = Modifier.fillMaxWidth(),
@@ -134,7 +135,7 @@ fun DavProfileEditDialog(state: DavProfileEditDialogState) {
                                 )
                                 StandardSpacer()
 
-                                FieldTitle(text = LocalI18N.current["ui.settings.webdav.profile.password"])
+                                FieldTitle(text = LocalI18N.current[I18N_R.UI_SETTINGS_WEBDAV_PROFILE_PASSWORD])
                                 SmallSpacer()
                                 ShortXTextField(
                                     modifier = Modifier.fillMaxWidth(),

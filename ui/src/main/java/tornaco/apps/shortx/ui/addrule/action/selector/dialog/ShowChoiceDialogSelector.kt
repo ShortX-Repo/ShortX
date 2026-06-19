@@ -47,6 +47,7 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.SwitchRow
 import tornaco.apps.shortx.ui.base.rememberCommonSortState
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 @AndroidEntryPoint
@@ -69,7 +70,7 @@ private fun ShowChoiceDialogSelectorActivity.ShowChoiceDialogSelector(currentDat
         topBar = {
             ShortXTopAppBar(
                 modifier = Modifier,
-                title = { Text(LocalI18N.current["ui.action.show.menu.dialog"]) },
+                title = { Text(LocalI18N.current[I18N_R.UI_ACTION_SHOW_MENU_DIALOG]) },
                 navigationIcon = {
                     IconButton(onClick = {
                         cancelAndFinish()
@@ -104,7 +105,7 @@ private fun ShowChoiceDialogSelectorActivity.ShowChoiceDialogSelector(currentDat
                     .animateContentSize()
                     .verticalScroll(rememberScrollState())
             ) {
-                FieldTitle(text = LocalI18N.current["ui.action.dialog.title"])
+                FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_DIALOG_TITLE])
                 MediumSpacer()
                 ShortXTextField(
                     modifier = Modifier.fillMaxWidth(),
@@ -130,7 +131,7 @@ private fun ShowChoiceDialogSelectorActivity.ShowChoiceDialogSelector(currentDat
                             SortItem(index, menuDialogUiItem.label)
                         })
 
-                    FieldTitle(text = LocalI18N.current["ui.action.show.menu.dialog.item"])
+                    FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_SHOW_MENU_DIALOG_ITEM])
                     // Sort
                     AnimatedVisibility(visible = dialogState.choices.size > 1) {
                         IconButton(onClick = {
@@ -162,13 +163,13 @@ private fun ShowChoiceDialogSelectorActivity.ShowChoiceDialogSelector(currentDat
                 Button(onClick = {
                     vm.addItem()
                 }) {
-                    Text(text = LocalI18N.current["ui.action.show.menu.dialog.item.add"])
+                    Text(text = LocalI18N.current[I18N_R.UI_ACTION_SHOW_MENU_DIALOG_ITEM_ADD])
                 }
 
                 SectionSpacer()
 
                 SwitchRow(
-                    text = LocalI18N.current["ui.action.dialog.cancelable"],
+                    text = LocalI18N.current[I18N_R.UI_ACTION_DIALOG_CANCELABLE],
                     isChecked = dialogState.cancelable
                 ) {
                     vm.updateCancelable(it)
@@ -182,7 +183,7 @@ private fun ShowChoiceDialogSelectorActivity.ShowChoiceDialogSelector(currentDat
                 LargeSpacer()
 
                 SwitchRow(
-                    text = LocalI18N.current["ui.action.show.choice.dialog.is.multiple"],
+                    text = LocalI18N.current[I18N_R.UI_ACTION_SHOW_CHOICE_DIALOG_IS_MULTIPLE],
                     isChecked = dialogState.isMultipleChoice
                 ) {
                     vm.updateIsMultipleChoice(it)
@@ -207,7 +208,7 @@ private fun Items(
 ) {
     state.choices.forEachIndexed { index, menuDialogUiItem ->
         ItemSettings(
-            headerTitle = LocalI18N.current["ui.action.show.choice.dialog.item"] + " ${index + 1}",
+            headerTitle = LocalI18N.current[I18N_R.UI_ACTION_SHOW_CHOICE_DIALOG_ITEM] + " ${index + 1}",
             label = menuDialogUiItem.label,
             value = menuDialogUiItem.value,
             isSelected = menuDialogUiItem.isSelectedByDefault,
@@ -259,7 +260,7 @@ private fun ItemSettings(
         ShortXTextField(
             modifier = Modifier.fillMaxWidth(),
             label = {
-                Text(text = LocalI18N.current["ui.action.show.choice.dialog.item.label"])
+                Text(text = LocalI18N.current[I18N_R.UI_ACTION_SHOW_CHOICE_DIALOG_ITEM_LABEL])
             },
             value = label,
             onValueChange = {
@@ -270,7 +271,7 @@ private fun ItemSettings(
         ShortXTextField(
             modifier = Modifier.fillMaxWidth(),
             label = {
-                Text(text = LocalI18N.current["ui.action.show.choice.dialog.item.value"])
+                Text(text = LocalI18N.current[I18N_R.UI_ACTION_SHOW_CHOICE_DIALOG_ITEM_VALUE])
             },
             value = value,
             onValueChange = {
@@ -279,7 +280,7 @@ private fun ItemSettings(
         )
 
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(LocalI18N.current["ui.action.show.choice.dialog.item.default.selected"])
+            Text(LocalI18N.current[I18N_R.UI_ACTION_SHOW_CHOICE_DIALOG_ITEM_DEFAULT_SELECTED])
             StandardSpacer()
             Checkbox(checked = isSelected, onCheckedChange = {
                 defaultSelectItem(!isSelected)

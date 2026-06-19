@@ -61,6 +61,7 @@ import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.gesture.ScreenRectPickerActivity
 import tornaco.apps.shortx.ui.util.toComposeColor
 import tornaco.apps.shortx.core.proto.common.Rect as ProtoRect
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class FindColorSelectorActivity : BaseSelectorActivity<FindPointsByColorConfig>() {
@@ -102,7 +103,7 @@ private fun BaseSelectorActivity<FindPointsByColorConfig>.Selector(
     }
 
     ShortXAppBarScaffold(
-        title = LocalI18N.current["ui.action.find.color"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_FIND_COLOR],
         onBackPressed = { cancelAndFinish() },
         actions = {
             IconButton(onClick = {
@@ -117,29 +118,29 @@ private fun BaseSelectorActivity<FindPointsByColorConfig>.Selector(
             val i18N = LocalI18N.current
             val context = LocalContext.current
 
-            FieldTitle(text = LocalI18N.current["ui.action.find.color.image"])
+            FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_FIND_COLOR_IMAGE])
             SmallSpacer()
-            ImageSourceSelector(state.image, i18N["ui.action.find.color.image"], true) {
+            ImageSourceSelector(state.image, i18N[I18N_R.UI_ACTION_FIND_COLOR_IMAGE], true) {
                 vm.setImage(it)
             }
 
             SectionSpacer()
 
             if (showOutputTypeSelector) {
-                FieldTitle(text = i18N["ui.action.find.color.output.type"])
+                FieldTitle(text = i18N[I18N_R.UI_ACTION_FIND_COLOR_OUTPUT_TYPE])
                 SmallSpacer()
                 val outputTypeMenuState = rememberMenuDialogState<String>(
-                    title = i18N["ui.action.find.color.output.type"],
+                    title = i18N[I18N_R.UI_ACTION_FIND_COLOR_OUTPUT_TYPE],
                     menuItems = listOf(
                         MenuDialogItem(
                             id = FindPointsByColorOutputType.FindPointsByColorOutputType_Text.name,
-                            title = i18N["ui.action.find.color.output.text"],
-                            summary = i18N["ui.action.find.color.output.text.summary"],
+                            title = i18N[I18N_R.UI_ACTION_FIND_COLOR_OUTPUT_TEXT],
+                            summary = i18N[I18N_R.UI_ACTION_FIND_COLOR_OUTPUT_TEXT_SUMMARY],
                         ),
                         MenuDialogItem(
                             id = FindPointsByColorOutputType.FindPointsByColorOutputType_Json.name,
-                            title = i18N["ui.action.find.color.output.json"],
-                            summary = i18N["ui.action.find.color.output.json.summary"],
+                            title = i18N[I18N_R.UI_ACTION_FIND_COLOR_OUTPUT_JSON],
+                            summary = i18N[I18N_R.UI_ACTION_FIND_COLOR_OUTPUT_JSON_SUMMARY],
                         ),
                     ),
                     onItemSelected = { _, id ->
@@ -163,18 +164,18 @@ private fun BaseSelectorActivity<FindPointsByColorConfig>.Selector(
                         }
                     },
                     titleLines = listOf(
-                        i18N["ui.action.find.color.output.type"],
+                        i18N[I18N_R.UI_ACTION_FIND_COLOR_OUTPUT_TYPE],
                         when (state.outputType) {
                             FindPointsByColorOutputType.FindPointsByColorOutputType_Text ->
-                                i18N["ui.action.find.color.output.text"]
+                                i18N[I18N_R.UI_ACTION_FIND_COLOR_OUTPUT_TEXT]
 
-                            else -> i18N["ui.action.find.color.output.json"]
+                            else -> i18N[I18N_R.UI_ACTION_FIND_COLOR_OUTPUT_JSON]
                         },
                         when (state.outputType) {
                             FindPointsByColorOutputType.FindPointsByColorOutputType_Text ->
-                                i18N["ui.action.find.color.output.text.summary"]
+                                i18N[I18N_R.UI_ACTION_FIND_COLOR_OUTPUT_TEXT_SUMMARY]
 
-                            else -> i18N["ui.action.find.color.output.json.summary"]
+                            else -> i18N[I18N_R.UI_ACTION_FIND_COLOR_OUTPUT_JSON_SUMMARY]
                         },
                     ),
                     onClick = { outputTypeMenuState.show() }
@@ -183,7 +184,7 @@ private fun BaseSelectorActivity<FindPointsByColorConfig>.Selector(
                 StandardSpacer()
             }
 
-            FieldTitle(text = LocalI18N.current["ui.action.find.color.color"])
+            FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_FIND_COLOR_COLOR])
             SmallSpacer()
             val colorPickerState = remember(state) {
                 ColorPickerDialogState(
@@ -211,7 +212,7 @@ private fun BaseSelectorActivity<FindPointsByColorConfig>.Selector(
             }
 
             SectionSpacer()
-            FieldTitle(text = LocalI18N.current["ui.action.find.color.rect"])
+            FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_FIND_COLOR_RECT])
             SmallSpacer()
 
             // Rect输入框
@@ -243,7 +244,7 @@ private fun BaseSelectorActivity<FindPointsByColorConfig>.Selector(
                 },
                 label = {
                     Text(
-                        i18N["ui.action.find.color.rect.input.label"]
+                        i18N[I18N_R.UI_ACTION_FIND_COLOR_RECT_INPUT_LABEL]
                     )
                 },
                 placeholder = { Text("例如: 100 200 300 400，留空表示全屏") },
@@ -254,7 +255,7 @@ private fun BaseSelectorActivity<FindPointsByColorConfig>.Selector(
 
             if (rectInputText.isNotEmpty() && parseRectFromInput() == null) {
                 Text(
-                    text = i18N["ui.action.find.color.rect.input.error"],
+                    text = i18N[I18N_R.UI_ACTION_FIND_COLOR_RECT_INPUT_ERROR],
                     color = MaterialTheme.colorScheme.error,
                     modifier = Modifier.padding(top = 4.dp)
                 )
@@ -271,7 +272,7 @@ private fun BaseSelectorActivity<FindPointsByColorConfig>.Selector(
                 },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(i18N["ui.action.find.color.rect.picker"])
+                Text(i18N[I18N_R.UI_ACTION_FIND_COLOR_RECT_PICKER])
             }
 
             SmallSpacer()
@@ -288,7 +289,7 @@ private fun BaseSelectorActivity<FindPointsByColorConfig>.Selector(
                     modifier = Modifier.size(18.dp)
                 )
                 Spacer(modifier = Modifier.width(8.dp))
-                Text(i18N["ui.fact.edge.gesture.show.selected.area"])
+                Text(i18N[I18N_R.UI_FACT_EDGE_GESTURE_SHOW_SELECTED_AREA])
             }
         }
     }

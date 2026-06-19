@@ -86,6 +86,7 @@ import tornaco.apps.shortx.ui.flow.DirectActionFlowSpec
 import tornaco.apps.shortx.ui.flow.InstructionFlowDialog
 import tornaco.apps.shortx.ui.record.EvaRecordSetting
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class AddDirectActionActivity : BaseActivity() {
@@ -112,9 +113,9 @@ class AddDirectActionActivity : BaseActivity() {
     override fun Content() {
         val daId = intent.getStringExtra(KEY_DA_ID)
         val screenTitle = if (daId == null) {
-            LocalI18N.current["ui.title.add.da"]
+            LocalI18N.current[I18N_R.UI_TITLE_ADD_DA]
         } else {
-            LocalI18N.current["ui.title.edit.da"]
+            LocalI18N.current[I18N_R.UI_TITLE_EDIT_DA]
         }
         // For create from a set chip.
         val daSetId = intent.getStringExtra(KEY_DA_SET_ID)
@@ -143,7 +144,7 @@ fun AddDirectActionScreen(
 
     val context = LocalContext.current
     val i18n = LocalI18N.current
-    val savedMessage = i18n["ui.toast.da.saved"]
+    val savedMessage = i18n[I18N_R.UI_TOAST_DA_SAVED]
     val showDASavedToast = {
         Toast.makeText(context, savedMessage, Toast.LENGTH_SHORT).show()
     }
@@ -190,12 +191,12 @@ fun AddDirectActionScreen(
 
     val backConfirmDialogState = rememberConfirmDialogState()
     ConfirmDialog(
-        title = i18n["ui.edit.discard.dialog.title"],
+        title = i18n[I18N_R.UI_EDIT_DISCARD_DIALOG_TITLE],
         messageHint = {
-            i18n["ui.edit.discard.dialog.message"]
+            i18n[I18N_R.UI_EDIT_DISCARD_DIALOG_MESSAGE]
         },
-        confirmButton = i18n["ui.edit.discard.dialog.discard"],
-        dismissButton = i18n["ui.edit.discard.dialog.stay"],
+        confirmButton = i18n[I18N_R.UI_EDIT_DISCARD_DIALOG_DISCARD],
+        dismissButton = i18n[I18N_R.UI_EDIT_DISCARD_DIALOG_STAY],
         state = backConfirmDialogState,
         data = "",
         onConfirm = {
@@ -311,7 +312,7 @@ fun AddDirectActionScreen(
 
         flowSpec?.let { spec ->
             InstructionFlowDialog(
-                title = i18n["ui.flow.view"],
+                title = i18n[I18N_R.UI_FLOW_VIEW],
                 root = spec,
                 shortXManager = vm.shortXManager,
                 onDismissRequest = { flowSpec = null }
@@ -344,8 +345,8 @@ private fun LazyListScope.daContent(
                     modifier = Modifier
                         .padding(vertical = 16.dp),
                     iconName = Remix.UserAndFaces.skull_2_fill,
-                    title = LocalI18N.current["ui.rule.action.secure.warning.title"],
-                    warnings = listOf(LocalI18N.current["ui.rule.action.secure.warning.message"])
+                    title = LocalI18N.current[I18N_R.UI_RULE_ACTION_SECURE_WARNING_TITLE],
+                    warnings = listOf(LocalI18N.current[I18N_R.UI_RULE_ACTION_SECURE_WARNING_MESSAGE])
                 )
                 LargeSpacer()
             }
@@ -366,7 +367,7 @@ private fun LazyListScope.daContent(
                             .padding(16.dp)
                     ) {
                         Text(
-                            text = LocalI18N.current["ui.rule.contains.send.sms.message"],
+                            text = LocalI18N.current[I18N_R.UI_RULE_CONTAINS_SEND_SMS_MESSAGE],
                             style = MaterialTheme.typography.titleSmall
                         )
                     }
@@ -411,7 +412,7 @@ private fun LazyListScope.daContent(
         )
         ExpandableSectionBar(
             isExpand = addDirectActionState.showAdvancedOptions,
-            text = LocalI18N.current["ui.advanced.options"],
+            text = LocalI18N.current[I18N_R.UI_ADVANCED_OPTIONS],
             iconName = Remix.System.star_fill,
             shape = RoundedCornerShape(cornerDp),
             modifier = Modifier.padding(horizontal = paddingDp)
@@ -458,7 +459,7 @@ private fun LazyListScope.daContent(
         )
         ExpandableSectionBar(
             isExpand = addDirectActionState.isQuitEnabled,
-            text = LocalI18N.current["ui.rule.quit.title"],
+            text = LocalI18N.current[I18N_R.UI_RULE_QUIT_TITLE],
             iconName = Remix.System.logout_circle_fill,
             shape = RoundedCornerShape(cornerDp),
             modifier = Modifier.padding(horizontal = paddingDp)
@@ -471,7 +472,7 @@ private fun LazyListScope.daContent(
         AnimatedVisibility(visible = addDirectActionState.isQuitEnabled) {
             Column {
                 StandardSpacer()
-                TipBody(LocalI18N.current["ui.rule.quit.description"])
+                TipBody(LocalI18N.current[I18N_R.UI_RULE_QUIT_DESCRIPTION])
                 StandardSpacer()
                 // Policy
                 QuitEvaluatePolicy(addDirectActionState.quitEvaluatePolicy) {
@@ -483,7 +484,7 @@ private fun LazyListScope.daContent(
                     header = {
                         FieldTitle(
                             modifier = Modifier.padding(bottom = 12.dp),
-                            text = "${LocalI18N.current["ui.rule.quit.title"]} - ${LocalI18N.current["ui.fact.title"]}"
+                            text = "${LocalI18N.current[I18N_R.UI_RULE_QUIT_TITLE]} - ${LocalI18N.current[I18N_R.UI_FACT_TITLE]}"
                         )
                     },
                     state = quitFactContentState,
@@ -496,7 +497,7 @@ private fun LazyListScope.daContent(
                     header = {
                         FieldTitle(
                             modifier = Modifier.padding(bottom = 12.dp),
-                            text = "${LocalI18N.current["ui.rule.quit.title"]} - ${LocalI18N.current["ui.conditions.title"]}"
+                            text = "${LocalI18N.current[I18N_R.UI_RULE_QUIT_TITLE]} - ${LocalI18N.current[I18N_R.UI_CONDITIONS_TITLE]}"
                         )
                     },
                     state = quitConditionContentState,
@@ -510,11 +511,11 @@ private fun LazyListScope.daContent(
                     header = {
                         FieldTitle(
                             modifier = Modifier.padding(bottom = 6.dp),
-                            text = "${LocalI18N.current["ui.rule.quit.title"]} - ${LocalI18N.current["ui.actions.title"]}"
+                            text = "${LocalI18N.current[I18N_R.UI_RULE_QUIT_TITLE]} - ${LocalI18N.current[I18N_R.UI_ACTIONS_TITLE]}"
                         )
                     },
                     summary = {
-                        TipBody(text = LocalI18N.current["ui.rule.quit.action.description"])
+                        TipBody(text = LocalI18N.current[I18N_R.UI_RULE_QUIT_ACTION_DESCRIPTION])
                     },
                     srcId = addDirectActionState.id,
                     actions = quitActionState.actions,
@@ -561,8 +562,8 @@ private fun LazyListScope.daContent(
                 ActionContent(
                     header = {
                         FieldTitleWithTip(
-                            LocalI18N.current["ui.actions.hook.on.stopped.title"],
-                            LocalI18N.current["ui.actions.hook.on.stopped.description"]
+                            LocalI18N.current[I18N_R.UI_ACTIONS_HOOK_ON_STOPPED_TITLE],
+                            LocalI18N.current[I18N_R.UI_ACTIONS_HOOK_ON_STOPPED_DESCRIPTION]
                         )
                     },
                     srcId = addDirectActionState.id,
@@ -593,7 +594,7 @@ private fun LazyListScope.daContent(
         )
         ExpandableSectionBar(
             isExpand = addDirectActionState.showOtherOptions,
-            text = LocalI18N.current["ui.other.options"],
+            text = LocalI18N.current[I18N_R.UI_OTHER_OPTIONS],
             iconName = Remix.System.more_2_fill,
             shape = RoundedCornerShape(cornerDp),
             modifier = Modifier.padding(horizontal = paddingDp)
@@ -644,7 +645,7 @@ private fun TitleAndDescription(
     ShortXTextField(
         modifier = Modifier.fillMaxWidth(),
         label = {
-            Text(text = LocalI18N.current["ui.da.title"])
+            Text(text = LocalI18N.current[I18N_R.UI_DA_TITLE])
         },
         value = state.title,
         readOnly = readOnly,
@@ -668,7 +669,7 @@ private fun TitleAndDescription(
                 .fillMaxWidth()
                 .padding(top = 16.dp),
             label = {
-                Text(text = LocalI18N.current["ui.da.description"])
+                Text(text = LocalI18N.current[I18N_R.UI_DA_DESCRIPTION])
             },
             value = state.description,
             readOnly = readOnly,

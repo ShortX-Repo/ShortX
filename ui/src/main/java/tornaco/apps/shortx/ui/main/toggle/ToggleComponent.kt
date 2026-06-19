@@ -45,6 +45,7 @@ import tornaco.apps.shortx.ui.record.EvaRecordActivity
 import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
 import tornaco.apps.shortx.ui.theme.Dimens
 import tornaco.apps.shortx.ui.theme.Dimens.menuDropdownFraction
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 @Composable
@@ -155,17 +156,17 @@ private fun listItemOverflowMenu(
     val i18N = LocalI18N.current
     val badge = if (isSubscribed) {
         null
-    } else i18N["ui.subscription.subscribed.only"]
+    } else i18N[I18N_R.UI_SUBSCRIPTION_SUBSCRIBED_ONLY]
 
     val subscribeDialogState = rememberShortXBottomSheetState()
     FeatureAccessDialog(subscribeDialogState)
 
     val deleteDialogState = rememberConfirmDialogState()
     ConfirmDialog(
-        title = i18N["ui.common.delete"],
+        title = i18N[I18N_R.UI_COMMON_DELETE],
         state = deleteDialogState,
         data = toggle,
-        messageHint = { i18N["ui.delete.dialog.confirm", mapOf("wht" to toggle.title)] },
+        messageHint = { i18N[I18N_R.UI_DELETE_DIALOG_CONFIRM, mapOf("wht" to toggle.title)] },
         onConfirm = { handler.delete(toggle) }
     )
 
@@ -178,33 +179,33 @@ private fun listItemOverflowMenu(
         state = menuState,
         items = listOf(
             DropdownItem(
-                labelLines = listOf(i18N["ui.common.dup"]),
+                labelLines = listOf(i18N[I18N_R.UI_COMMON_DUP]),
                 data = ToggleItemMenuOptions.Dup,
                 badge = badge,
                 icon = {
                     RemixIcon(Remix.Document.file_copy_2_fill)
                 }),
             DropdownItem(
-                labelLines = listOf(i18N["ui.common.edit"]),
+                labelLines = listOf(i18N[I18N_R.UI_COMMON_EDIT]),
                 data = ToggleItemMenuOptions.Edit,
                 icon = {
                     RemixIcon(Remix.Design.edit_line)
                 }),
             DropdownItem(
-                labelLines = listOf(i18N["ui.common.share"]),
+                labelLines = listOf(i18N[I18N_R.UI_COMMON_SHARE]),
                 data = ToggleItemMenuOptions.Share,
                 badge = badge,
                 icon = {
                     RemixIcon(Remix.System.share_line)
                 }),
             DropdownItem(
-                labelLines = listOf(LocalI18N.current["ui.settings.eva.record"]),
+                labelLines = listOf(LocalI18N.current[I18N_R.UI_SETTINGS_EVA_RECORD]),
                 data = ToggleItemMenuOptions.ViewEvaRecord,
                 icon = {
                     RemixIcon(Remix.System.history_fill)
                 }),
             DropdownItem(
-                labelLines = listOf(i18N["ui.common.delete"]),
+                labelLines = listOf(i18N[I18N_R.UI_COMMON_DELETE]),
                 data = ToggleItemMenuOptions.Delete,
                 icon = {
                     RemixIcon(Remix.System.delete_bin_4_line)

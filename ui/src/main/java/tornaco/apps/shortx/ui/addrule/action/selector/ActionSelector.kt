@@ -42,26 +42,27 @@ import tornaco.apps.shortx.ui.base.rememberSearchBarState
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import kotlin.reflect.KClass
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @DoNotStrip
 enum class ActionCategory(val i18NKey: String, val icon: String) {
-    All("ui.action.all", Remix.Buildings.store_2_line),
-    Recent("ui.action.recent", Remix.System.history_line),
+    All(I18N_R.UI_ACTION_ALL, Remix.Buildings.store_2_line),
+    Recent(I18N_R.UI_ACTION_RECENT, Remix.System.history_line),
     Ui("UI", Remix.Design.layout_2_fill),
-    Apps("ui.action.category.app", Remix.System.apps_2_fill),
-    Notifications("ui.action.category.notification", Remix.System.notification_badge_fill),
-    Settings("ui.action.system.settings", Remix.System.settings_2_fill),
-    Life("ui.action.life", Remix.Map.riding_fill),
-    Advanced("ui.action.advanced", Remix.System.external_link_fill),
-    Vars("ui.action.var", Remix.System.function_fill),
-    Functions("ui.action.functions", Remix.System.function_fill),
-    Misc("ui.action.misc", Remix.Others.box_1_fill),
-    Plugin("ui.action.plugin", Remix.Others.box_1_fill),
+    Apps(I18N_R.UI_ACTION_CATEGORY_APP, Remix.System.apps_2_fill),
+    Notifications(I18N_R.UI_ACTION_CATEGORY_NOTIFICATION, Remix.System.notification_badge_fill),
+    Settings(I18N_R.UI_ACTION_SYSTEM_SETTINGS, Remix.System.settings_2_fill),
+    Life(I18N_R.UI_ACTION_LIFE, Remix.Map.riding_fill),
+    Advanced(I18N_R.UI_ACTION_ADVANCED, Remix.System.external_link_fill),
+    Vars(I18N_R.UI_ACTION_VAR, Remix.System.function_fill),
+    Functions(I18N_R.UI_ACTION_FUNCTIONS, Remix.System.function_fill),
+    Misc(I18N_R.UI_ACTION_MISC, Remix.Others.box_1_fill),
+    Plugin(I18N_R.UI_ACTION_PLUGIN, Remix.Others.box_1_fill),
 }
 
 enum class TabItems(val i18NKey: String, val icon: String) {
-    All("ui.action.all", Remix.Buildings.store_2_line),
-    Remote("ui.action.remote", Remix.Business.cloud_line)
+    All(I18N_R.UI_ACTION_ALL, Remix.Buildings.store_2_line),
+    Remote(I18N_R.UI_ACTION_REMOTE, Remix.Business.cloud_line)
 }
 
 val initialPageIndex = TabItems.All.ordinal
@@ -70,7 +71,7 @@ val initialPageIndex = TabItems.All.ordinal
 fun ActionSelector(close: () -> Unit, onSelected: (Action) -> Unit) {
     ShortXTheme {
         ShortXAppBarScaffold(
-            title = LocalI18N.current["ui.title.select.action"],
+            title = LocalI18N.current[I18N_R.UI_TITLE_SELECT_ACTION],
             onBackPressed = { close() }) {
             ClickOutsideClearFocusBox {
                 Column(

@@ -33,6 +33,7 @@ import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.settings.dav.DavProfileSelectorDialog
 import tornaco.apps.shortx.ui.settings.dav.DavSettingsActivity
 import tornaco.apps.shortx.ui.settings.dav.rememberDavProfileSelectorState
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class WebDavListSelectorActivity : BaseSelectorActivity<Action.WebDavList>() {
@@ -54,7 +55,7 @@ private fun BaseSelectorActivity<Action.WebDavList>.Selector(currentAction: Acti
     val dialogState by vm.state.collectAsState()
 
     ShortXAppBarScaffold(
-        title = LocalI18N.current["ui.action.web.dav.list"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_WEB_DAV_LIST],
         onBackPressed = {
             cancelAndFinish()
         },
@@ -91,7 +92,7 @@ private fun BaseSelectorActivity<Action.WebDavList>.Selector(currentAction: Acti
                 })
             LargeSpacer()
 
-            FieldTitle(text = LocalI18N.current["ui.settings.webdav.profile"])
+            FieldTitle(text = LocalI18N.current[I18N_R.UI_SETTINGS_WEBDAV_PROFILE])
             SmallSpacer()
             val webdavProfileSelectorState = rememberDavProfileSelectorState {
                 vm.setProfile(it)
@@ -102,7 +103,7 @@ private fun BaseSelectorActivity<Action.WebDavList>.Selector(currentAction: Acti
                     webdavProfileSelectorState.show()
                 }) {
                     Text(text = if (dialogState.profile == null) {
-                        LocalI18N.current["ui.common.unselected"]
+                        LocalI18N.current[I18N_R.UI_COMMON_UNSELECTED]
                     } else {
                         dialogState.profile!!.let {
                             it.alias ?: it.userName

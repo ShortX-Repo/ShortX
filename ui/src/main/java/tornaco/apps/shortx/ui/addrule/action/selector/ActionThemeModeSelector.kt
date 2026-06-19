@@ -16,6 +16,7 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.theme.normalized
 import tornaco.apps.shortx.core.res.Remix
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @Composable
 fun ActionThemeModeSelector(
@@ -26,7 +27,7 @@ fun ActionThemeModeSelector(
     val dropdownState = rememberDropdownSelectorState()
     val current = themeMode.normalized()
 
-    FieldTitle(text = i18n["ui.settings.theme.mode"])
+    FieldTitle(text = i18n[I18N_R.UI_SETTINGS_THEME_MODE])
     StandardSpacer()
 
     Box(modifier = androidx.compose.ui.Modifier.fillMaxWidth()) {
@@ -54,8 +55,8 @@ fun ActionThemeModeSelector(
 
 private fun UiThemeMode.labelKey(): String {
     return when (normalized()) {
-        UiThemeMode.UiThemeMode_Light -> "ui.settings.theme.mode.light"
-        UiThemeMode.UiThemeMode_Dark -> "ui.settings.theme.mode.dark"
-        UiThemeMode.UNRECOGNIZED, UiThemeMode.UiThemeMode_System -> "ui.settings.theme.mode.system"
+        UiThemeMode.UiThemeMode_Light -> I18N_R.UI_SETTINGS_THEME_MODE_LIGHT
+        UiThemeMode.UiThemeMode_Dark -> I18N_R.UI_SETTINGS_THEME_MODE_DARK
+        UiThemeMode.UNRECOGNIZED, UiThemeMode.UiThemeMode_System -> I18N_R.UI_SETTINGS_THEME_MODE_SYSTEM
     }
 }

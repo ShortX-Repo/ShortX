@@ -42,6 +42,7 @@ import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class AdvancedKeyEventSelectorState(val selected: (Fact.AdvancedKeyEvent) -> Unit) :
     CommonDialogState() {
@@ -86,7 +87,7 @@ fun rememberAdvancedKeyEventSelectorState(selected: (Fact.AdvancedKeyEvent) -> U
 fun AdvancedKeyEventSelector(state: AdvancedKeyEventSelectorState) {
     if (state.isShowing) {
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
-            DialogTitle(text = LocalI18N.current["ui.fact.key.event.adv"])
+            DialogTitle(text = LocalI18N.current[I18N_R.UI_FACT_KEY_EVENT_ADV])
         }, buttons = {
             ShortXTextButton(onClick = {
                 state.selected(
@@ -102,7 +103,7 @@ fun AdvancedKeyEventSelector(state: AdvancedKeyEventSelectorState) {
             }
         }, content = {
             val customKeyCodeDialogState = rememberTextInputState(
-                title = LocalI18N.current["ui.action.custom.keycode"],
+                title = LocalI18N.current[I18N_R.UI_ACTION_CUSTOM_KEYCODE],
                 message = null,
                 showSymbolButton = false,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -124,7 +125,7 @@ fun AdvancedKeyEventSelector(state: AdvancedKeyEventSelectorState) {
                     Column {
                         FieldTitle(
                             modifier = Modifier.padding(vertical = 12.dp),
-                            text = i18N["ui.fact.key.event.adv"]
+                            text = i18N[I18N_R.UI_FACT_KEY_EVENT_ADV]
                         )
                         ListItem(
                             icon = {
@@ -144,27 +145,27 @@ fun AdvancedKeyEventSelector(state: AdvancedKeyEventSelectorState) {
                         state = dropdownState,
                         items = arrayOf(
                             AdvancedKeyEventItem(
-                                LocalI18N.current["ui.keycode.label.back"],
+                                LocalI18N.current[I18N_R.UI_KEYCODE_LABEL_BACK],
                                 KeyEvent.KEYCODE_BACK
                             ),
                             AdvancedKeyEventItem(
-                                LocalI18N.current["ui.keycode.label.home"],
+                                LocalI18N.current[I18N_R.UI_KEYCODE_LABEL_HOME],
                                 KeyEvent.KEYCODE_HOME
                             ),
                             AdvancedKeyEventItem(
-                                LocalI18N.current["ui.keycode.label.volume.down"],
+                                LocalI18N.current[I18N_R.UI_KEYCODE_LABEL_VOLUME_DOWN],
                                 KeyEvent.KEYCODE_VOLUME_DOWN
                             ),
                             AdvancedKeyEventItem(
-                                LocalI18N.current["ui.keycode.label.volume.up"],
+                                LocalI18N.current[I18N_R.UI_KEYCODE_LABEL_VOLUME_UP],
                                 KeyEvent.KEYCODE_VOLUME_UP
                             ),
                             AdvancedKeyEventItem(
-                                LocalI18N.current["ui.keycode.label.power"],
+                                LocalI18N.current[I18N_R.UI_KEYCODE_LABEL_POWER],
                                 KeyEvent.KEYCODE_POWER
                             ),
                             AdvancedKeyEventItem(
-                                LocalI18N.current["ui.action.custom.keycode"],
+                                LocalI18N.current[I18N_R.UI_ACTION_CUSTOM_KEYCODE],
                                 KeyEvent.KEYCODE_UNKNOWN
                             ),
                         ).map {
@@ -192,7 +193,7 @@ fun AdvancedKeyEventSelector(state: AdvancedKeyEventSelectorState) {
                     Column {
                         FieldTitle(
                             modifier = Modifier.padding(vertical = 12.dp),
-                            text = i18N["ui.fact.edge.gesture.gesture"]
+                            text = i18N[I18N_R.UI_FACT_EDGE_GESTURE_GESTURE]
                         )
                         ListItem(
                             icon = {
@@ -230,7 +231,7 @@ fun AdvancedKeyEventSelector(state: AdvancedKeyEventSelectorState) {
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    FieldTitle(text = LocalI18N.current["ui.fact.key.event.adv.is.intercept.mode"])
+                    FieldTitle(text = LocalI18N.current[I18N_R.UI_FACT_KEY_EVENT_ADV_IS_INTERCEPT_MODE])
                     ShortXSwitch(checked = state.isInterceptMode, onCheckedChange = {
                         state.setIsInterceptMode(it)
                     })
@@ -238,7 +239,7 @@ fun AdvancedKeyEventSelector(state: AdvancedKeyEventSelectorState) {
                 StandardSpacer()
 
                 AnimatedVisibility(visible = state.isInterceptMode) {
-                    TipRow(text = LocalI18N.current["ui.fact.key.event.adv.summary"])
+                    TipRow(text = LocalI18N.current[I18N_R.UI_FACT_KEY_EVENT_ADV_SUMMARY])
                     StandardSpacer()
                     StandardSpacer()
                 }

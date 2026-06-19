@@ -55,6 +55,7 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.settings.danmu.ItemCard
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 private const val LONG_TEXT =
     "Lorem Ipsum is simply dummy text of the printing and typesetting industry"
@@ -92,7 +93,7 @@ private fun StatusBarClipUISettingsScreen(back: () -> Unit) {
                 ShortXMediumTopAppBar(
                     title = {
                         Text(
-                            text = LocalI18N.current["ui.settings.statusbar.chip"]
+                            text = LocalI18N.current[I18N_R.UI_SETTINGS_STATUSBAR_CHIP]
                         )
                     },
                     navigationIcon = {

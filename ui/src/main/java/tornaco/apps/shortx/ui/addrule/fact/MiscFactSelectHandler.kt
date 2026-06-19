@@ -21,6 +21,7 @@ import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.contextmenu.CustomContextMenuSettingsActivity
 import tornaco.apps.shortx.ui.settings.TileSettingsActivity
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @Composable
 fun miscFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Boolean {
@@ -38,7 +39,7 @@ fun miscFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Boolea
     )
 
     val dynamicShortcutSelectState = rememberOnStartDynamicShortcutState(
-        title = LocalI18N.current["ui.settings.dynamic.shortcut"],
+        title = LocalI18N.current[I18N_R.UI_SETTINGS_DYNAMIC_SHORTCUT],
         message = null,
         onSelected = {
             addFact(
@@ -75,10 +76,10 @@ fun miscFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Boolea
     fun createUrl(tag: String) = "shortx://trigger?tag=${tag}"
 
     val deepLinkCallState = rememberTextInputState(
-        title = i18N["ui.fact.deeplink.call"],
+        title = i18N[I18N_R.UI_FACT_DEEPLINK_CALL],
         message = {
             val uri = createUrl(it)
-            i18N["ui.fact.deeplink.call.message", mapOf("url" to uri)]
+            i18N[I18N_R.UI_FACT_DEEPLINK_CALL_MESSAGE, mapOf("url" to uri)]
         },
         textToCopy = {
             val uri = createUrl(it)

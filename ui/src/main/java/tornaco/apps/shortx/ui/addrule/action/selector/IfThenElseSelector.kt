@@ -41,6 +41,7 @@ import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StateViewModel
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 @AndroidEntryPoint
@@ -127,7 +128,7 @@ private fun BaseSelectorActivity<Action.IfThenElse>.IfThenElseSelectorDialogSele
         topBar = {
             ShortXTopAppBar(
                 modifier = Modifier,
-                title = { Text(LocalI18N.current["ui.action.if.then.else"]) },
+                title = { Text(LocalI18N.current[I18N_R.UI_ACTION_IF_THEN_ELSE]) },
                 navigationIcon = {
                     IconButton(onClick = {
                         cancelAndFinish()
@@ -167,7 +168,7 @@ private fun BaseSelectorActivity<Action.IfThenElse>.IfThenElseSelectorDialogSele
         ) {
             ConditionContent(
                 header = {
-                    MediumTitle(LocalI18N.current["ui.action.if"])
+                    MediumTitle(LocalI18N.current[I18N_R.UI_ACTION_IF])
                 },
                 state = conditionState,
                 handler = condHandler.asConditionHandler()
@@ -176,7 +177,7 @@ private fun BaseSelectorActivity<Action.IfThenElse>.IfThenElseSelectorDialogSele
 
             tornaco.apps.shortx.ui.addrule.action.ActionContent(
                 header = {
-                    MediumTitle(LocalI18N.current["ui.action.then"])
+                    MediumTitle(LocalI18N.current[I18N_R.UI_ACTION_THEN])
                 },
                 actions = ifActionState.actions,
                 evaluatingActions = dialogState.evaluatingActions,
@@ -189,7 +190,7 @@ private fun BaseSelectorActivity<Action.IfThenElse>.IfThenElseSelectorDialogSele
 
             tornaco.apps.shortx.ui.addrule.action.ActionContent(
                 header = {
-                    MediumTitle(LocalI18N.current["ui.action.else"])
+                    MediumTitle(LocalI18N.current[I18N_R.UI_ACTION_ELSE])
                 },
                 actions = elseActionState.actions,
                 evaluatingActions = dialogState.evaluatingActions,

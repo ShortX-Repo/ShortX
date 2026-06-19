@@ -23,6 +23,7 @@ import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 object TipIds {
     val actionContent by lazy {
@@ -68,7 +69,7 @@ fun UserTip(modifier: Modifier = Modifier, tipId: String, message: String) {
                 ShortXTextButton(onClick = {
                     scope.launch { pref.userReadTip(tipId) }
                 }) {
-                    Text(text = LocalI18N.current["ui.common.got.it"])
+                    Text(text = LocalI18N.current[I18N_R.UI_COMMON_GOT_IT])
                 }
             }
         }

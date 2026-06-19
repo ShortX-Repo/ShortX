@@ -40,6 +40,7 @@ import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.TextDisplayActivity
 import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class AppShortcutSelectorActivity : BaseSelectorActivity<Action.AppShortcut>() {
@@ -91,7 +92,7 @@ private fun BaseSelectorActivity<Action.AppShortcut>.AppShortcutSelector(current
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(LocalI18N.current["ui.action.shortcut"]) },
+                        title = { Text(LocalI18N.current[I18N_R.UI_ACTION_SHORTCUT]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 cancelAndFinish()

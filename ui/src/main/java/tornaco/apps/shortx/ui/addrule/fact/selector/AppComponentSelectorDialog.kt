@@ -64,6 +64,7 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberSearchBarState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.ComponentRule
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 enum class ComponentType {
     Activity,
@@ -149,7 +150,7 @@ private fun AppComponentSelector(state: AppComponentSelectorState) {
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(text = LocalI18N.current["ui.title.select.component"]) },
+                        title = { Text(text = LocalI18N.current[I18N_R.UI_TITLE_SELECT_COMPONENT]) },
                         actions = {
                             IconButton(onClick = {
                                 state.onAppComponentSelected(state.selectedAppComponents)
@@ -426,7 +427,7 @@ private fun AppComponentItem(
                     }
 
                     if (app.isRunning) {
-                        OutlineBadge(text = LocalI18N.current["ui.common.running"])
+                        OutlineBadge(text = LocalI18N.current[I18N_R.UI_COMMON_RUNNING])
                     }
                 }
             }

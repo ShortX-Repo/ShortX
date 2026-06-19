@@ -32,6 +32,7 @@ import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 class ShowOverlayButtonSortState(
@@ -72,7 +73,7 @@ private fun ShowOverlayButtonSortDialogContent(state: ShowOverlayButtonSortState
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(LocalI18N.current["ui.common.long.press.sort"]) },
+                        title = { Text(LocalI18N.current[I18N_R.UI_COMMON_LONG_PRESS_SORT]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 state.dismiss()

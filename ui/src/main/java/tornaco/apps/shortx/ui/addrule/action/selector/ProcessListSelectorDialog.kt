@@ -59,6 +59,7 @@ import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.theme.ThanoxBlue
 import tornaco.apps.shortx.ui.util.ThanoxFuncs
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class ProcessListSelectorDialogState(
     val onSelected: (List<ProcessName>) -> Unit
@@ -120,7 +121,7 @@ private fun ProcessListSelectorContent(dialogState: ProcessListSelectorDialogSta
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(text = LocalI18N.current["ui.common.select.process"]) },
+                        title = { Text(text = LocalI18N.current[I18N_R.UI_COMMON_SELECT_PROCESS]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 dialogState.dismiss()
@@ -169,11 +170,11 @@ private fun ProcessListSelectorContent(dialogState: ProcessListSelectorDialogSta
 @Composable
 private fun ProcessListContent(dialogState: ProcessListSelectorDialogState) {
     MediumTitle(
-        text = "${LocalI18N.current["ui.common.selected.process"]} ${dialogState.processNameList.size}"
+        text = "${LocalI18N.current[I18N_R.UI_COMMON_SELECTED_PROCESS]} ${dialogState.processNameList.size}"
     )
     if (dialogState.processNameList.isEmpty()) {
         TipBody(
-            text = LocalI18N.current["ui.common.selected.process.empty"]
+            text = LocalI18N.current[I18N_R.UI_COMMON_SELECTED_PROCESS_EMPTY]
         )
     } else {
         LazyColumn(
@@ -202,13 +203,13 @@ private fun ProcessListContent(dialogState: ProcessListSelectorDialogState) {
         mutableIntStateOf(0)
     }
     var userLabel by remember {
-        mutableStateOf(i18N["ui.common.user.main"])
+        mutableStateOf(i18N[I18N_R.UI_COMMON_USER_MAIN])
     }
     val userSelectorState =
         rememberUserSelectorDialogState(onSelected = { userInfo ->
             userId = userInfo.userId
             userLabel = if (userId.isMainUser()) {
-                i18N["ui.common.user.main"]
+                i18N[I18N_R.UI_COMMON_USER_MAIN]
             } else {
                 shortXManager.getAllUsers()
                     .firstOrNull { it.userId == userId }?.name
@@ -235,7 +236,7 @@ private fun ProcessListContent(dialogState: ProcessListSelectorDialogState) {
         },
         showSymbolButton = false,
         label = {
-            Text(text = i18N["ui.common.selected.process.input"])
+            Text(text = i18N[I18N_R.UI_COMMON_SELECTED_PROCESS_INPUT])
         }
     )
     MediumSpacer()
@@ -248,7 +249,7 @@ private fun ProcessListContent(dialogState: ProcessListSelectorDialogState) {
                 inputNameString = ""
             }
         }) {
-        Text(text = LocalI18N.current["ui.common.add"])
+        Text(text = LocalI18N.current[I18N_R.UI_COMMON_ADD])
     }
 
 
@@ -256,7 +257,7 @@ private fun ProcessListContent(dialogState: ProcessListSelectorDialogState) {
     if (dialogState.isThanoxAvailable) {
         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
             TipRow(
-                text = LocalI18N.current["ui.common.handle.process.via.thanox"],
+                text = LocalI18N.current[I18N_R.UI_COMMON_HANDLE_PROCESS_VIA_THANOX],
                 icon = {
                     ColoredIcon(color = ThanoxBlue, size = 16.dp) {
                         RemixIcon(remixName = Remix.System.shield_flash_fill, tint = Color.White)

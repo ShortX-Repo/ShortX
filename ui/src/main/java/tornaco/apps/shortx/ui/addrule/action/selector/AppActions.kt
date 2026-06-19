@@ -36,6 +36,7 @@ import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @Composable
 fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> Boolean {
@@ -49,7 +50,7 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     SingleAppSelectorDialog(state = launchAppSelectorState)
 
     val launchAppByAppPkgSelectorState = rememberPkgAndUserListSelectorDialogState(
-        title = LocalI18N.current["ui.action.launch.app.by.pkg"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_LAUNCH_APP_BY_PKG],
         onSelected = {
             addAction(Action.LaunchAppByPkg(stringPairs = it))
         })
@@ -68,14 +69,14 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     AppPkgSelectorDialog(state = stopAppSelectorState)
 
     val stopAppByPackageSelectorState = rememberPkgAndUserListSelectorDialogState(
-        title = LocalI18N.current["ui.action.stop.app.by.pkg"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_STOP_APP_BY_PKG],
         onSelected = {
             addAction(Action.StopAppByPkg(stringPairs = it))
         })
     PackageNameAndUserSelectorDialog(state = stopAppByPackageSelectorState)
 
     val addAppsToPkgSetByPkgSelectorState = rememberPkgSetAppMutationSelectorDialogState(
-        title = LocalI18N.current["ui.action.add.apps.to.pkg.set.by.pkg"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_ADD_APPS_TO_PKG_SET_BY_PKG],
         onSelected = { label, pairs ->
             addAction(Action.AddAppsToPkgSetByPkg(pkgSetLabel = label, stringPairs = pairs))
         }
@@ -83,7 +84,7 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     PkgSetAppMutationSelectorDialog(state = addAppsToPkgSetByPkgSelectorState)
 
     val removeAppsFromPkgSetByPkgSelectorState = rememberPkgSetAppMutationSelectorDialogState(
-        title = LocalI18N.current["ui.action.remove.apps.from.pkg.set.by.pkg"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_REMOVE_APPS_FROM_PKG_SET_BY_PKG],
         onSelected = { label, pairs ->
             addAction(Action.RemoveAppsFromPkgSetByPkg(pkgSetLabel = label, stringPairs = pairs))
         }
@@ -91,14 +92,14 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     PkgSetAppMutationSelectorDialog(state = removeAppsFromPkgSetByPkgSelectorState)
 
     val enableAppByPkgSelectorState = rememberPkgAndUserListSelectorDialogState(
-        title = LocalI18N.current["ui.action.enable.app.by.pkg"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_ENABLE_APP_BY_PKG],
         onSelected = {
             addAction(Action.EnableAppByPkg(stringPairs = it))
         })
     PackageNameAndUserSelectorDialog(state = enableAppByPkgSelectorState)
 
     val disableAppByPkgSelectorState = rememberPkgAndUserListSelectorDialogState(
-        title = LocalI18N.current["ui.action.disable.app.by.pkg"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_DISABLE_APP_BY_PKG],
         onSelected = {
             addAction(Action.DisableAppByPkg(stringPairs = it))
         })
@@ -117,7 +118,7 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     AppPkgSelectorDialog(state = removeTasksSelectorState)
 
     val removeTaskByPackageSelectorState = rememberPkgAndUserListSelectorDialogState(
-        title = LocalI18N.current["ui.action.remove.tasks.by.pkg"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_REMOVE_TASKS_BY_PKG],
         onSelected = {
             addAction(Action.RemoveTasksByPkg(stringPairs = it))
         })
@@ -136,7 +137,7 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     AppPkgSelectorDialog(state = startAppProcessSelectorState)
 
     val startAppProcessByPkgSelectorState = rememberPkgAndUserListSelectorDialogState(
-        title = LocalI18N.current["ui.action.start.app.process.by.pkg"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_START_APP_PROCESS_BY_PKG],
         onSelected = {
             addAction(Action.StartAppProcessByPkg(stringPairs = it))
         })
@@ -155,7 +156,7 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     AppPkgSelectorDialog(state = setAppInactiveSelectorState)
 
     val setAppInactiveByPkgSelectorState = rememberPkgAndUserListSelectorDialogState(
-        title = LocalI18N.current["ui.action.set.app.inactive.by.pkg"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_SET_APP_INACTIVE_BY_PKG],
         onSelected = {
             addAction(Action.SetAppInactiveByPkg(stringPairs = it))
         })
@@ -210,14 +211,14 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     AppPkgSelectorDialog(state = unsuspendAppSelectorState)
 
     val suspendAppByPkgSelectorState = rememberPkgAndUserListSelectorDialogState(
-        title = LocalI18N.current["ui.action.suspend.app.by.pkg"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_SUSPEND_APP_BY_PKG],
         onSelected = {
             addAction(Action.SuspendAppByPkg(stringPairs = it))
         })
     PackageNameAndUserSelectorDialog(state = suspendAppByPkgSelectorState)
 
     val unsuspendAppByPkgSelectorState = rememberPkgAndUserListSelectorDialogState(
-        title = LocalI18N.current["ui.action.unsuspend.app.by.pkg"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_UNSUSPEND_APP_BY_PKG],
         onSelected = {
             addAction(Action.UnSuspendAppByPkg(stringPairs = it))
         })
@@ -286,15 +287,15 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     SingleAppSelectorDialog(state = closeActivityAppSelectorState)
 
     val closeActivitySelectorState = rememberMenuDialogState<String>(
-        title = LocalI18N.current["ui.action.close.activity"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_CLOSE_ACTIVITY],
         menuItems = listOf(
             MenuDialogItem(
                 id = CloseActivityMode.CloseActivityMode_Focused.name,
-                title = LocalI18N.current["ui.action.close.activity.focused"]
+                title = LocalI18N.current[I18N_R.UI_ACTION_CLOSE_ACTIVITY_FOCUSED]
             ),
             MenuDialogItem(
                 id = CloseActivityMode.CloseActivityMode_Component.name,
-                title = LocalI18N.current["ui.action.close.activity.component"]
+                title = LocalI18N.current[I18N_R.UI_ACTION_CLOSE_ACTIVITY_COMPONENT]
             )
         ),
         onItemSelected = { _, id ->
@@ -314,7 +315,7 @@ fun appActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) ->
     StartActivityUrlSchemaDialog(state = startActivityUrlSchemaDialogState)
 
     val startActivityIntentUrlSelectorState = rememberTextInputState(
-        title = LocalI18N.current["ui.action.start.activity.intent.uri"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_START_ACTIVITY_INTENT_URI],
         message = null,
         onSelected = {
             addAction(Action.StartActivityIntentUri(intentUri = it))

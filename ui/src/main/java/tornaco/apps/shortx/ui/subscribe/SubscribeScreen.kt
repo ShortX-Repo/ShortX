@@ -93,6 +93,7 @@ import tornaco.apps.shortx.ui.theme.GoogleBlue
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.theme.VipColorGold
 import tornaco.apps.shortx.ui.util.ClipboardUtils
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class SubscribeActivity : BaseActivity() {
@@ -125,7 +126,7 @@ fun SubscribeScreen(back: () -> Unit) {
         val appName = LocalAppName.current
         val googleIntroDialogState = rememberTipDialogState(
             title = LocalI18N.current["Google play"],
-            tip = LocalI18N.current["ui.subscription.subscribe.verify.play.intro", mapOf(
+            tip = LocalI18N.current[I18N_R.UI_SUBSCRIPTION_SUBSCRIBE_VERIFY_PLAY_INTRO, mapOf(
                 "app_name" to appName
             )]
         )
@@ -137,7 +138,7 @@ fun SubscribeScreen(back: () -> Unit) {
                     ShortXTopAppBar(
                         title = {
                             Text(
-                                text = LocalI18N.current["ui.subscription.intro.title"]
+                                text = LocalI18N.current[I18N_R.UI_SUBSCRIPTION_INTRO_TITLE]
                             )
                         },
                         navigationIcon = {
@@ -196,7 +197,7 @@ private fun SubscribedUi(vm: SubscribeViewModel) {
                             modifier = Modifier.fillMaxWidth(),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            MediumTitle(text = LocalI18N.current["ui.subscription.subscribe.validation.left"])
+                            MediumTitle(text = LocalI18N.current[I18N_R.UI_SUBSCRIPTION_SUBSCRIBE_VALIDATION_LEFT])
                             SmallSpacer()
                             Text(remainingState.data)
                         }
@@ -259,15 +260,15 @@ private fun SubscribeIntroUi(config: SubscriptionConfig2) {
         val i18N = LocalI18N.current
 
         val progressDialog = rememberProgressDialogState(
-            title = i18N["ui.subscription.code.verify.title"],
-            message = i18N["ui.subscription.code.verify.message"]
+            title = i18N[I18N_R.UI_SUBSCRIPTION_CODE_VERIFY_TITLE],
+            message = i18N[I18N_R.UI_SUBSCRIPTION_CODE_VERIFY_MESSAGE]
         )
         ProgressDialog(state = progressDialog)
 
         val context = LocalContext.current
-        val failMsg = i18N["ui.subscription.code.verify.fail"]
+        val failMsg = i18N[I18N_R.UI_SUBSCRIPTION_CODE_VERIFY_FAIL]
         val failNetworkMsg =
-            i18N["ui.subscription.code.verify.fail.network"]
+            i18N[I18N_R.UI_SUBSCRIPTION_CODE_VERIFY_FAIL_NETWORK]
 
         val vm = hiltViewModel<SubscribeViewModel>()
         LaunchedEffect(vm) {
@@ -302,7 +303,7 @@ private fun SubscribeIntroUi(config: SubscriptionConfig2) {
         }
 
         LargeSpacer()
-        LargeTitle(text = i18N["ui.subscription.subscribe.flav"])
+        LargeTitle(text = i18N[I18N_R.UI_SUBSCRIPTION_SUBSCRIBE_FLAV])
         MediumSpacer()
         config.flavors.forEach {
             ShortXCard {
@@ -346,7 +347,7 @@ private fun SubscribeIntroUi(config: SubscriptionConfig2) {
         }
         val appName = LocalAppName.current
         MarkdownText(
-            markdown = i18N["ui.subscription.subscribe.how.to.page", mapOf(
+            markdown = i18N[I18N_R.UI_SUBSCRIPTION_SUBSCRIBE_HOW_TO_PAGE, mapOf(
                 "mail" to config.email,
                 "qq" to config.qq,
                 "app_name" to appName,
@@ -365,7 +366,7 @@ private fun SubscribeIntroUi(config: SubscriptionConfig2) {
                 ClipboardUtils.copyToClipboard(context, "link", it)
                 Toast.makeText(
                     context,
-                    i18N["ui.common.copied.to.clipboard"],
+                    i18N[I18N_R.UI_COMMON_COPIED_TO_CLIPBOARD],
                     Toast.LENGTH_LONG
                 ).show()
             }
@@ -385,7 +386,7 @@ private fun Fabs(
     val i18N = LocalI18N.current
 
     val verifyCodeInputState = rememberTextInputState(
-        title = i18N["ui.subscription.subscribe.verify.code"],
+        title = i18N[I18N_R.UI_SUBSCRIPTION_SUBSCRIBE_VERIFY_CODE],
         message = null,
         onSelected = {
             vm.verify(it.trim().replace(System.lineSeparator(), ""))
@@ -406,7 +407,7 @@ private fun Fabs(
     TipDialog(state = paypalDialogState)
 
     val payMenuDialogState =
-        rememberMenuDialogState<String>(title = LocalI18N.current["ui.subscription.pay"],
+        rememberMenuDialogState<String>(title = LocalI18N.current[I18N_R.UI_SUBSCRIPTION_PAY],
             menuItems = listOf(
                 MenuDialogItem(
                     id = "wechat",
@@ -443,7 +444,7 @@ private fun Fabs(
                         )
                         Toast.makeText(
                             context,
-                            i18N["ui.common.copied.to.clipboard"],
+                            i18N[I18N_R.UI_COMMON_COPIED_TO_CLIPBOARD],
                             Toast.LENGTH_LONG
                         ).show()
                     }
@@ -464,7 +465,7 @@ private fun Fabs(
                 payMenuDialogState.show()
             },
             text = {
-                Text(text = LocalI18N.current["ui.subscription.pay"], color = Color.White)
+                Text(text = LocalI18N.current[I18N_R.UI_SUBSCRIPTION_PAY], color = Color.White)
             },
             icon = {
                 RemixIcon(
@@ -479,7 +480,7 @@ private fun Fabs(
             onClick = { verifyCodeInputState.show() },
             text = {
                 Text(
-                    text = LocalI18N.current["ui.subscription.subscribe.verify.code"],
+                    text = LocalI18N.current[I18N_R.UI_SUBSCRIPTION_SUBSCRIBE_VERIFY_CODE],
                     color = Color.White
                 )
             },
@@ -493,7 +494,7 @@ private fun Fabs(
             onClick = { LVLCheckActivity.start(context) },
             text = {
                 Text(
-                    text = LocalI18N.current["ui.subscription.subscribe.verify.play"],
+                    text = LocalI18N.current[I18N_R.UI_SUBSCRIPTION_SUBSCRIBE_VERIFY_PLAY],
                     color = Color.White
                 )
             },

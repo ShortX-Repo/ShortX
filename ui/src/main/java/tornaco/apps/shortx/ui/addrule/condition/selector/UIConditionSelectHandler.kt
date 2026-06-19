@@ -8,11 +8,12 @@ import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.selector.HasFoundNodeOnScreenDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberHasFoundNodeOnScreenState
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @Composable
 fun uiConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSelectSource) -> Boolean {
     val hasNodeOnScreenState = rememberHasFoundNodeOnScreenState(
-        selectorTitle = LocalI18N.current["ui.condition.is.has.node.on.screen"],
+        selectorTitle = LocalI18N.current[I18N_R.UI_CONDITION_IS_HAS_NODE_ON_SCREEN],
         canSelectPkgName = false,
         canSelectActivity = false,
         canSelectTimeout = false,

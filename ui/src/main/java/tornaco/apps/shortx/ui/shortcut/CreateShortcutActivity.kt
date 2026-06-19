@@ -50,6 +50,7 @@ import tornaco.apps.shortx.ui.main.da.LocalDAItemHandler
 import tornaco.apps.shortx.ui.main.da.LocalDASetItemHandler
 import tornaco.apps.shortx.ui.main.model.DirectActionUM
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 @AndroidEntryPoint
@@ -92,7 +93,7 @@ class CreateShortcutActivity : BaseActivity() {
                             .padding(paddingValues)
                     ) {
                         Box(modifier = Modifier.padding(16.dp)) {
-                            TipRow(text = LocalI18N.current["ui.common.click.item.to.pick"])
+                            TipRow(text = LocalI18N.current[I18N_R.UI_COMMON_CLICK_ITEM_TO_PICK])
                         }
 
                         val daItemHandler = object : DAItemHandler {

@@ -24,6 +24,7 @@ import tornaco.apps.shortx.ui.base.BaseSelectorActivity.Companion.popupSelectorR
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @Composable
 fun notificationActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> Boolean {
@@ -42,7 +43,7 @@ fun notificationActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectS
     AppPkgSelectorDialog(state = removeNotificationDialogState)
 
     val removeNotificationByPkgSelectorState = rememberPkgAndUserListSelectorDialogState(
-        title = LocalI18N.current["ui.action.remove.app.notification.by.pkg"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_REMOVE_APP_NOTIFICATION_BY_PKG],
         onSelected = {
             addAction(Action.RemoveNotificationForPackageByPkg(stringPairs = it))
         })
@@ -71,20 +72,20 @@ fun notificationActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectS
     )
 
     val removeNotificationState =
-        rememberNotificationAppAndMatcherSelectorState(LocalI18N.current["ui.action.remove.notification"]) { it, _ ->
+        rememberNotificationAppAndMatcherSelectorState(LocalI18N.current[I18N_R.UI_ACTION_REMOVE_NOTIFICATION]) { it, _ ->
             addAction(Action.RemoveNotification(n = it))
         }
     NotificationAppAndMatcherSelectorDialog(removeNotificationState)
 
     val clickNotificationState =
-        rememberNotificationAppAndMatcherSelectorState(LocalI18N.current["ui.action.click.notification"]) { it, _ ->
+        rememberNotificationAppAndMatcherSelectorState(LocalI18N.current[I18N_R.UI_ACTION_CLICK_NOTIFICATION]) { it, _ ->
             addAction(Action.ClickNotification(n = it))
         }
     NotificationAppAndMatcherSelectorDialog(clickNotificationState)
 
     val clickNotificationButtonState =
         rememberNotificationAppAndMatcherSelectorState(
-            LocalI18N.current["ui.action.click.notification.button"],
+            LocalI18N.current[I18N_R.UI_ACTION_CLICK_NOTIFICATION_BUTTON],
             canMatchButtonTitle = true
         ) { it, button ->
             addAction(Action.ClickNotificationActionButton(n = it, button = button))

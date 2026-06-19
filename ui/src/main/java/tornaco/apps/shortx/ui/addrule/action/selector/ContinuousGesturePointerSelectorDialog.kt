@@ -47,6 +47,7 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import kotlin.math.roundToInt
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class ContinuousGesturePointerDialogState(
     val onSelected: (Action.ContinuousGesturePointer) -> Unit
@@ -104,7 +105,7 @@ private fun ContinuousGesturePointerSelector(dialogState: ContinuousGesturePoint
                         title = {
                             Text(
                                 text = LocalI18N.current.get(
-                                    key = "ui.action.continuous.gesture.pointer",
+                                    key = I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER,
                                     fallback = "Gesture pointer"
                                 )
                             )
@@ -147,7 +148,7 @@ private fun ContinuousGesturePointerSelector(dialogState: ContinuousGesturePoint
                     FieldTitle(text = "Sensitivity ${"%.2f".format(dialogState.sensitivityScale)}x")
                     MediumSpacer()
                     TipBody(text = LocalI18N.current.get(
-                        key = "ui.action.continuous.gesture.pointer.sensitivity.tip",
+                        key = I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_SENSITIVITY_TIP,
                         fallback = "Higher values move the gesture pointer faster during the gesture."
                     ))
                     Slider(
@@ -160,7 +161,7 @@ private fun ContinuousGesturePointerSelector(dialogState: ContinuousGesturePoint
 
                     StandardSpacer()
                     FieldTitle(text = LocalI18N.current.get(
-                        key = "ui.action.continuous.gesture.pointer.release.button",
+                        key = I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_RELEASE_BUTTON,
                         fallback = "Release action"
                     ))
                     MediumSpacer()
@@ -175,7 +176,7 @@ private fun ContinuousGesturePointerSelector(dialogState: ContinuousGesturePoint
 
                     StandardSpacer()
                     FieldTitle(text = LocalI18N.current.get(
-                        key = "ui.action.continuous.gesture.pointer.drag.button",
+                        key = I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_DRAG_BUTTON,
                         fallback = "Long-press drag"
                     ))
                     MediumSpacer()
@@ -192,14 +193,14 @@ private fun ContinuousGesturePointerSelector(dialogState: ContinuousGesturePoint
                         StandardSpacer()
                         FieldTitle(
                             text = LocalI18N.current.get(
-                                key = "ui.action.continuous.gesture.pointer.drag.hold.duration",
+                                key = I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_DRAG_HOLD_DURATION,
                                 fallback = "Drag hold duration"
                             ) + " ${dialogState.dragHoldDurationMs}ms"
                         )
                         MediumSpacer()
                         TipBody(
                             text = LocalI18N.current.get(
-                                key = "ui.action.continuous.gesture.pointer.drag.hold.duration.tip",
+                                key = I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_DRAG_HOLD_DURATION_TIP,
                                 fallback = "Press and hold for this long before drag starts."
                             )
                         )
@@ -214,7 +215,7 @@ private fun ContinuousGesturePointerSelector(dialogState: ContinuousGesturePoint
 
                     StandardSpacer()
                     FieldTitle(text = LocalI18N.current.get(
-                        key = "ui.action.continuous.gesture.pointer.scroll.mode",
+                        key = I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_SCROLL_MODE,
                         fallback = "Wheel mode"
                     ))
                     MediumSpacer()
@@ -231,14 +232,14 @@ private fun ContinuousGesturePointerSelector(dialogState: ContinuousGesturePoint
                         StandardSpacer()
                         FieldTitle(
                             text = LocalI18N.current.get(
-                                key = "ui.action.continuous.gesture.pointer.scroll.scale",
+                                key = I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_SCROLL_SCALE,
                                 fallback = "Wheel sensitivity"
                             ) + " ${"%.2f".format(dialogState.scrollScale)}x"
                         )
                         MediumSpacer()
                         TipBody(
                             text = LocalI18N.current.get(
-                                key = "ui.action.continuous.gesture.pointer.scroll.scale.tip",
+                                key = I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_SCROLL_SCALE_TIP,
                                 fallback = "Higher values emit stronger wheel deltas from the same gesture movement."
                             )
                         )
@@ -254,14 +255,14 @@ private fun ContinuousGesturePointerSelector(dialogState: ContinuousGesturePoint
                     StandardSpacer()
                     FieldTitle(
                         text = LocalI18N.current.get(
-                            key = "ui.action.continuous.gesture.pointer.cancel.region.radius",
+                            key = I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_CANCEL_REGION_RADIUS,
                             fallback = "Cancel circle radius"
                         ) + " ${dialogState.cancelRegionRadiusDp}dp"
                     )
                     MediumSpacer()
                     TipBody(
                         text = LocalI18N.current.get(
-                            key = "ui.action.continuous.gesture.pointer.cancel.region.radius.tip",
+                            key = I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_CANCEL_REGION_RADIUS_TIP,
                             fallback = "If your finger is still inside this start circle when the gesture ends, the release action will be cancelled."
                         )
                     )
@@ -276,14 +277,14 @@ private fun ContinuousGesturePointerSelector(dialogState: ContinuousGesturePoint
                     StandardSpacer()
                     FieldTitle(
                         text = LocalI18N.current.get(
-                            key = "ui.action.continuous.gesture.pointer.center.switch.enabled",
+                            key = I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_CENTER_SWITCH_ENABLED,
                             fallback = "Center circle action switch"
                         )
                     )
                     MediumSpacer()
                     TipBody(
                         text = LocalI18N.current.get(
-                            key = "ui.action.continuous.gesture.pointer.center.switch.enabled.tip",
+                            key = I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_CENTER_SWITCH_ENABLED_TIP,
                             fallback = "After leaving the center circle once, pull back into it and leave again to cycle single click, long press, and double click. Releasing inside the center circle still cancels."
                         )
                     )
@@ -294,7 +295,7 @@ private fun ContinuousGesturePointerSelector(dialogState: ContinuousGesturePoint
 
                     StandardSpacer()
                     TipBody(text = LocalI18N.current.get(
-                        key = "ui.action.continuous.gesture.pointer.tip",
+                        key = I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_TIP,
                         fallback = "Move a virtual mouse pointer with the gesture. You can choose a release action, long-press drag behavior, and wheel mode."
                     ))
                 }
@@ -345,22 +346,22 @@ private fun PointerDropdownField(
 private fun tornaco.apps.shortx.core.I18N.labelFor(button: GesturePointerReleaseButton): String {
     return when (button) {
         GesturePointerReleaseButton.None -> get(
-            key = "ui.action.continuous.gesture.pointer.release.button.none",
+            key = I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_RELEASE_BUTTON_NONE,
             fallback = "None"
         )
 
         GesturePointerReleaseButton.Primary -> get(
-            key = "ui.action.continuous.gesture.pointer.release.button.primary",
+            key = I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_RELEASE_BUTTON_PRIMARY,
             fallback = "Primary click"
         )
 
         GesturePointerReleaseButton.Secondary -> get(
-            key = "ui.action.continuous.gesture.pointer.release.button.secondary",
+            key = I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_RELEASE_BUTTON_SECONDARY,
             fallback = "Secondary click"
         )
 
         GesturePointerReleaseButton.Touch -> get(
-            key = "ui.action.continuous.gesture.pointer.release.button.touch",
+            key = I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_RELEASE_BUTTON_TOUCH,
             fallback = "Touch tap"
         )
     }
@@ -369,17 +370,17 @@ private fun tornaco.apps.shortx.core.I18N.labelFor(button: GesturePointerRelease
 private fun tornaco.apps.shortx.core.I18N.labelFor(button: GesturePointerDragButton): String {
     return when (button) {
         GesturePointerDragButton.None -> get(
-            key = "ui.action.continuous.gesture.pointer.drag.button.none",
+            key = I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_DRAG_BUTTON_NONE,
             fallback = "Disabled"
         )
 
         GesturePointerDragButton.Primary -> get(
-            key = "ui.action.continuous.gesture.pointer.drag.button.primary",
+            key = I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_DRAG_BUTTON_PRIMARY,
             fallback = "Primary drag"
         )
 
         GesturePointerDragButton.Secondary -> get(
-            key = "ui.action.continuous.gesture.pointer.drag.button.secondary",
+            key = I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_DRAG_BUTTON_SECONDARY,
             fallback = "Secondary drag"
         )
     }
@@ -388,22 +389,22 @@ private fun tornaco.apps.shortx.core.I18N.labelFor(button: GesturePointerDragBut
 private fun tornaco.apps.shortx.core.I18N.labelFor(mode: GesturePointerScrollMode): String {
     return when (mode) {
         GesturePointerScrollMode.None -> get(
-            key = "ui.action.continuous.gesture.pointer.scroll.mode.none",
+            key = I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_SCROLL_MODE_NONE,
             fallback = "Disabled"
         )
 
         GesturePointerScrollMode.Vertical -> get(
-            key = "ui.action.continuous.gesture.pointer.scroll.mode.vertical",
+            key = I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_SCROLL_MODE_VERTICAL,
             fallback = "Vertical wheel"
         )
 
         GesturePointerScrollMode.Horizontal -> get(
-            key = "ui.action.continuous.gesture.pointer.scroll.mode.horizontal",
+            key = I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_SCROLL_MODE_HORIZONTAL,
             fallback = "Horizontal wheel"
         )
 
         GesturePointerScrollMode.Both -> get(
-            key = "ui.action.continuous.gesture.pointer.scroll.mode.both",
+            key = I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_SCROLL_MODE_BOTH,
             fallback = "Two-axis wheel"
         )
     }

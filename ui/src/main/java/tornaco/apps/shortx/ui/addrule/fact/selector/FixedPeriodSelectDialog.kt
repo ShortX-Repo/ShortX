@@ -63,6 +63,7 @@ import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import java.time.LocalTime
 import kotlin.time.Duration.Companion.minutes
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class FixedInPeriodSelectorState(
     val selected: (Fact.FixedInPeriod) -> Unit
@@ -94,7 +95,7 @@ class FixedInPeriodSelectorState(
     private fun checkError() {
         val isStartEndError = (end != null && start != null && !end!!.isAfter(start))
         errorMessages = if (isStartEndError) {
-            listOf("ui.fact.time.of.a.day.error.end.before.start")
+            listOf(I18N_R.UI_FACT_TIME_OF_A_DAY_ERROR_END_BEFORE_START)
         } else {
             emptyList()
         }
@@ -147,7 +148,7 @@ fun FixedPeriodSelector(state: FixedInPeriodSelectorState) {
                         topBar = {
                             ShortXTopAppBar(
                                 modifier = Modifier,
-                                title = { Text(text = LocalI18N.current["ui.fact.time.of.a.day.fixed"]) },
+                                title = { Text(text = LocalI18N.current[I18N_R.UI_FACT_TIME_OF_A_DAY_FIXED]) },
                                 actions = {
                                     IconButton(onClick = {
                                         if (state.isValid) {
@@ -201,7 +202,7 @@ private fun PeriodContent(state: FixedInPeriodSelectorState) {
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.Start
     ) {
-        TipRow(text = LocalI18N.current["ui.fact.time.of.a.day.fixed.description"])
+        TipRow(text = LocalI18N.current[I18N_R.UI_FACT_TIME_OF_A_DAY_FIXED_DESCRIPTION])
         StandardSpacer()
 
         TimeContent(
@@ -252,7 +253,7 @@ private fun FixedBySelector(fixedBy: FixedSetting?, setFixedBy: (FixedSetting) -
     val fixedByDropdownState = rememberDropdownSelectorState()
 
     val timesInputState = rememberTextInputState(
-        title = i18N["ui.fact.time.of.a.day.fixed.by.times"],
+        title = i18N[I18N_R.UI_FACT_TIME_OF_A_DAY_FIXED_BY_TIMES],
         message = null,
         showSymbolButton = false,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -264,8 +265,8 @@ private fun FixedBySelector(fixedBy: FixedSetting?, setFixedBy: (FixedSetting) -
     TextInputDialog(state = timesInputState)
 
     val intervalInputState = rememberTextInputState(
-        title = i18N["ui.fact.time.of.a.day.fixed.by.interval"],
-        message = i18N["ui.fact.time.of.a.day.fixed.by.interval.input.tip"],
+        title = i18N[I18N_R.UI_FACT_TIME_OF_A_DAY_FIXED_BY_INTERVAL],
+        message = i18N[I18N_R.UI_FACT_TIME_OF_A_DAY_FIXED_BY_INTERVAL_INPUT_TIP],
         showSymbolButton = false,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         onSelected = { input ->
@@ -275,24 +276,24 @@ private fun FixedBySelector(fixedBy: FixedSetting?, setFixedBy: (FixedSetting) -
         })
     TextInputDialog(state = intervalInputState)
 
-    FieldTitle(text = LocalI18N.current["ui.fact.time.of.a.day.fixed.by.select"])
+    FieldTitle(text = LocalI18N.current[I18N_R.UI_FACT_TIME_OF_A_DAY_FIXED_BY_SELECT])
 
     Box {
         ShortXFilledTonalButton(onClick = {
             fixedByDropdownState.open()
         }) {
-            Text(text = fixedBy?.label(i18N) ?: i18N["ui.common.unselected"])
+            Text(text = fixedBy?.label(i18N) ?: i18N[I18N_R.UI_COMMON_UNSELECTED])
         }
 
         DropdownSelector(
             state = fixedByDropdownState,
             items = listOf(
                 DropdownItem(
-                    labelLines = listOf(i18N["ui.fact.time.of.a.day.fixed.by.times"]),
+                    labelLines = listOf(i18N[I18N_R.UI_FACT_TIME_OF_A_DAY_FIXED_BY_TIMES]),
                     data = "times",
                     icon = {}),
                 DropdownItem(
-                    labelLines = listOf(i18N["ui.fact.time.of.a.day.fixed.by.interval"]),
+                    labelLines = listOf(i18N[I18N_R.UI_FACT_TIME_OF_A_DAY_FIXED_BY_INTERVAL]),
                     data = "interval",
                     icon = {}),
             ),
@@ -319,7 +320,7 @@ private fun FixedBySummary(fixedBy: FixedSetting?, start: LocalTime?, end: Local
                         end.ofTodayDate()
                     ).joinToString { DateUtils.formatHHMMSS(it.time) }
                 }
-            TipBody(text = LocalI18N.current["ui.fact.time.of.a.day.fixed.summary", mapOf("seg" to seg)])
+            TipBody(text = LocalI18N.current[I18N_R.UI_FACT_TIME_OF_A_DAY_FIXED_SUMMARY, mapOf("seg" to seg)])
         }
     }
 }

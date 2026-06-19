@@ -52,6 +52,7 @@ import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.function.AddFunctionActivity
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class ExecuteFunctionDialogState(
     val onSelected: (Action.ExecuteFunction) -> Unit
@@ -111,7 +112,7 @@ private fun ExecuteFunctionSelector(dialogState: ExecuteFunctionDialogState) {
             Scaffold(
                 topBar = {
                     ShortXTopAppBar(
-                        title = { Text(i18n["ui.action.execute.function"]) },
+                        title = { Text(i18n[I18N_R.UI_ACTION_EXECUTE_FUNCTION]) },
                         navigationIcon = {
                             IconButton(onClick = { dialogState.dismiss() }) {
                                 RemixIcon(remixName = Remix.System.close_line)
@@ -169,7 +170,7 @@ private fun ExecuteFunctionSelector(dialogState: ExecuteFunctionDialogState) {
                             )
                         }
                         Button(onClick = { functionSelectorState.show() }) {
-                            Text(text = i18n["ui.title.select.function"])
+                            Text(text = i18n[I18N_R.UI_TITLE_SELECT_FUNCTION])
                         }
 
                         state.loadErrorMessage?.let {
@@ -182,10 +183,10 @@ private fun ExecuteFunctionSelector(dialogState: ExecuteFunctionDialogState) {
                         AnimatedVisibility(visible = state.parameterInputs.isNotEmpty()) {
                             Column {
                                 FieldTitleWithTip(
-                                    text = i18n["ui.function.params"],
+                                    text = i18n[I18N_R.UI_FUNCTION_PARAMS],
                                     tipText = i18n[
-                                        "ui.function.params.description",
-                                        mapOf("arg" to "$FUNC_PARAM_REF_PREFIX${i18n["ui.function.params.name"]}")
+                                        I18N_R.UI_FUNCTION_PARAMS_DESCRIPTION,
+                                        mapOf("arg" to "$FUNC_PARAM_REF_PREFIX${i18n[I18N_R.UI_FUNCTION_PARAMS_NAME]}")
                                     ]
                                 )
                                 TinySpacer()
@@ -220,12 +221,12 @@ private fun ExecuteFunctionParams(
 
         ListItem(
             titleLines = listOf(
-                LocalI18N.current["ui.function.params.name"] + " " + input.name,
-                LocalI18N.current["ui.function.params.value"] + " " + input.value,
+                LocalI18N.current[I18N_R.UI_FUNCTION_PARAMS_NAME] + " " + input.name,
+                LocalI18N.current[I18N_R.UI_FUNCTION_PARAMS_VALUE] + " " + input.value,
             ),
             action1 = {
                 if (param?.isRequired == true) {
-                    OutlineBadge(text = LocalI18N.current["ui.function.params.is.required"])
+                    OutlineBadge(text = LocalI18N.current[I18N_R.UI_FUNCTION_PARAMS_IS_REQUIRED])
                 }
             },
             icon = {

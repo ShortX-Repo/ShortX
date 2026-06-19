@@ -46,6 +46,7 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.BrowserUtils
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 const val BAIDU_LOC_PICK_URL = "http://api.map.baidu.com/lbsapi/getpoint/index.html"
 const val GAODE_LOC_PICK_URL = "https://lbs.amap.com/tools/picker"
@@ -97,7 +98,7 @@ private fun MapNavSelector(dialogState: MapNavDialogState) {
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(i18n["ui.action.map.nav"]) },
+                        title = { Text(i18n[I18N_R.UI_ACTION_MAP_NAV]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 dialogState.dismiss()
@@ -137,15 +138,15 @@ private fun MapNavSelector(dialogState: MapNavDialogState) {
                         .animateContentSize()
                         .verticalScroll(rememberScrollState())
                 ) {
-                    FieldTitle(text = i18n["ui.action.map"])
+                    FieldTitle(text = i18n[I18N_R.UI_ACTION_MAP])
                     SmallSpacer()
                     ListItem(title = when (dialogState.mapApp) {
                         MapApp.Gaode -> {
-                            i18n["ui.action.map.gaode"]
+                            i18n[I18N_R.UI_ACTION_MAP_GAODE]
                         }
 
                         MapApp.Baidu -> {
-                            i18n["ui.action.map.baidu"]
+                            i18n[I18N_R.UI_ACTION_MAP_BAIDU]
                         }
 
                         else -> {
@@ -167,18 +168,18 @@ private fun MapNavSelector(dialogState: MapNavDialogState) {
                             }
 
                         }) {
-                            Text(i18n["ui.action.map.nav.pick.loc"])
+                            Text(i18n[I18N_R.UI_ACTION_MAP_NAV_PICK_LOC])
                         }
                     })
                     StandardSpacer()
                     StandardSpacer()
 
-                    FieldTitle(text = i18n["ui.action.map.nav.latitude"] + " & " + i18n["ui.action.map.nav.longitude"])
+                    FieldTitle(text = i18n[I18N_R.UI_ACTION_MAP_NAV_LATITUDE] + " & " + i18n[I18N_R.UI_ACTION_MAP_NAV_LONGITUDE])
                     SmallSpacer()
                     ShortXTextField(modifier = Modifier.fillMaxWidth(),
                         value = dialogState.latitude,
                         label = {
-                            Text(text = i18n["ui.action.map.nav.latitude"])
+                            Text(text = i18n[I18N_R.UI_ACTION_MAP_NAV_LATITUDE])
                         },
                         onValueChange = {
                             dialogState.latitude = it
@@ -188,7 +189,7 @@ private fun MapNavSelector(dialogState: MapNavDialogState) {
                     ShortXTextField(modifier = Modifier.fillMaxWidth(),
                         value = dialogState.longitude,
                         label = {
-                            Text(text = i18n["ui.action.map.nav.longitude"])
+                            Text(text = i18n[I18N_R.UI_ACTION_MAP_NAV_LONGITUDE])
                         },
                         onValueChange = {
                             dialogState.longitude = it

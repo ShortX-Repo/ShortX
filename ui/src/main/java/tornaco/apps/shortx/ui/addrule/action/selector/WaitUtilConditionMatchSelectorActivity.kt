@@ -52,6 +52,7 @@ import tornaco.apps.shortx.ui.base.StateViewModel
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 @AndroidEntryPoint
@@ -142,7 +143,7 @@ private fun BaseSelectorActivity<Action.WaitUtilConditionMatch>.WaitUtilConditio
             topBar = {
                 ShortXTopAppBar(
                     modifier = Modifier,
-                    title = { Text(LocalI18N.current["ui.action.wait.util.condition.match"]) },
+                    title = { Text(LocalI18N.current[I18N_R.UI_ACTION_WAIT_UTIL_CONDITION_MATCH]) },
                     navigationIcon = {
                         IconButton(onClick = {
                             cancelAndFinish()
@@ -184,7 +185,7 @@ private fun BaseSelectorActivity<Action.WaitUtilConditionMatch>.WaitUtilConditio
             ) {
                 ConditionContent(
                     header = {
-                        MediumTitle(LocalI18N.current["ui.conditions.add"])
+                        MediumTitle(LocalI18N.current[I18N_R.UI_CONDITIONS_ADD])
                     },
                     state = conditionState,
                     handler = condHandler.asConditionHandler()
@@ -193,8 +194,8 @@ private fun BaseSelectorActivity<Action.WaitUtilConditionMatch>.WaitUtilConditio
 
                 // Timeout
                 FieldTitleWithTip(
-                    text = LocalI18N.current["ui.action.wait.util.condition.match.timeout"],
-                    tipText = LocalI18N.current["ui.action.wait.util.condition.match.timeout.summary"]
+                    text = LocalI18N.current[I18N_R.UI_ACTION_WAIT_UTIL_CONDITION_MATCH_TIMEOUT],
+                    tipText = LocalI18N.current[I18N_R.UI_ACTION_WAIT_UTIL_CONDITION_MATCH_TIMEOUT_SUMMARY]
                 )
                 TinySpacer()
                 ShortXTextField(value = vmState.timeoutStr, onValueChange = {
@@ -210,8 +211,8 @@ private fun BaseSelectorActivity<Action.WaitUtilConditionMatch>.WaitUtilConditio
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     MediumTitleWithTip(
-                        LocalI18N.current["ui.action.wait.util.condition.match.quit.title"],
-                        LocalI18N.current["ui.action.wait.util.condition.match.quit.description"]
+                        LocalI18N.current[I18N_R.UI_ACTION_WAIT_UTIL_CONDITION_MATCH_QUIT_TITLE],
+                        LocalI18N.current[I18N_R.UI_ACTION_WAIT_UTIL_CONDITION_MATCH_QUIT_DESCRIPTION]
                     )
                     ShortXSwitch(checked = vmState.isQuitEnabled, onCheckedChange = {
                         vm.toggleQuitEnable()
@@ -224,7 +225,7 @@ private fun BaseSelectorActivity<Action.WaitUtilConditionMatch>.WaitUtilConditio
                             header = {
                                 FieldTitle(
                                     modifier = Modifier.padding(bottom = 12.dp),
-                                    text = LocalI18N.current["ui.fact.title"]
+                                    text = LocalI18N.current[I18N_R.UI_FACT_TITLE]
                                 )
                             },
                             state = quitFactContentState,
@@ -238,7 +239,7 @@ private fun BaseSelectorActivity<Action.WaitUtilConditionMatch>.WaitUtilConditio
                             header = {
                                 FieldTitle(
                                     modifier = Modifier.padding(bottom = 12.dp),
-                                    text = LocalI18N.current["ui.conditions.title"]
+                                    text = LocalI18N.current[I18N_R.UI_CONDITIONS_TITLE]
                                 )
                             },
                             state = quitConditionState,

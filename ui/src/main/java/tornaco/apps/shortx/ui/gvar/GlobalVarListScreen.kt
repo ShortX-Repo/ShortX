@@ -92,6 +92,7 @@ import tornaco.apps.shortx.ui.base.rememberSearchBarState
 import tornaco.apps.shortx.ui.base.rememberShareDialogState
 import tornaco.apps.shortx.ui.settings.pref.Pref
 import tornaco.apps.shortx.ui.share.addShareContentHeader
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class GlobalVarListActivity : BaseActivity() {
@@ -171,7 +172,7 @@ fun GlobalVarListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
         topBar = {
             ShortXMediumTopAppBar(
                 modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                title = { Text(text = LocalI18N.current["ui.global.var.title"]) },
+                title = { Text(text = LocalI18N.current[I18N_R.UI_GLOBAL_VAR_TITLE]) },
                 navigationIcon = {
                     IconButton(onClick = {
                         back()
@@ -434,7 +435,7 @@ private fun GlobalVarListItem(
         if (isSecret) {
             MediumSpacer()
             TipRow(
-                text = LocalI18N.current["ui.global.var.secrets.title"],
+                text = LocalI18N.current[I18N_R.UI_GLOBAL_VAR_SECRETS_TITLE],
                 icon = {
                     ColoredIcon(size = 16.dp) {
                         RemixIcon(
@@ -458,19 +459,19 @@ private fun listItemOverflowMenu(
     DropdownSelector(
         widthFraction = 0.33f, state = menuState, items = listOf(
             DropdownItem(
-                labelLines = listOf(LocalI18N.current["ui.common.delete"]),
+                labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_DELETE]),
                 data = "delete",
                 icon = {
                     RemixIcon(remixName = Remix.System.delete_bin_line)
                 }),
             DropdownItem(
-                labelLines = listOf(LocalI18N.current["ui.common.edit"]),
+                labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_EDIT]),
                 data = "edit",
                 icon = {
                     RemixIcon(remixName = Remix.Design.edit_line)
                 }),
             DropdownItem(
-                labelLines = listOf(LocalI18N.current["ui.common.share"]),
+                labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_SHARE]),
                 data = "share",
                 icon = {
                     RemixIcon(Remix.System.share_line)
@@ -507,17 +508,17 @@ private fun AddOptionsFab(
         MultiFabItem(
             id = GVFabOptions.ImportFile.name,
             icon = Remix.Document.file_line,
-            label = LocalI18N.current["ui.common.import.from.file"]
+            label = LocalI18N.current[I18N_R.UI_COMMON_IMPORT_FROM_FILE]
         ),
         MultiFabItem(
             id = GVFabOptions.ImportClipboard.name,
             icon = Remix.Document.clipboard_line,
-            label = LocalI18N.current["ui.common.import.from.clipboard"]
+            label = LocalI18N.current[I18N_R.UI_COMMON_IMPORT_FROM_CLIPBOARD]
         ),
         MultiFabItem(
             id = GVFabOptions.New.name,
             icon = Remix.System.add_line,
-            label = LocalI18N.current["ui.common.new"]
+            label = LocalI18N.current[I18N_R.UI_COMMON_NEW]
         ),
     )
 

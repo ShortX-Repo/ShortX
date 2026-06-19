@@ -27,6 +27,7 @@ import java.io.File
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.coroutines.cancellation.CancellationException
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class WatchDogService(shortXContext: ShortXContext) :
     SystemService(shortXContext, "WatchDogService") {
@@ -99,8 +100,8 @@ class WatchDogService(shortXContext: ShortXContext) :
         // Post N
         shortXContext.notification.post(
             PostNotification.newBuilder()
-                .setTitle(i18NIns["ui.settings.fatal.error.title"])
-                .setMessage(i18NIns["ui.settings.fatal.error.message"])
+                .setTitle(i18NIns[I18N_R.UI_SETTINGS_FATAL_ERROR_TITLE])
+                .setMessage(i18NIns[I18N_R.UI_SETTINGS_FATAL_ERROR_MESSAGE])
                 .setId("ShortX.WatchDog")
                 .setIsImportant(true)
                 .setSmallIcon(Remix.System.alert_fill)
@@ -121,8 +122,8 @@ class WatchDogService(shortXContext: ShortXContext) :
         logger.w("onUiAutomationAlreadyRegisterError")
         shortXContext.notification.post(
             PostNotification.newBuilder()
-                .setTitle(i18NIns["ui.settings.fatal.error.ui.auto.already.registered.title"])
-                .setMessage(i18NIns["ui.settings.fatal.error.ui.auto.already.registered.message"])
+                .setTitle(i18NIns[I18N_R.UI_SETTINGS_FATAL_ERROR_UI_AUTO_ALREADY_REGISTERED_TITLE])
+                .setMessage(i18NIns[I18N_R.UI_SETTINGS_FATAL_ERROR_UI_AUTO_ALREADY_REGISTERED_MESSAGE])
                 .setId("ShortX.WatchDog.UiAuto")
                 .setIsImportant(true)
                 .setSmallIcon(Remix.Development.bug_2_fill)

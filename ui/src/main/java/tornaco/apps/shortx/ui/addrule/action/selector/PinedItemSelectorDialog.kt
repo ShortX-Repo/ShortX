@@ -27,6 +27,7 @@ import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 class PinedItemSelectorState(
@@ -54,7 +55,7 @@ fun PinedItemSelectorDialog(state: PinedItemSelectorState) {
                     topBar = {
                         ShortXTopAppBar(
                             modifier = Modifier,
-                            title = { Text(text = LocalI18N.current["ui.action.launch.pined.item"]) },
+                            title = { Text(text = LocalI18N.current[I18N_R.UI_ACTION_LAUNCH_PINED_ITEM]) },
                             navigationIcon = {
                                 IconButton(onClick = {
                                     state.dismiss()
@@ -83,7 +84,7 @@ fun PinedItemSelectorDialog(state: PinedItemSelectorState) {
                         }
 
                         item {
-                            TipRow(text = LocalI18N.current["ui.action.launch.pined.item.tip"])
+                            TipRow(text = LocalI18N.current[I18N_R.UI_ACTION_LAUNCH_PINED_ITEM_TIP])
                         }
 
                         items(items) {

@@ -56,6 +56,7 @@ import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 import tornaco.apps.shortx.ui.util.sortByIndex
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class ShowTextFieldDialogSettingsDialogState(
     val onSelected: (Action.ShowTextFieldDialog) -> Unit
@@ -155,7 +156,7 @@ private fun ShowTextFieldDialogSelector(dialogState: ShowTextFieldDialogSettings
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(LocalI18N.current["ui.action.show.text.field.dialog"]) },
+                        title = { Text(LocalI18N.current[I18N_R.UI_ACTION_SHOW_TEXT_FIELD_DIALOG]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 dialogState.dismiss()
@@ -193,7 +194,7 @@ private fun ShowTextFieldDialogSelector(dialogState: ShowTextFieldDialogSettings
                     ShortXTextField(
                         modifier = Modifier.fillMaxWidth(),
                         label = {
-                            Text(text = LocalI18N.current["ui.action.dialog.title"])
+                            Text(text = LocalI18N.current[I18N_R.UI_ACTION_DIALOG_TITLE])
                         },
                         value = dialogState.title,
                         onValueChange = {
@@ -217,7 +218,7 @@ private fun ShowTextFieldDialogSelector(dialogState: ShowTextFieldDialogSettings
                                 SortItem(index, menuDialogUiItem.label)
                             })
 
-                        FieldTitle(text = LocalI18N.current["ui.action.show.menu.dialog.item"])
+                        FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_SHOW_MENU_DIALOG_ITEM])
                         // Sort
                         AnimatedVisibility(visible = dialogState.items.size > 1) {
                             IconButton(onClick = {
@@ -235,13 +236,13 @@ private fun ShowTextFieldDialogSelector(dialogState: ShowTextFieldDialogSettings
                     Button(onClick = {
                         dialogState.addItem(TextFieldProp.newBuilder().build())
                     }) {
-                        Text(text = LocalI18N.current["ui.action.show.text.field.dialog.item.add"])
+                        Text(text = LocalI18N.current[I18N_R.UI_ACTION_SHOW_TEXT_FIELD_DIALOG_ITEM_ADD])
                     }
 
                     SectionSpacer()
 
                     SwitchRow(
-                        text = LocalI18N.current["ui.action.dialog.cancelable"],
+                        text = LocalI18N.current[I18N_R.UI_ACTION_DIALOG_CANCELABLE],
                         isChecked = dialogState.isCancelable
                     ) {
                         dialogState.updateCancelable(it)
@@ -270,7 +271,7 @@ private fun Items(
     state.items.forEachIndexed { index, menuDialogUiItem ->
         ItemSettings(
             index = index,
-            headerTitle = LocalI18N.current["ui.action.show.text.field.dialog.item"] + " ${index + 1}",
+            headerTitle = LocalI18N.current[I18N_R.UI_ACTION_SHOW_TEXT_FIELD_DIALOG_ITEM] + " ${index + 1}",
             placeholder = menuDialogUiItem.placeholder,
             value = menuDialogUiItem.value,
             onPlaceholderChange = {
@@ -319,7 +320,7 @@ private fun ItemSettings(
     ShortXTextField(
         modifier = Modifier.fillMaxWidth(),
         label = {
-            Text(text = i18N["ui.action.show.text.field.dialog.item.value"])
+            Text(text = i18N[I18N_R.UI_ACTION_SHOW_TEXT_FIELD_DIALOG_ITEM_VALUE])
         },
         value = value,
         onValueChange = {
@@ -330,7 +331,7 @@ private fun ItemSettings(
     ShortXTextField(
         modifier = Modifier.fillMaxWidth(),
         label = {
-            Text(text = i18N["ui.action.show.text.field.dialog.item.placeholder"])
+            Text(text = i18N[I18N_R.UI_ACTION_SHOW_TEXT_FIELD_DIALOG_ITEM_PLACEHOLDER])
         },
         value = placeholder,
         onValueChange = {
@@ -345,10 +346,10 @@ private fun ItemSettings(
         )
         Toast.makeText(
             context,
-            i18N["ui.common.copied.to.clipboard"],
+            i18N[I18N_R.UI_COMMON_COPIED_TO_CLIPBOARD],
             Toast.LENGTH_LONG
         ).show()
     }) {
-        Text(text = i18N["ui.action.show.text.field.dialog.item.context.var", mapOf("var" to contextKey)])
+        Text(text = i18N[I18N_R.UI_ACTION_SHOW_TEXT_FIELD_DIALOG_ITEM_CONTEXT_VAR, mapOf("var" to contextKey)])
     }
 }

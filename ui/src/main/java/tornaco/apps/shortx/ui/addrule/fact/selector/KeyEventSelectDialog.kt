@@ -26,6 +26,7 @@ import tornaco.apps.shortx.ui.base.ShortXDialog
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.rememberTextInputState
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 data class KeyEventOptions(
     val isLongPress: Boolean,
@@ -61,11 +62,11 @@ fun rememberKeyEventWithOptionsSelectorState(selected: (Int, KeyEventOptions) ->
 fun KeyEventSelector(state: KeyEventSelectorState) {
     if (state.isShowing) {
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
-            DialogTitle(text = LocalI18N.current["ui.fact.key.event"])
+            DialogTitle(text = LocalI18N.current[I18N_R.UI_FACT_KEY_EVENT])
         }, buttons = {
         }, content = {
             val customKeyCodeDialogState = rememberTextInputState(
-                title = LocalI18N.current["ui.action.custom.keycode"],
+                title = LocalI18N.current[I18N_R.UI_ACTION_CUSTOM_KEYCODE],
                 message = null,
                 showSymbolButton = false,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -85,22 +86,22 @@ fun KeyEventSelector(state: KeyEventSelectorState) {
 
             Column(modifier = Modifier.fillMaxWidth()) {
                 arrayOf(
-                    KeyEventItem(LocalI18N.current["ui.keycode.label.back"], KeyEvent.KEYCODE_BACK),
-                    KeyEventItem(LocalI18N.current["ui.keycode.label.home"], KeyEvent.KEYCODE_HOME),
+                    KeyEventItem(LocalI18N.current[I18N_R.UI_KEYCODE_LABEL_BACK], KeyEvent.KEYCODE_BACK),
+                    KeyEventItem(LocalI18N.current[I18N_R.UI_KEYCODE_LABEL_HOME], KeyEvent.KEYCODE_HOME),
                     KeyEventItem(
-                        LocalI18N.current["ui.keycode.label.volume.down"],
+                        LocalI18N.current[I18N_R.UI_KEYCODE_LABEL_VOLUME_DOWN],
                         KeyEvent.KEYCODE_VOLUME_DOWN
                     ),
                     KeyEventItem(
-                        LocalI18N.current["ui.keycode.label.volume.up"],
+                        LocalI18N.current[I18N_R.UI_KEYCODE_LABEL_VOLUME_UP],
                         KeyEvent.KEYCODE_VOLUME_UP
                     ),
                     KeyEventItem(
-                        LocalI18N.current["ui.keycode.label.power"],
+                        LocalI18N.current[I18N_R.UI_KEYCODE_LABEL_POWER],
                         KeyEvent.KEYCODE_POWER
                     ),
                     KeyEventItem(
-                        LocalI18N.current["ui.action.custom.keycode"],
+                        LocalI18N.current[I18N_R.UI_ACTION_CUSTOM_KEYCODE],
                         KeyEvent.KEYCODE_UNKNOWN
                     ),
                 ).forEach { key ->
@@ -144,7 +145,7 @@ fun KeyEventSelector(state: KeyEventSelectorState) {
                             .padding(start = 16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text(text = LocalI18N.current["ui.fact.edge.gesture.doubletap"])
+                        Text(text = LocalI18N.current[I18N_R.UI_FACT_EDGE_GESTURE_DOUBLETAP])
                         LargeSpacer()
                         Checkbox(
                             checked = state.isDoublePress,

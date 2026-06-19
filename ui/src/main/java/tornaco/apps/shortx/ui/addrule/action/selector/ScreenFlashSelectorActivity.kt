@@ -40,6 +40,7 @@ import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.util.toComposeColor
 import javax.inject.Inject
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class ScreenFlashSelectorActivity : BaseSelectorActivity<Action.ScreenFlash>() {
@@ -61,7 +62,7 @@ private fun BaseSelectorActivity<Action.ScreenFlash>.Selector(currentAction: Act
     val state by vm.state.collectAsState()
 
     ShortXAppBarScaffold(
-        title = LocalI18N.current["ui.action.screen.flash"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_SCREEN_FLASH],
         onBackPressed = { cancelAndFinish() },
         actions = {
             IconButton(onClick = {
@@ -75,7 +76,7 @@ private fun BaseSelectorActivity<Action.ScreenFlash>.Selector(currentAction: Act
         Column(Modifier.padding(horizontal = 16.dp)) {
             val i18N = LocalI18N.current
 
-            FieldTitle(text = LocalI18N.current["ui.action.screen.flash.color"])
+            FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_SCREEN_FLASH_COLOR])
             SmallSpacer()
             val colorPickerState = remember(state) {
                 ColorPickerDialogState(
@@ -104,7 +105,7 @@ private fun BaseSelectorActivity<Action.ScreenFlash>.Selector(currentAction: Act
 
             SectionSpacer()
 
-            FieldTitle(text = LocalI18N.current["ui.action.screen.flash.times"])
+            FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_SCREEN_FLASH_TIMES])
             SmallSpacer()
             ShortXTextField(value = state.times,
                 onValueChange = {

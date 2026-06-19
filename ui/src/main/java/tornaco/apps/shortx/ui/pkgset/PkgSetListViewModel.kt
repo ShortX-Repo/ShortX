@@ -13,6 +13,7 @@ import tornaco.apps.shortx.ui.base.InputValidateResult.OK.toError
 import tornaco.apps.shortx.ui.base.InputValidateResult.OK.toWarn
 import tornaco.apps.shortx.ui.base.StateViewModel
 import tornaco.apps.shortx.ui.base.afterNavDelay
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 data class PkgSetListState(
     val pkgSets: List<PkgSet> = emptyList(),
@@ -55,8 +56,8 @@ class PkgSetListViewModel : StateViewModel<PkgSetListState, Unit>({ PkgSetListSt
             "".toError()
         } else if (shortXManager.getPkgSetByLabel(label.trim()) != null) {
             errorIfExists.select(
-                i18N["ui.pkg.set.add.input.label.exists"].toError(),
-                i18N["ui.pkg.set.add.input.label.exists"].toWarn()
+                i18N[I18N_R.UI_PKG_SET_ADD_INPUT_LABEL_EXISTS].toError(),
+                i18N[I18N_R.UI_PKG_SET_ADD_INPUT_LABEL_EXISTS].toWarn()
             )
         } else {
             InputValidateResult.OK

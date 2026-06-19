@@ -40,6 +40,7 @@ import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class ScreenOnTimeSelectorState(
     val onSelected: (Fact.ScreenOnTime) -> Unit
@@ -79,7 +80,7 @@ fun ScreenOnTimeSelectorDialog(state: ScreenOnTimeSelectorState) {
                         topBar = {
                             ShortXTopAppBar(
                                 modifier = Modifier,
-                                title = { Text(text = LocalI18N.current["ui.fact.screen.on.time"]) },
+                                title = { Text(text = LocalI18N.current[I18N_R.UI_FACT_SCREEN_ON_TIME]) },
                                 actions = {
                                     IconButton(onClick = {
                                         state.onSelected(
@@ -109,12 +110,12 @@ fun ScreenOnTimeSelectorDialog(state: ScreenOnTimeSelectorState) {
                                 .padding(16.dp)
                                 .verticalScroll(rememberScrollState())
                         ) {
-                            FieldTitle(text = LocalI18N.current["ui.fact.screen.on.time"])
+                            FieldTitle(text = LocalI18N.current[I18N_R.UI_FACT_SCREEN_ON_TIME])
                             MediumSpacer()
                             ShortXTextField(state.timeInSeconds, onValueChange = {
                                 state.timeInSeconds = it
                             }, label = {
-                                Text(LocalI18N.current["ui.fact.screen.on.time.seconds"])
+                                Text(LocalI18N.current[I18N_R.UI_FACT_SCREEN_ON_TIME_SECONDS])
                             })
 
                             LargeSpacer()

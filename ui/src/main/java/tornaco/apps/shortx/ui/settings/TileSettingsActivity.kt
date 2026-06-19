@@ -68,6 +68,7 @@ import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class TileSettingsActivity : BaseActivity() {
@@ -114,7 +115,7 @@ private fun TileSettings(back: () -> Unit, onTileClick: (StatusBarTile) -> Unit)
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(text = i18N["ui.settings.sb.tile"]) },
+                        title = { Text(text = i18N[I18N_R.UI_SETTINGS_SB_TILE]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 back()
@@ -169,7 +170,7 @@ private fun TileSettings(back: () -> Unit, onTileClick: (StatusBarTile) -> Unit)
                         SectionSpacer()
                         InfoCard(
                             title = null,
-                            infos = listOf(LocalI18N.current["ui.settings.sb.tile.tip"])
+                            infos = listOf(LocalI18N.current[I18N_R.UI_SETTINGS_SB_TILE_TIP])
                         )
 
                     }
@@ -198,7 +199,7 @@ private fun TileItem(
     val context = LocalContext.current
 
     val renameDialogState =
-        rememberTextInputState(title = LocalI18N.current["ui.common.rename"], message = null,
+        rememberTextInputState(title = LocalI18N.current[I18N_R.UI_COMMON_RENAME], message = null,
             onSelected = {
                 rename(tile.tile, it)
             })
@@ -249,7 +250,7 @@ private fun TileItem(
 
                         if (usage.isEmpty()) {
                             Text(
-                                text = LocalI18N.current["ui.settings.sb.unused"],
+                                text = LocalI18N.current[I18N_R.UI_SETTINGS_SB_UNUSED],
                                 style = MaterialTheme.typography.bodySmall,
                             )
 
@@ -258,7 +259,7 @@ private fun TileItem(
                                 when (it) {
                                     is TileUsageOwner.RuleOwner -> {
                                         LinkText(
-                                            text = LocalI18N.current["ui.settings.sb.used", mapOf(
+                                            text = LocalI18N.current[I18N_R.UI_SETTINGS_SB_USED, mapOf(
                                                 "title" to it.ruleUM.title
                                             )]
                                         ) {
@@ -268,7 +269,7 @@ private fun TileItem(
 
                                     is TileUsageOwner.ToggleOwner -> {
                                         LinkText(
-                                            text = LocalI18N.current["ui.settings.sb.used", mapOf(
+                                            text = LocalI18N.current[I18N_R.UI_SETTINGS_SB_USED, mapOf(
                                                 "title" to it.toggleUM.title
                                             )]
                                         ) {
@@ -293,9 +294,9 @@ private fun TileItem(
         DropdownSelector(
             state = editDropdownState,
             items = listOf(
-                DropdownItem(listOf(LocalI18N.current["ui.common.rename"]), "rename"),
-                DropdownItem(listOf(LocalI18N.current["ui.common.icon"]), "icon"),
-                DropdownItem(listOf(LocalI18N.current["ui.settings.sb.restore.default.style"]), "restore-default-style"),
+                DropdownItem(listOf(LocalI18N.current[I18N_R.UI_COMMON_RENAME]), "rename"),
+                DropdownItem(listOf(LocalI18N.current[I18N_R.UI_COMMON_ICON]), "icon"),
+                DropdownItem(listOf(LocalI18N.current[I18N_R.UI_SETTINGS_SB_RESTORE_DEFAULT_STYLE]), "restore-default-style"),
             ),
             onSelect = {
                 if (it.data == "rename") {

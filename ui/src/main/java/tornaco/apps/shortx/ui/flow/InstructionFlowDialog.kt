@@ -68,6 +68,7 @@ import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXAppBarScaffold
 import tornaco.apps.shortx.ui.base.ShortXTextButton
 import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 private enum class InstructionFlowNodeKind {
     Root,
@@ -140,21 +141,21 @@ private class InstructionFlowBuilder(
     fun buildRule(spec: RuleFlowSpec): InstructionFlowNode {
         val children = mutableListOf<InstructionFlowEdge>()
         addParameters(children, spec.parameters)
-        addFacts(children, i18n["ui.flow.triggers"], spec.facts)
-        addConditions(children, i18n["ui.flow.conditions"], spec.conditions)
-        addActions(children, i18n["ui.flow.main.actions"], spec.actions, InstructionReferenceState())
+        addFacts(children, i18n[I18N_R.UI_FLOW_TRIGGERS], spec.facts)
+        addConditions(children, i18n[I18N_R.UI_FLOW_CONDITIONS], spec.conditions)
+        addActions(children, i18n[I18N_R.UI_FLOW_MAIN_ACTIONS], spec.actions, InstructionReferenceState())
 
         val hookChildren = listOfNotNull(
-            buildActionSection(i18n["ui.flow.on.enable"], spec.actionsOnEnabled, InstructionReferenceState()),
-            buildActionSection(i18n["ui.flow.on.disable"], spec.actionsOnDisabled, InstructionReferenceState()),
-            buildActionSection(i18n["ui.flow.on.delete"], spec.actionsOnDeleted, InstructionReferenceState()),
-            buildActionSection(i18n["ui.flow.on.update"], spec.actionsOnUpdated, InstructionReferenceState()),
-            buildActionSection(i18n["ui.flow.on.stop"], spec.actionsOnStopped, InstructionReferenceState()),
+            buildActionSection(i18n[I18N_R.UI_FLOW_ON_ENABLE], spec.actionsOnEnabled, InstructionReferenceState()),
+            buildActionSection(i18n[I18N_R.UI_FLOW_ON_DISABLE], spec.actionsOnDisabled, InstructionReferenceState()),
+            buildActionSection(i18n[I18N_R.UI_FLOW_ON_DELETE], spec.actionsOnDeleted, InstructionReferenceState()),
+            buildActionSection(i18n[I18N_R.UI_FLOW_ON_UPDATE], spec.actionsOnUpdated, InstructionReferenceState()),
+            buildActionSection(i18n[I18N_R.UI_FLOW_ON_STOP], spec.actionsOnStopped, InstructionReferenceState()),
         )
         if (hookChildren.isNotEmpty()) {
             children += InstructionFlowEdge(
                 node = InstructionFlowNode(
-                    title = i18n["ui.flow.hooks"],
+                    title = i18n[I18N_R.UI_FLOW_HOOKS],
                     kind = InstructionFlowNodeKind.Section,
                     children = hookChildren.map { InstructionFlowEdge(node = it) }
                 )
@@ -163,13 +164,13 @@ private class InstructionFlowBuilder(
 
         if (spec.quitEnabled) {
             val quitChildren = mutableListOf<InstructionFlowEdge>()
-            addFacts(quitChildren, i18n["ui.flow.triggers"], spec.quitFacts)
-            addConditions(quitChildren, i18n["ui.flow.conditions"], spec.quitConditions)
-            addActions(quitChildren, i18n["ui.flow.actions"], spec.quitActions, InstructionReferenceState())
+            addFacts(quitChildren, i18n[I18N_R.UI_FLOW_TRIGGERS], spec.quitFacts)
+            addConditions(quitChildren, i18n[I18N_R.UI_FLOW_CONDITIONS], spec.quitConditions)
+            addActions(quitChildren, i18n[I18N_R.UI_FLOW_ACTIONS], spec.quitActions, InstructionReferenceState())
             if (quitChildren.isNotEmpty()) {
                 children += InstructionFlowEdge(
                     node = InstructionFlowNode(
-                        title = i18n["ui.flow.quit"],
+                        title = i18n[I18N_R.UI_FLOW_QUIT],
                         kind = InstructionFlowNodeKind.Section,
                         children = quitChildren
                     )
@@ -179,7 +180,7 @@ private class InstructionFlowBuilder(
 
         return InstructionFlowNode(
             title = spec.title,
-            detail = i18n["ui.settings.action.record.src.contextsrc_rule"],
+            detail = i18n[I18N_R.UI_SETTINGS_ACTION_RECORD_SRC_CONTEXTSRC_RULE],
             kind = InstructionFlowNodeKind.Root,
             children = children
         )
@@ -191,21 +192,21 @@ private class InstructionFlowBuilder(
     ): InstructionFlowNode {
         val children = mutableListOf<InstructionFlowEdge>()
         addParameters(children, spec.parameters)
-        addActions(children, i18n["ui.flow.main.actions"], spec.actions, state)
+        addActions(children, i18n[I18N_R.UI_FLOW_MAIN_ACTIONS], spec.actions, state)
 
-        buildActionSection(i18n["ui.flow.on.stop"], spec.actionsOnStop, state)?.let {
+        buildActionSection(i18n[I18N_R.UI_FLOW_ON_STOP], spec.actionsOnStop, state)?.let {
             children += InstructionFlowEdge(node = it)
         }
 
         if (spec.quitEnabled) {
             val quitChildren = mutableListOf<InstructionFlowEdge>()
-            addFacts(quitChildren, i18n["ui.flow.triggers"], spec.quitFacts)
-            addConditions(quitChildren, i18n["ui.flow.conditions"], spec.quitConditions)
-            addActions(quitChildren, i18n["ui.flow.actions"], spec.quitActions, state)
+            addFacts(quitChildren, i18n[I18N_R.UI_FLOW_TRIGGERS], spec.quitFacts)
+            addConditions(quitChildren, i18n[I18N_R.UI_FLOW_CONDITIONS], spec.quitConditions)
+            addActions(quitChildren, i18n[I18N_R.UI_FLOW_ACTIONS], spec.quitActions, state)
             if (quitChildren.isNotEmpty()) {
                 children += InstructionFlowEdge(
                     node = InstructionFlowNode(
-                        title = i18n["ui.flow.quit"],
+                        title = i18n[I18N_R.UI_FLOW_QUIT],
                         kind = InstructionFlowNodeKind.Section,
                         children = quitChildren
                     )
@@ -215,7 +216,7 @@ private class InstructionFlowBuilder(
 
         return InstructionFlowNode(
             title = spec.title,
-            detail = i18n["ui.settings.action.record.src.contextsrc_directaction"],
+            detail = i18n[I18N_R.UI_SETTINGS_ACTION_RECORD_SRC_CONTEXTSRC_DIRECTACTION],
             kind = InstructionFlowNodeKind.Root,
             children = children
         )
@@ -228,7 +229,7 @@ private class InstructionFlowBuilder(
         if (parameters.isEmpty()) return
         target += InstructionFlowEdge(
             node = InstructionFlowNode(
-                title = i18n["ui.flow.parameters"],
+                title = i18n[I18N_R.UI_FLOW_PARAMETERS],
                 kind = InstructionFlowNodeKind.Section,
                 children = parameters.mapIndexed { index, parameter ->
                     InstructionFlowEdge(
@@ -344,11 +345,11 @@ private class InstructionFlowBuilder(
 
         when (action) {
             is Action.IfThenElse -> {
-                addConditions(children, i18n["ui.flow.conditions"], action.ifConditions)
-                buildActionSection(i18n["ui.flow.then"], action.ifActions, state)?.let {
+                addConditions(children, i18n[I18N_R.UI_FLOW_CONDITIONS], action.ifConditions)
+                buildActionSection(i18n[I18N_R.UI_FLOW_THEN], action.ifActions, state)?.let {
                     children += InstructionFlowEdge(node = it)
                 }
-                buildActionSection(i18n["ui.flow.else"], action.elseActions, state)?.let {
+                buildActionSection(i18n[I18N_R.UI_FLOW_ELSE], action.elseActions, state)?.let {
                     children += InstructionFlowEdge(node = it)
                 }
             }
@@ -356,12 +357,12 @@ private class InstructionFlowBuilder(
             is Action.SwitchCase -> {
                 action.cases.forEachIndexed { index, case ->
                     val caseChildren = mutableListOf<InstructionFlowEdge>()
-                    addConditions(caseChildren, i18n["ui.flow.conditions"], case.conditions)
-                    addActions(caseChildren, i18n["ui.flow.actions"], case.actions, state)
+                    addConditions(caseChildren, i18n[I18N_R.UI_FLOW_CONDITIONS], case.conditions)
+                    addActions(caseChildren, i18n[I18N_R.UI_FLOW_ACTIONS], case.actions, state)
                     children += InstructionFlowEdge(
-                        label = "${i18n["ui.flow.case"]} ${index + 1}",
+                        label = "${i18n[I18N_R.UI_FLOW_CASE]} ${index + 1}",
                         node = InstructionFlowNode(
-                            title = case.description.ifBlank { "${i18n["ui.flow.case"]} ${index + 1}" },
+                            title = case.description.ifBlank { "${i18n[I18N_R.UI_FLOW_CASE]} ${index + 1}" },
                             detail = if (case.isBreak) "break" else null,
                             kind = InstructionFlowNodeKind.Section,
                             children = caseChildren
@@ -371,7 +372,7 @@ private class InstructionFlowBuilder(
                 if (action.deft.actions.isNotEmpty()) {
                     children += InstructionFlowEdge(
                         node = InstructionFlowNode(
-                            title = i18n["ui.flow.default"],
+                            title = i18n[I18N_R.UI_FLOW_DEFAULT],
                             kind = InstructionFlowNodeKind.Section,
                             children = action.deft.actions.mapIndexed { index, childAction ->
                                 InstructionFlowEdge(
@@ -385,90 +386,90 @@ private class InstructionFlowBuilder(
             }
 
             is Action.WhileLoop -> {
-                addConditions(children, i18n["ui.flow.conditions"], action.conditions)
-                buildActionSection(i18n["ui.flow.body"], action.actions, state)?.let {
+                addConditions(children, i18n[I18N_R.UI_FLOW_CONDITIONS], action.conditions)
+                buildActionSection(i18n[I18N_R.UI_FLOW_BODY], action.actions, state)?.let {
                     children += InstructionFlowEdge(node = it)
                 }
             }
 
             is Action.ForEach -> {
-                buildActionSection(i18n["ui.flow.body"], action.actions, state)?.let {
+                buildActionSection(i18n[I18N_R.UI_FLOW_BODY], action.actions, state)?.let {
                     children += InstructionFlowEdge(node = it)
                 }
             }
 
             is Action.ForEachPkgSet -> {
-                buildActionSection(i18n["ui.flow.body"], action.actions, state)?.let {
+                buildActionSection(i18n[I18N_R.UI_FLOW_BODY], action.actions, state)?.let {
                     children += InstructionFlowEdge(node = it)
                 }
             }
 
             is Action.ShowAlertDialog -> {
-                buildActionSection(i18n["ui.flow.positive"], action.positiveActions, state)?.let {
+                buildActionSection(i18n[I18N_R.UI_FLOW_POSITIVE], action.positiveActions, state)?.let {
                     children += InstructionFlowEdge(node = it)
                 }
-                buildActionSection(i18n["ui.flow.negative"], action.negativeActions, state)?.let {
+                buildActionSection(i18n[I18N_R.UI_FLOW_NEGATIVE], action.negativeActions, state)?.let {
                     children += InstructionFlowEdge(node = it)
                 }
-                buildActionSection(i18n["ui.flow.neutral"], action.neutralActions, state)?.let {
+                buildActionSection(i18n[I18N_R.UI_FLOW_NEUTRAL], action.neutralActions, state)?.let {
                     children += InstructionFlowEdge(node = it)
                 }
             }
 
             is Action.PostNotification -> {
-                buildActionSection(i18n["ui.flow.on.click"], action.onClickActions, state)?.let {
+                buildActionSection(i18n[I18N_R.UI_FLOW_ON_CLICK], action.onClickActions, state)?.let {
                     children += InstructionFlowEdge(node = it)
                 }
             }
 
             is Action.ShowPPN -> {
-                buildActionSection(i18n["ui.flow.on.click"], action.onClickActions, state)?.let {
+                buildActionSection(i18n[I18N_R.UI_FLOW_ON_CLICK], action.onClickActions, state)?.let {
                     children += InstructionFlowEdge(node = it)
                 }
             }
 
             is Action.ShowStatusBarChip -> {
-                buildActionSection(i18n["ui.flow.on.click"], action.clickActions, state)?.let {
+                buildActionSection(i18n[I18N_R.UI_FLOW_ON_CLICK], action.clickActions, state)?.let {
                     children += InstructionFlowEdge(node = it)
                 }
-                buildActionSection(i18n["ui.flow.on.long.click"], action.longClickActions, state)?.let {
+                buildActionSection(i18n[I18N_R.UI_FLOW_ON_LONG_CLICK], action.longClickActions, state)?.let {
                     children += InstructionFlowEdge(node = it)
                 }
             }
 
             is Action.BiometricVerify -> {
-                buildActionSection(i18n["ui.flow.allow"], action.allowActions, state)?.let {
+                buildActionSection(i18n[I18N_R.UI_FLOW_ALLOW], action.allowActions, state)?.let {
                     children += InstructionFlowEdge(node = it)
                 }
-                buildActionSection(i18n["ui.flow.deny"], action.denyActions, state)?.let {
+                buildActionSection(i18n[I18N_R.UI_FLOW_DENY], action.denyActions, state)?.let {
                     children += InstructionFlowEdge(node = it)
                 }
             }
 
             is Action.WebSocketConnect -> {
-                buildActionSection(i18n["ui.flow.on.open"], action.openActions, state)?.let {
+                buildActionSection(i18n[I18N_R.UI_FLOW_ON_OPEN], action.openActions, state)?.let {
                     children += InstructionFlowEdge(node = it)
                 }
-                buildActionSection(i18n["ui.flow.on.closed"], action.closeActions, state)?.let {
+                buildActionSection(i18n[I18N_R.UI_FLOW_ON_CLOSED], action.closeActions, state)?.let {
                     children += InstructionFlowEdge(node = it)
                 }
-                buildActionSection(i18n["ui.flow.on.message"], action.messageActions, state)?.let {
+                buildActionSection(i18n[I18N_R.UI_FLOW_ON_MESSAGE], action.messageActions, state)?.let {
                     children += InstructionFlowEdge(node = it)
                 }
-                buildActionSection(i18n["ui.flow.on.failure"], action.failureActions, state)?.let {
+                buildActionSection(i18n[I18N_R.UI_FLOW_ON_FAILURE], action.failureActions, state)?.let {
                     children += InstructionFlowEdge(node = it)
                 }
             }
 
             is Action.WaitUtilConditionMatch -> {
-                addConditions(children, i18n["ui.flow.conditions"], action.conditions)
+                addConditions(children, i18n[I18N_R.UI_FLOW_CONDITIONS], action.conditions)
                 if (action.isQuitEnabled) {
                     val quitChildren = mutableListOf<InstructionFlowEdge>()
-                    addFacts(quitChildren, i18n["ui.flow.triggers"], action.quitFacts)
-                    addConditions(quitChildren, i18n["ui.flow.conditions"], action.quitConditions)
+                    addFacts(quitChildren, i18n[I18N_R.UI_FLOW_TRIGGERS], action.quitFacts)
+                    addConditions(quitChildren, i18n[I18N_R.UI_FLOW_CONDITIONS], action.quitConditions)
                     children += InstructionFlowEdge(
                         node = InstructionFlowNode(
-                            title = i18n["ui.flow.quit"],
+                            title = i18n[I18N_R.UI_FLOW_QUIT],
                             kind = InstructionFlowNodeKind.Section,
                             children = quitChildren
                         )
@@ -488,7 +489,7 @@ private class InstructionFlowBuilder(
                     val refQuitActions = refQuit.actionsList.mapNotNull { it.toAction(shortXManager) }
                     val refStopActions = referenced.hook?.actionsOnStopList?.mapNotNull { it.toAction(shortXManager) }.orEmpty()
                     children += InstructionFlowEdge(
-                        label = i18n["ui.flow.reference"],
+                        label = i18n[I18N_R.UI_FLOW_REFERENCE],
                         node = buildDirectAction(
                             DirectActionFlowSpec(
                                 title = referenced.title,
@@ -513,10 +514,10 @@ private class InstructionFlowBuilder(
                     val nextState = state.copy(functionIds = state.functionIds + functionId)
                     val functionActions = function.actionsList.mapNotNull { it.toAction(shortXManager) }
                     children += InstructionFlowEdge(
-                        label = i18n["ui.flow.reference"],
+                        label = i18n[I18N_R.UI_FLOW_REFERENCE],
                         node = InstructionFlowNode(
                             title = function.name,
-                            detail = i18n["ui.function.title"],
+                            detail = i18n[I18N_R.UI_FUNCTION_TITLE],
                             kind = InstructionFlowNodeKind.Reference,
                             children = functionActions.mapIndexed { index, childAction ->
                                 InstructionFlowEdge(
@@ -893,14 +894,14 @@ private fun InstructionFlowDialogContent(
                     ) {
                         Column(modifier = Modifier.padding(14.dp)) {
                             Text(
-                                text = i18n["ui.flow.focus.mode.enabled"],
+                                text = i18n[I18N_R.UI_FLOW_FOCUS_MODE_ENABLED],
                                 style = MaterialTheme.typography.titleSmall,
                                 fontWeight = FontWeight.SemiBold,
                                 color = MaterialTheme.colorScheme.onSecondaryContainer,
                             )
                             StandardSpacer()
                             Text(
-                                text = i18n["ui.flow.focus.mode.tip"],
+                                text = i18n[I18N_R.UI_FLOW_FOCUS_MODE_TIP],
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSecondaryContainer,
                             )

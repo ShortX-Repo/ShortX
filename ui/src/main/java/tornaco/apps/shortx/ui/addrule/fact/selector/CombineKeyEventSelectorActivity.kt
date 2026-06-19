@@ -32,6 +32,7 @@ import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 @AndroidEntryPoint
@@ -58,7 +59,7 @@ class CombineKeyEventSelectorActivity : BaseSelectorActivity<Action.InjectCombin
                     topBar = {
                         ShortXTopAppBar(
                             modifier = Modifier,
-                            title = { Text(LocalI18N.current["ui.action.inject.combine.keycode"]) },
+                            title = { Text(LocalI18N.current[I18N_R.UI_ACTION_INJECT_COMBINE_KEYCODE]) },
                             navigationIcon = {
                                 IconButton(onClick = {
                                     setResult(RESULT_CANCELED)
@@ -111,7 +112,7 @@ class CombineKeyEventSelectorActivity : BaseSelectorActivity<Action.InjectCombin
                         androidx.compose.material3.Button(onClick = {
                             keycodeSelectorState.show()
                         }) {
-                            Text(text = LocalI18N.current["ui.common.add"])
+                            Text(text = LocalI18N.current[I18N_R.UI_COMMON_ADD])
                         }
                         StandardSpacer()
                     }

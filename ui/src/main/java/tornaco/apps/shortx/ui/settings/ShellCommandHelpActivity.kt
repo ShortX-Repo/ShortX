@@ -37,6 +37,7 @@ import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import javax.inject.Inject
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 data class ShellCommandHelpState(
     val isLoading: Boolean = true,
@@ -125,7 +126,7 @@ private fun ShellCommandHelpScreen(
     Scaffold(
         topBar = {
             ShortXTopAppBar(
-                title = { Text(text = i18N["ui.settings.shell.commands.page.title"]) },
+                title = { Text(text = i18N[I18N_R.UI_SETTINGS_SHELL_COMMANDS_PAGE_TITLE]) },
                 navigationIcon = {
                     IconButton(onClick = back) {
                         RemixIcon(remixName = Remix.System.close_line)
@@ -153,7 +154,7 @@ private fun ShellCommandHelpScreen(
                     modifier = Modifier
                         .fillMaxSize()
                         .padding(paddingValues),
-                    message = state.error ?: i18N["ui.settings.shell.commands.load.error"],
+                    message = state.error ?: i18N[I18N_R.UI_SETTINGS_SHELL_COMMANDS_LOAD_ERROR],
                     refresh = refresh,
                 )
             }

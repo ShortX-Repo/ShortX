@@ -26,6 +26,7 @@ import tornaco.apps.shortx.ui.main.model.ruleToRuleUM
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 import java.nio.charset.Charset
 import javax.inject.Inject
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 data class GlobalVarUiItem(val globalVar: GlobalVar, val createdBy: CreatedBy)
 data class GlobalVarGroup(val createdBy: CreatedBy, val vars: List<GlobalVarUiItem>)
@@ -41,19 +42,19 @@ sealed interface CreatedBy {
 
     data object User : CreatedBy {
         override fun getLabel(i18n: I18N): String {
-            return i18n["ui.global.var.created.by.user"]
+            return i18n[I18N_R.UI_GLOBAL_VAR_CREATED_BY_USER]
         }
     }
 
     data class DA(val da: DirectActionUM) : CreatedBy {
         override fun getLabel(i18n: I18N): String {
-            return i18n["ui.global.var.created.by.rule", mapOf("rule" to da.title)]
+            return i18n[I18N_R.UI_GLOBAL_VAR_CREATED_BY_RULE, mapOf("rule" to da.title)]
         }
     }
 
     data class Rule(val rule: RuleUM) : CreatedBy {
         override fun getLabel(i18n: I18N): String {
-            return i18n["ui.global.var.created.by.rule", mapOf("rule" to rule.title)]
+            return i18n[I18N_R.UI_GLOBAL_VAR_CREATED_BY_RULE, mapOf("rule" to rule.title)]
         }
     }
 }

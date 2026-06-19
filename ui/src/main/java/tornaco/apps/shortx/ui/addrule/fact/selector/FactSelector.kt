@@ -31,17 +31,18 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberSearchBarState
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 enum class FactCategory(val i18NKey: String, val icon: String) {
-    All("ui.fact.all", Remix.Buildings.store_2_line),
-    Apps("ui.action.category.app", Remix.System.apps_2_line),
-    Input("ui.fact.category.input", Remix.System.settings_2_line),
-    ScreenTime("ui.fact.category.screen.time", Remix.System.history_line),
-    State("ui.fact.category.state", Remix.System.settings_2_fill),
-    Power("ui.fact.category.power", Remix.Map.riding_fill),
-    Sensor("ui.fact.sensor", Remix.System.settings_2_line),
-    System("ui.fact.category.system", Remix.System.settings_2_line),
-    Advanced("ui.fact.category.advanced", Remix.Development.bug_line),
+    All(I18N_R.UI_FACT_ALL, Remix.Buildings.store_2_line),
+    Apps(I18N_R.UI_ACTION_CATEGORY_APP, Remix.System.apps_2_line),
+    Input(I18N_R.UI_FACT_CATEGORY_INPUT, Remix.System.settings_2_line),
+    ScreenTime(I18N_R.UI_FACT_CATEGORY_SCREEN_TIME, Remix.System.history_line),
+    State(I18N_R.UI_FACT_CATEGORY_STATE, Remix.System.settings_2_fill),
+    Power(I18N_R.UI_FACT_CATEGORY_POWER, Remix.Map.riding_fill),
+    Sensor(I18N_R.UI_FACT_SENSOR, Remix.System.settings_2_line),
+    System(I18N_R.UI_FACT_CATEGORY_SYSTEM, Remix.System.settings_2_line),
+    Advanced(I18N_R.UI_FACT_CATEGORY_ADVANCED, Remix.Development.bug_line),
 }
 
 @OptIn(
@@ -55,7 +56,7 @@ fun FactSelector(
 ) {
     ShortXTheme {
         ShortXAppBarScaffold(
-            title = LocalI18N.current["ui.fact.select"],
+            title = LocalI18N.current[I18N_R.UI_FACT_SELECT],
             onBackPressed = { close() },
         ) {
             val setFact: (Fact) -> Unit = {

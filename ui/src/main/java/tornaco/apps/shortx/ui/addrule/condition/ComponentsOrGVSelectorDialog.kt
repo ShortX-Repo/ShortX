@@ -79,6 +79,7 @@ import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.NoteTextColor
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.ClipboardUtils
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 private enum class SelectorType {
     GV,
@@ -185,7 +186,7 @@ private fun ComponentOrGVSelectorContent(dialogState: AppComponentOrGVSelectorDi
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(text = LocalI18N.current["ui.common.select.component"]) },
+                        title = { Text(text = LocalI18N.current[I18N_R.UI_COMMON_SELECT_COMPONENT]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 dialogState.dismiss()
@@ -229,11 +230,11 @@ private fun ComponentOrGVEntry(dialogState: AppComponentOrGVSelectorDialogState)
         state = typeDropdownState,
         items = listOf(
             DropdownItem(
-                labelLines = listOf(i18N["ui.common.from.component"]),
+                labelLines = listOf(i18N[I18N_R.UI_COMMON_FROM_COMPONENT]),
                 data = SelectorType.Component.name
             ),
             DropdownItem(
-                labelLines = listOf(i18N["ui.common.from.global.var"]),
+                labelLines = listOf(i18N[I18N_R.UI_COMMON_FROM_GLOBAL_VAR]),
                 data = SelectorType.GV.name
             )
         )
@@ -245,7 +246,7 @@ private fun ComponentOrGVEntry(dialogState: AppComponentOrGVSelectorDialogState)
         typeDropdownState.open()
     }) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(text = if (type == SelectorType.GV) i18N["ui.common.from.global.var"] else i18N["ui.common.from.component"])
+            Text(text = if (type == SelectorType.GV) i18N[I18N_R.UI_COMMON_FROM_GLOBAL_VAR] else i18N[I18N_R.UI_COMMON_FROM_COMPONENT])
             StandardSpacer()
             RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)
         }
@@ -271,7 +272,7 @@ private fun GVContent(dialogState: AppComponentOrGVSelectorDialogState) {
 
     SmallTitle(
         modifier = Modifier.padding(vertical = 12.dp),
-        text = LocalI18N.current["ui.action.select.global.var"]
+        text = LocalI18N.current[I18N_R.UI_ACTION_SELECT_GLOBAL_VAR]
     )
     ShortXTextField(
         modifier = Modifier.fillMaxWidth(),
@@ -295,7 +296,7 @@ private fun ComponentContent(dialogState: AppComponentOrGVSelectorDialogState) {
     ) {
         Column(modifier = Modifier) {
             MediumTitle(
-                text = LocalI18N.current["ui.condition.selector.component.all.any.op.title"]
+                text = LocalI18N.current[I18N_R.UI_CONDITION_SELECTOR_COMPONENT_ALL_ANY_OP_TITLE]
             )
             MediumSpacer()
             val opSelectorDialogState: MenuDialogState<String> =
@@ -319,11 +320,11 @@ private fun ComponentContent(dialogState: AppComponentOrGVSelectorDialogState) {
 
 
     MediumTitle(
-        text = "${LocalI18N.current["ui.common.selected.components"]} ${dialogState.componentsOrGV.components.size}"
+        text = "${LocalI18N.current[I18N_R.UI_COMMON_SELECTED_COMPONENTS]} ${dialogState.componentsOrGV.components.size}"
     )
     if (dialogState.componentsOrGV.components.isEmpty()) {
         TipBody(
-            text = LocalI18N.current["ui.common.select.component.empty"]
+            text = LocalI18N.current[I18N_R.UI_COMMON_SELECT_COMPONENT_EMPTY]
         )
     } else {
         dialogState.componentsOrGV.components.distinctBy { it }.forEach { appComponent ->
@@ -354,7 +355,7 @@ private fun ComponentContent(dialogState: AppComponentOrGVSelectorDialogState) {
     FilledTonalButton(onClick = {
         singleAppSelectorState.show()
     }) {
-        Text(text = LocalI18N.current["ui.common.select"])
+        Text(text = LocalI18N.current[I18N_R.UI_COMMON_SELECT])
     }
 
 
@@ -374,7 +375,7 @@ private fun ComponentContent(dialogState: AppComponentOrGVSelectorDialogState) {
     StandardSpacer()
     StandardSpacer()
 
-    MediumTitle(text = LocalI18N.current["ui.common.manually.input"])
+    MediumTitle(text = LocalI18N.current[I18N_R.UI_COMMON_MANUALLY_INPUT])
 
     // Manually input section
     val i18N = LocalI18N.current
@@ -385,7 +386,7 @@ private fun ComponentContent(dialogState: AppComponentOrGVSelectorDialogState) {
         mutableStateOf(0)
     }
     var userLabel by remember {
-        mutableStateOf(i18N["ui.common.user.main"])
+        mutableStateOf(i18N[I18N_R.UI_COMMON_USER_MAIN])
     }
 
 
@@ -410,7 +411,7 @@ private fun ComponentContent(dialogState: AppComponentOrGVSelectorDialogState) {
         },
         showSymbolButton = false,
         label = {
-            Text(text = i18N["ui.common.select.component.input"])
+            Text(text = i18N[I18N_R.UI_COMMON_SELECT_COMPONENT_INPUT])
         }
     )
 
@@ -421,7 +422,7 @@ private fun ComponentContent(dialogState: AppComponentOrGVSelectorDialogState) {
         rememberUserSelectorDialogState(onSelected = { userInfo ->
             userId = userInfo.userId
             userLabel = if (userId.isMainUser()) {
-                i18N["ui.common.user.main"]
+                i18N[I18N_R.UI_COMMON_USER_MAIN]
             } else {
                 shortXManager.getAllUsers()
                     .firstOrNull { it.userId == userId }?.name
@@ -463,7 +464,7 @@ private fun AppComponentItem(
             )
             Toast.makeText(
                 context,
-                i18N["ui.common.copied.to.clipboard"],
+                i18N[I18N_R.UI_COMMON_COPIED_TO_CLIPBOARD],
                 Toast.LENGTH_LONG
             ).show()
         }

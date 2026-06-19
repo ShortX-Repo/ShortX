@@ -11,6 +11,7 @@ import androidx.core.content.FileProvider
 import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 import java.io.File
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 private const val DEFAULT_SHARE_FILE_PREFIX = "ShortX"
 
@@ -47,24 +48,24 @@ fun ShareDialog(state: ShareDialogState) {
         val i18N = LocalI18N.current
         ShortXDialog(
             title = {
-                DialogTitle(text = i18N["ui.common.share"])
+                DialogTitle(text = i18N[I18N_R.UI_COMMON_SHARE])
             },
             onDismissRequest = { state.dismiss() }) {
-            ListItem(title = i18N["ui.common.share.clipboard"]) {
+            ListItem(title = i18N[I18N_R.UI_COMMON_SHARE_CLIPBOARD]) {
                 ClipboardUtils.copyToClipboard(context, state.shareName, state.content)
                 state.dismiss()
             }
 
-            ListItem(title = i18N["ui.common.share.file"]) {
+            ListItem(title = i18N[I18N_R.UI_COMMON_SHARE_FILE]) {
                 shareAsFile(context, state.objectTitle, state.content, state.filePrefix)
                 state.dismiss()
             }
 
-            ListItem(title = i18N["ui.common.share.save.file"]) {
+            ListItem(title = i18N[I18N_R.UI_COMMON_SHARE_SAVE_FILE]) {
                 saveAsFile(context, state.objectTitle, state.content, state.filePrefix).let {
                     Toast.makeText(
                         context,
-                        i18N["ui.common.save.success.to", mapOf("path" to "${it.first}${File.separator}${it.second}")],
+                        i18N[I18N_R.UI_COMMON_SAVE_SUCCESS_TO, mapOf("path" to "${it.first}${File.separator}${it.second}")],
                         Toast.LENGTH_LONG
                     ).show()
                 }

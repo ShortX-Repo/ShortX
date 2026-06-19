@@ -34,6 +34,7 @@ import tornaco.apps.shortx.ui.base.code.rememberCodeEditorState
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import kotlin.reflect.KClass
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 sealed interface RuleInstanceIdGen {
     val displayValue: String?
@@ -116,8 +117,8 @@ fun RuleInstanceIdGenSelector(
     val opSelectorState = rememberDropdownSelectorState()
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
         FieldTitleWithTip(
-            i18N["ui.rule.ins.id.gen"],
-            i18N["ui.rule.ins.id.gen.description"]
+            i18N[I18N_R.UI_RULE_INS_ID_GEN],
+            i18N[I18N_R.UI_RULE_INS_ID_GEN_DESCRIPTION]
         )
         ListItem(
             modifier = Modifier,
@@ -138,12 +139,12 @@ fun RuleInstanceIdGenSelector(
                         remixName = Remix.Design.edit_circle_line
                     )
                     TinySpacer()
-                    Text(text = i18N["ui.rule.ins.id.gen.edit"])
+                    Text(text = i18N[I18N_R.UI_RULE_INS_ID_GEN_EDIT])
                 }
             }
 
             val mvelSelectorState = rememberCodeEditorState(
-                title = i18N["ui.title.mvel"],
+                title = i18N[I18N_R.UI_TITLE_MVEL],
                 execute = {
                     shortXManager.executeMVEL(it, CoroutineContext.CoroutineContext_Default)
                 },
@@ -265,23 +266,23 @@ fun RuleInstanceIdGenSelector(
 fun KClass<*>.labelKey(): String {
     return when (this) {
         RuleInstanceIdGen.RuleInstanceIdGenDefault::class -> {
-            "ui.rule.ins.id.gen.default"
+            I18N_R.UI_RULE_INS_ID_GEN_DEFAULT
         }
 
         RuleInstanceIdGen.RuleInstanceIdGenJS::class -> {
-            "ui.rule.ins.id.gen.js"
+            I18N_R.UI_RULE_INS_ID_GEN_JS
         }
 
         RuleInstanceIdGen.RuleInstanceIdGenMVEL::class -> {
-            "ui.rule.ins.id.gen.mvel"
+            I18N_R.UI_RULE_INS_ID_GEN_MVEL
         }
 
         RuleInstanceIdGen.RuleInstanceIdGenStatic::class -> {
-            "ui.rule.ins.id.gen.static"
+            I18N_R.UI_RULE_INS_ID_GEN_STATIC
         }
 
         RuleInstanceIdGen.RuleInstanceIdGenString::class -> {
-            "ui.rule.ins.id.gen.string"
+            I18N_R.UI_RULE_INS_ID_GEN_STRING
         }
 
         else -> {
@@ -294,23 +295,23 @@ fun KClass<*>.labelKey(): String {
 fun KClass<*>.descriptionKey(): String {
     return when (this) {
         RuleInstanceIdGen.RuleInstanceIdGenDefault::class -> {
-            "ui.rule.ins.id.gen.default.description"
+            I18N_R.UI_RULE_INS_ID_GEN_DEFAULT_DESCRIPTION
         }
 
         RuleInstanceIdGen.RuleInstanceIdGenJS::class -> {
-            "ui.rule.ins.id.gen.js.description"
+            I18N_R.UI_RULE_INS_ID_GEN_JS_DESCRIPTION
         }
 
         RuleInstanceIdGen.RuleInstanceIdGenMVEL::class -> {
-            "ui.rule.ins.id.gen.mvel.description"
+            I18N_R.UI_RULE_INS_ID_GEN_MVEL_DESCRIPTION
         }
 
         RuleInstanceIdGen.RuleInstanceIdGenStatic::class -> {
-            "ui.rule.ins.id.gen.static.description"
+            I18N_R.UI_RULE_INS_ID_GEN_STATIC_DESCRIPTION
         }
 
         RuleInstanceIdGen.RuleInstanceIdGenString::class -> {
-            "ui.rule.ins.id.gen.string.description"
+            I18N_R.UI_RULE_INS_ID_GEN_STRING_DESCRIPTION
         }
 
         else -> {

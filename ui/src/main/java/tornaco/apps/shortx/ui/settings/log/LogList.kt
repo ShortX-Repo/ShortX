@@ -42,6 +42,7 @@ import tornaco.apps.shortx.ui.util.ClipboardUtils
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 private const val MAX_CLIPBOARD_LOG_CHARS = 256 * 1024
 
@@ -56,21 +57,21 @@ fun LogList(
     val shareDialogState = rememberShareDialogState("share.shortx.log")
     val lineMenuState = rememberMenuDialogState<Int>(
         key1 = state.logs,
-        title = i18N["ui.log.line.actions"],
+        title = i18N[I18N_R.UI_LOG_LINE_ACTIONS],
         menuItems = listOf(
             MenuDialogItem(
                 id = "copy_line",
-                title = i18N["ui.log.copy.line"],
+                title = i18N[I18N_R.UI_LOG_COPY_LINE],
                 iconName = Remix.Document.file_copy_line
             ),
             MenuDialogItem(
                 id = "copy_remaining",
-                title = i18N["ui.log.copy.remaining"],
+                title = i18N[I18N_R.UI_LOG_COPY_REMAINING],
                 iconName = Remix.Document.file_copy_2_line
             ),
             MenuDialogItem(
                 id = "share_line",
-                title = i18N["ui.common.share"],
+                title = i18N[I18N_R.UI_COMMON_SHARE],
                 iconName = Remix.System.share_forward_line
             )
         ),
@@ -83,9 +84,9 @@ fun LogList(
                         context = context,
                         name = "log",
                         content = selectedLine,
-                        successMessage = i18N["ui.common.copied.to.clipboard"],
-                        tooLargeMessage = i18N["ui.log.copy.too.large.export"],
-                        failedMessage = i18N["ui.log.copy.failed.export"]
+                        successMessage = i18N[I18N_R.UI_COMMON_COPIED_TO_CLIPBOARD],
+                        tooLargeMessage = i18N[I18N_R.UI_LOG_COPY_TOO_LARGE_EXPORT],
+                        failedMessage = i18N[I18N_R.UI_LOG_COPY_FAILED_EXPORT]
                     )
                 }
 
@@ -94,9 +95,9 @@ fun LogList(
                         context = context,
                         name = "log",
                         content = state.logs.drop(selectedIndex).joinToString("\n"),
-                        successMessage = i18N["ui.common.copied.to.clipboard"],
-                        tooLargeMessage = i18N["ui.log.copy.too.large.export"],
-                        failedMessage = i18N["ui.log.copy.failed.export"]
+                        successMessage = i18N[I18N_R.UI_COMMON_COPIED_TO_CLIPBOARD],
+                        tooLargeMessage = i18N[I18N_R.UI_LOG_COPY_TOO_LARGE_EXPORT],
+                        failedMessage = i18N[I18N_R.UI_LOG_COPY_FAILED_EXPORT]
                     )
                 }
 
@@ -163,9 +164,9 @@ fun MenuActions(
                         }
                     }
                 }.onSuccess {
-                    Toast.makeText(context, i18N["ui.log.export.success"], Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, i18N[I18N_R.UI_LOG_EXPORT_SUCCESS], Toast.LENGTH_SHORT).show()
                 }.onFailure {
-                    Toast.makeText(context, i18N["ui.log.export.failed"], Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, i18N[I18N_R.UI_LOG_EXPORT_FAILED], Toast.LENGTH_SHORT).show()
                 }
                 pendingExportContent = ""
             }
@@ -180,9 +181,9 @@ fun MenuActions(
                 context = context,
                 name = "log",
                 content = logs.joinToString("\n"),
-                successMessage = i18N["ui.common.copied.to.clipboard"],
-                tooLargeMessage = i18N["ui.log.copy.too.large.export"],
-                failedMessage = i18N["ui.log.copy.failed.export"]
+                successMessage = i18N[I18N_R.UI_COMMON_COPIED_TO_CLIPBOARD],
+                tooLargeMessage = i18N[I18N_R.UI_LOG_COPY_TOO_LARGE_EXPORT],
+                failedMessage = i18N[I18N_R.UI_LOG_COPY_FAILED_EXPORT]
             )
         }) {
             RemixIcon(Remix.Document.clipboard_line)

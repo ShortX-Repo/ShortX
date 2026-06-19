@@ -14,11 +14,12 @@ import tornaco.apps.shortx.ui.base.MediumTitleWithTip
 import tornaco.apps.shortx.ui.base.OutlineBadge
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @Composable
 fun FuncParamList(
     params: List<FuncParameter>,
-    i18nKeyPrefix: String = "ui.da.params",
+    i18nKeyPrefix: String = I18N_R.UI_DA_PARAMS,
     add: (FuncParameter, override: Boolean) -> Unit,
     remove: (FuncParameter) -> Unit
 ) {
@@ -70,6 +71,6 @@ fun FuncParamList(
     Button(onClick = {
         addFuncState.show()
     }) {
-        Text(text = LocalI18N.current["ui.common.add"])
+        Text(text = LocalI18N.current[I18N_R.UI_COMMON_ADD])
     }
 }

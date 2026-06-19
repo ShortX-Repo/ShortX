@@ -24,6 +24,7 @@ import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 @Composable
@@ -39,7 +40,7 @@ fun miscActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -
     )
 
     val ttsDialogState = rememberTextInputState(
-        title = LocalI18N.current["ui.action.tts"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_TTS],
         message = null,
         onSelected = {
             addAction(Action.TTS(text = it))
@@ -52,8 +53,8 @@ fun miscActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -
     DownloadFileSelectorDialog(state = downloadFileSelectorState)
 
     val backupFileDialogState = rememberTextInputState(
-        title = LocalI18N.current["ui.action.backup"],
-        message = LocalI18N.current["ui.action.backup.dest.dir"]
+        title = LocalI18N.current[I18N_R.UI_ACTION_BACKUP],
+        message = LocalI18N.current[I18N_R.UI_ACTION_BACKUP_DEST_DIR]
     ) {
         addAction(Action.ExportBackup(destDir = it))
     }

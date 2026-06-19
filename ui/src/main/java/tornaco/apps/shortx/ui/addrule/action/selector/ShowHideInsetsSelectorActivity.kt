@@ -24,6 +24,7 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXAppBarScaffold
 import tornaco.apps.shortx.ui.base.SwitchRow
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class ShowHideInsetsSelectorActivity : BaseSelectorActivity<Action.ShowHideInsets>() {
@@ -45,7 +46,7 @@ private fun BaseSelectorActivity<Action.ShowHideInsets>.Selector(currentAction: 
     val state by vm.state.collectAsState()
 
     ShortXAppBarScaffold(
-        title = LocalI18N.current["ui.action.show.hide.insets"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_SHOW_HIDE_INSETS],
         onBackPressed = { cancelAndFinish() },
         actions = {
             IconButton(onClick = {
@@ -64,9 +65,9 @@ private fun BaseSelectorActivity<Action.ShowHideInsets>.Selector(currentAction: 
         Column(Modifier.padding(horizontal = 16.dp)) {
             SwitchRow(
                 text = if (state.isHide) {
-                    LocalI18N.current["ui.action.show.hide.insets.hide"]
+                    LocalI18N.current[I18N_R.UI_ACTION_SHOW_HIDE_INSETS_HIDE]
                 } else {
-                    LocalI18N.current["ui.action.show.hide.insets.show"]
+                    LocalI18N.current[I18N_R.UI_ACTION_SHOW_HIDE_INSETS_SHOW]
                 },
                 isChecked = state.isHide,
                 onCheckChange = {

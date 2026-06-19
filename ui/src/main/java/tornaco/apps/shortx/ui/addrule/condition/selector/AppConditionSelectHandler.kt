@@ -10,6 +10,7 @@ import tornaco.apps.shortx.ui.addrule.condition.rememberComponentOrGVSelectorSta
 import tornaco.apps.shortx.ui.addrule.condition.rememberConditionAppPkgSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.ComponentType
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @Composable
 fun appConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSelectSource) -> Boolean {
@@ -36,7 +37,7 @@ fun appConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSele
     ConditionAppPkgSelectorDialog(currentPkgSelectorState)
 
     val currentPkgByPkgSelectorState = rememberConditionPkgAndUserListSelectorDialogState(
-        title = LocalI18N.current["ui.dialog.title.current.app.by.pkg"],
+        title = LocalI18N.current[I18N_R.UI_DIALOG_TITLE_CURRENT_APP_BY_PKG],
         onSelected = { pairs, op ->
             addCondition(Condition.CurrentForegroundAppByPkg(stringPairs = pairs, op = op))
         })
@@ -87,7 +88,7 @@ fun appConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSele
     ConditionAppPkgSelectorDialog(appHasTaskSelectorState)
 
     val appHasTaskByPkgSelectorState = rememberConditionPkgAndUserListSelectorDialogState(
-        title = LocalI18N.current["ui.conditions.app.has.task.by.pkg"],
+        title = LocalI18N.current[I18N_R.UI_CONDITIONS_APP_HAS_TASK_BY_PKG],
         onSelected = { pairs, op ->
             addCondition(Condition.AppHasTaskByPkg(stringPairs = pairs, op = op))
         })

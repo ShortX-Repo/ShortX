@@ -78,6 +78,7 @@ import tornaco.apps.shortx.ui.theme.NoteTextColor
 import tornaco.apps.shortx.ui.theme.VipColorGold
 import tornaco.apps.shortx.ui.util.darkenColor
 import tornaco.apps.shortx.ui.util.themedTextColor
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 private const val COMPAT_MODE_ICON_SIZE = 48
 
@@ -482,18 +483,18 @@ private fun daListItemOverflowMenu(
 
     val badge = if (isSubscribed) {
         null
-    } else i18N["ui.subscription.subscribed.only"]
+    } else i18N[I18N_R.UI_SUBSCRIPTION_SUBSCRIBED_ONLY]
 
     val subscribeDialogState = rememberShortXBottomSheetState()
     FeatureAccessDialog(subscribeDialogState)
 
     val deleteDialogState = rememberConfirmDialogState()
     ConfirmDialog(
-        title = LocalI18N.current["ui.common.delete"],
+        title = LocalI18N.current[I18N_R.UI_COMMON_DELETE],
         state = deleteDialogState,
         data = da,
         messageHint = {
-            i18N["ui.delete.dialog.confirm", mapOf("wht" to da.title)]
+            i18N[I18N_R.UI_DELETE_DIALOG_CONFIRM, mapOf("wht" to da.title)]
         },
         onConfirm = { handler.delete(da) }
     )
@@ -505,11 +506,11 @@ private fun daListItemOverflowMenu(
 
     val createApkDialog = rememberConfirmDialogState()
     ConfirmDialog(
-        title = i18N["ui.common.install.as.apk"],
+        title = i18N[I18N_R.UI_COMMON_INSTALL_AS_APK],
         state = createApkDialog,
         data = da,
         messageHint = {
-            i18N["ui.common.install.as.apk.description"]
+            i18N[I18N_R.UI_COMMON_INSTALL_AS_APK_DESCRIPTION]
         },
     ) {
         handler.createApk(it)
@@ -522,68 +523,68 @@ private fun daListItemOverflowMenu(
             // 添加置顶/取消置顶选项（放在第一个位置）
             if (da.isPinned) {
                 DropdownItem(
-                    labelLines = listOf(LocalI18N.current["ui.common.unpin"]),
+                    labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_UNPIN]),
                     data = DAItemMenuOptions.Unpin,
                     icon = {
                         RemixIcon(Remix.Map.unpin_line)
                     })
             } else {
                 DropdownItem(
-                    labelLines = listOf(LocalI18N.current["ui.common.pinned"]),
+                    labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_PINNED]),
                     data = DAItemMenuOptions.Pin,
                     icon = {
                         RemixIcon(Remix.Map.pushpin_2_line)
                     })
             },
             DropdownItem(
-                labelLines = listOf(LocalI18N.current["ui.common.select"]),
+                labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_SELECT]),
                 data = DAItemMenuOptions.Select,
                 icon = {
                     RemixIcon(Remix.System.checkbox_multiple_line)
                 }),
             DropdownItem(
-                labelLines = listOf(LocalI18N.current["ui.common.create.shortcut"]),
+                labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_CREATE_SHORTCUT]),
                 data = DAItemMenuOptions.Shortcut,
                 badge = badge,
                 icon = {
                     RemixIcon(Remix.System.external_link_line)
                 }),
             DropdownItem(
-                labelLines = listOf(LocalI18N.current["ui.common.create.dynamic.shortcut"]),
+                labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_CREATE_DYNAMIC_SHORTCUT]),
                 data = DAItemMenuOptions.DynamicShortcut,
                 badge = badge,
                 icon = {
                     RemixIcon(Remix.System.external_link_line)
                 }),
             DropdownItem(
-                labelLines = listOf(LocalI18N.current["ui.common.remove.dynamic.shortcut"]),
+                labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_REMOVE_DYNAMIC_SHORTCUT]),
                 data = DAItemMenuOptions.RemoveDynamicShortcut,
                 badge = badge,
                 icon = {
                     RemixIcon(Remix.System.delete_bin_5_line)
                 }),
             DropdownItem(
-                labelLines = listOf(LocalI18N.current["ui.common.install.as.apk"]),
+                labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_INSTALL_AS_APK]),
                 data = DAItemMenuOptions.CreateApk,
                 badge = badge,
                 icon = {
                     RemixIcon(Remix.Logos.android_line)
                 }),
             DropdownItem(
-                labelLines = listOf(LocalI18N.current["ui.common.dup"]),
+                labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_DUP]),
                 data = DAItemMenuOptions.Dup,
                 badge = badge,
                 icon = {
                     RemixIcon(Remix.Document.file_copy_2_fill)
                 }),
             DropdownItem(
-                labelLines = listOf(LocalI18N.current["ui.common.edit"]),
+                labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_EDIT]),
                 data = DAItemMenuOptions.Edit,
                 icon = {
                     RemixIcon(Remix.Design.edit_line)
                 }),
             DropdownItem(
-                labelLines = listOf(LocalI18N.current["ui.common.share"]),
+                labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_SHARE]),
                 data = DAItemMenuOptions.Share,
                 badge = badge,
                 icon = {
@@ -602,26 +603,26 @@ private fun daListItemOverflowMenu(
                     RemixIcon(Remix.Editor.hashtag)
                 }),
             DropdownItem(
-                labelLines = listOf(LocalI18N.current["ui.common.move.to.set"]),
+                labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_MOVE_TO_SET]),
                 data = DAItemMenuOptions.MoveToSet,
                 badge = badge,
                 icon = {
                     RemixIcon(Remix.Document.folders_fill)
                 }),
             DropdownItem(
-                labelLines = listOf(LocalI18N.current["ui.common.move.out.set"]),
+                labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_MOVE_OUT_SET]),
                 data = DAItemMenuOptions.MoveOutSet,
                 icon = {
                     RemixIcon(Remix.Document.folder_reduce_fill)
                 }),
             DropdownItem(
-                labelLines = listOf(LocalI18N.current["ui.settings.eva.record"]),
+                labelLines = listOf(LocalI18N.current[I18N_R.UI_SETTINGS_EVA_RECORD]),
                 data = DAItemMenuOptions.ViewEvaRecord,
                 icon = {
                     RemixIcon(Remix.System.history_fill)
                 }),
             DropdownItem(
-                labelLines = listOf(LocalI18N.current["ui.common.delete"]),
+                labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_DELETE]),
                 data = DAItemMenuOptions.Delete,
                 icon = {
                     RemixIcon(Remix.System.delete_bin_4_line)
@@ -633,8 +634,8 @@ private fun daListItemOverflowMenu(
                         ActionShortcutActivity.addShortcut(context, da)
                         scope.launch {
                             val res = snackbar.showSnackbar(
-                                i18N["ui.common.create.shortcut.snackbar.message"],
-                                i18N["ui.common.settings"],
+                                i18N[I18N_R.UI_COMMON_CREATE_SHORTCUT_SNACKBAR_MESSAGE],
+                                i18N[I18N_R.UI_COMMON_SETTINGS],
                                 true,
                             )
                             if (res == SnackbarResult.ActionPerformed) {
@@ -710,7 +711,7 @@ private fun daListItemOverflowMenu(
                 DAItemMenuOptions.DynamicShortcut -> {
                     if (isSubscribed) {
                         if (ActionShortcutActivity.addDynamicShortcut(context, da)) {
-                            Toast.makeText(context, i18N["ui.common.done"], Toast.LENGTH_SHORT)
+                            Toast.makeText(context, i18N[I18N_R.UI_COMMON_DONE], Toast.LENGTH_SHORT)
                                 .show()
                         }
                     } else {

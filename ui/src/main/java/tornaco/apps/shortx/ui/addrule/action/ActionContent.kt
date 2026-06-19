@@ -106,11 +106,12 @@ import tornaco.apps.shortx.ui.theme.Dimens
 import tornaco.apps.shortx.ui.theme.ErrorRed
 import tornaco.apps.shortx.ui.theme.NoteTextColor
 import kotlin.reflect.KClass
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @Composable
 fun ActionContent(
     header: @Composable (() -> Unit) = {
-        LargeTitle(LocalI18N.current["ui.actions.title"])
+        LargeTitle(LocalI18N.current[I18N_R.UI_ACTIONS_TITLE])
     },
     summary: @Composable ColumnScope.() -> Unit = {},
     // Rule Or DA id.
@@ -164,17 +165,17 @@ private fun Actions(
 
     val actionAsyncModeMenuDialogState =
         rememberMenuDialogState<String>(
-            title = LocalI18N.current["ui.action.async.mode"],
+            title = LocalI18N.current[I18N_R.UI_ACTION_ASYNC_MODE],
             menuItems = listOf(
                 MenuDialogItem(
                     id = ActionAsyncMode.ActionAsyncMode_Sync.name,
-                    title = LocalI18N.current["ui.action.async.mode.sync"],
-                    summary = LocalI18N.current["ui.action.async.mode.sync.summary"],
+                    title = LocalI18N.current[I18N_R.UI_ACTION_ASYNC_MODE_SYNC],
+                    summary = LocalI18N.current[I18N_R.UI_ACTION_ASYNC_MODE_SYNC_SUMMARY],
                 ),
                 MenuDialogItem(
                     id = ActionAsyncMode.ActionAsyncMode_Async.name,
-                    title = LocalI18N.current["ui.action.async.mode.async"],
-                    summary = LocalI18N.current["ui.action.async.mode.async.summary"]
+                    title = LocalI18N.current[I18N_R.UI_ACTION_ASYNC_MODE_ASYNC],
+                    summary = LocalI18N.current[I18N_R.UI_ACTION_ASYNC_MODE_ASYNC_SUMMARY]
                 )
             ), onItemSelected = { _, id ->
                 val mode = ActionAsyncMode.valueOf(id)
@@ -202,9 +203,9 @@ private fun Actions(
                 if (actionAsyncMode == ActionAsyncMode.ActionAsyncMode_Async || canSelectActionAsyncMode) {
                     ClickableBadge(
                         text = if (actionAsyncMode == ActionAsyncMode.ActionAsyncMode_Sync) {
-                            LocalI18N.current["ui.rule.async.mode.sync"]
+                            LocalI18N.current[I18N_R.UI_RULE_ASYNC_MODE_SYNC]
                         } else {
-                            LocalI18N.current["ui.rule.async.mode.async"]
+                            LocalI18N.current[I18N_R.UI_RULE_ASYNC_MODE_ASYNC]
                         },
                         containerColor = ColorDefaults.backgroundSurfaceColor()
                     ) {
@@ -237,11 +238,11 @@ private fun Actions(
                 DropdownSelector(
                     state = moreDropdownState, items = listOf(
                         DropdownItem(
-                            labelLines = listOf(i18N["ui.common.execute.actions"]),
+                            labelLines = listOf(i18N[I18N_R.UI_COMMON_EXECUTE_ACTIONS]),
                             data = "exe",
                         ),
                         DropdownItem(
-                            labelLines = listOf(i18N["ui.settings.action.record"]),
+                            labelLines = listOf(i18N[I18N_R.UI_SETTINGS_ACTION_RECORD]),
                             data = "history",
                         )
                     ), onSelect = {
@@ -266,7 +267,7 @@ private fun Actions(
         UserTip(
             modifier = Modifier,
             tipId = TipIds.actionContent,
-            message = LocalI18N.current["ui.actions.content.tip"]
+            message = LocalI18N.current[I18N_R.UI_ACTIONS_CONTENT_TIP]
         )
 
         val contextDataInfoDialogState = rememberContextDataInfoDialogState()
@@ -394,7 +395,7 @@ private fun Actions(
 
                             val noteDialogState =
                                 rememberTextInputState(
-                                    title = LocalI18N.current["ui.common.note"],
+                                    title = LocalI18N.current[I18N_R.UI_COMMON_NOTE],
                                     message = null,
                                     inputValidator = {
                                         InputValidateResult.OK
@@ -405,7 +406,7 @@ private fun Actions(
                             TextInputDialog(state = noteDialogState)
 
                             val onErrorMenuState = rememberMenuDialogState<String>(
-                                title = LocalI18N.current["ui.actions.on.error"],
+                                title = LocalI18N.current[I18N_R.UI_ACTIONS_ON_ERROR],
                                 menuItems = listOf(
                                     MenuDialogItem(
                                         id = ActionOnError.Break.name,
@@ -523,7 +524,7 @@ private fun Actions(
                                             ErrorCard(
                                                 modifier = Modifier
                                                     .padding(16.dp),
-                                                title = LocalI18N.current["ui.action.warning.message"],
+                                                title = LocalI18N.current[I18N_R.UI_ACTION_WARNING_MESSAGE],
                                                 warnings = it
                                             )
                                         }
@@ -533,7 +534,7 @@ private fun Actions(
                                     state = clickDropdownState,
                                     items = listOf(
                                         DropdownItem(
-                                            labelLines = listOf(LocalI18N.current["ui.common.insert.above"]),
+                                            labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_INSERT_ABOVE]),
                                             data = currentAction.id to "ia",
                                             icon = {
                                                 RemixIcon(
@@ -543,7 +544,7 @@ private fun Actions(
                                             }
                                         ),
                                         DropdownItem(
-                                            labelLines = listOf(LocalI18N.current["ui.common.insert.below"]),
+                                            labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_INSERT_BELOW]),
                                             data = currentAction.id to "ib",
                                             icon = {
                                                 RemixIcon(
@@ -553,7 +554,7 @@ private fun Actions(
                                             }
                                         ),
                                         DropdownItem(
-                                            labelLines = listOf(LocalI18N.current["ui.common.paste.above"]),
+                                            labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_PASTE_ABOVE]),
                                             data = currentAction.id to "pa",
                                             icon = {
                                                 RemixIcon(
@@ -563,7 +564,7 @@ private fun Actions(
                                             }
                                         ),
                                         DropdownItem(
-                                            labelLines = listOf(LocalI18N.current["ui.common.paste.below"]),
+                                            labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_PASTE_BELOW]),
                                             data = currentAction.id to "pb",
                                             icon = {
                                                 RemixIcon(
@@ -573,7 +574,7 @@ private fun Actions(
                                             }
                                         ),
                                         DropdownItem(
-                                            labelLines = listOf(LocalI18N.current["ui.common.copy"]),
+                                            labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_COPY]),
                                             data = currentAction.id to "cp",
                                             icon = {
                                                 RemixIcon(
@@ -583,7 +584,7 @@ private fun Actions(
                                             }
                                         ),
                                         DropdownItem(
-                                            labelLines = listOf(LocalI18N.current["ui.common.note"]),
+                                            labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_NOTE]),
                                             data = currentAction.id to "note",
                                             icon = {
                                                 RemixIcon(
@@ -593,7 +594,7 @@ private fun Actions(
                                             }
                                         ),
                                         DropdownItem(
-                                            labelLines = listOf(LocalI18N.current["ui.common.sort"]),
+                                            labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_SORT]),
                                             data = currentAction.id to "sort",
                                             icon = {
                                                 RemixIcon(
@@ -603,7 +604,7 @@ private fun Actions(
                                             }
                                         ),
                                         DropdownItem(
-                                            labelLines = listOf(LocalI18N.current["ui.common.execute"]),
+                                            labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_EXECUTE]),
                                             data = currentAction.id to "execute",
                                             icon = {
                                                 RemixIcon(
@@ -614,7 +615,7 @@ private fun Actions(
                                         ),
                                         DropdownItem(
                                             labelLines = listOf(
-                                                LocalI18N.current["ui.actions.on.error"],
+                                                LocalI18N.current[I18N_R.UI_ACTIONS_ON_ERROR],
                                                 LocalI18N.current[action.actionOnError.labelKey()]
                                             ),
                                             data = currentAction.id to "onError",
@@ -627,8 +628,8 @@ private fun Actions(
                                         ),
                                         DropdownItem(
                                             labelLines = listOf(
-                                                LocalI18N.current["ui.common.toggle.enable.disable"],
-                                                LocalI18N.current["ui.common.toggle.enable.disable.summary"]
+                                                LocalI18N.current[I18N_R.UI_COMMON_TOGGLE_ENABLE_DISABLE],
+                                                LocalI18N.current[I18N_R.UI_COMMON_TOGGLE_ENABLE_DISABLE_SUMMARY]
                                             ),
                                             data = currentAction.id to "enableDisable",
                                             icon = {
@@ -747,7 +748,7 @@ private fun Actions(
                                         tint = MaterialTheme.colorScheme.onPrimary
                                     )
                                     TinySpacer()
-                                    Text(LocalI18N.current["ui.actions.add"])
+                                    Text(LocalI18N.current[I18N_R.UI_ACTIONS_ADD])
                                 }
                             }
 
@@ -761,7 +762,7 @@ private fun Actions(
                 state = actionContentCardMenuState,
                 items = listOf(
                     DropdownItem(
-                        labelLines = listOf(LocalI18N.current["ui.common.paste"]),
+                        labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_PASTE]),
                         data = "paste"
                     )
                 ),

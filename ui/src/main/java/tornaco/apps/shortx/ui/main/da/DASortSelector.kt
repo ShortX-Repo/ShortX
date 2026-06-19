@@ -19,6 +19,7 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXCardRoundedCornerShape
 import tornaco.apps.shortx.ui.main.DASortBy
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @Composable
 fun DASortSelector(
@@ -51,12 +52,12 @@ fun DASortSelector(
                         text = {
                             Text(
                                 text = when (sortBy) {
-                                    DASortBy.Name -> i18n["ui.sort.by_name"]
-                                    DASortBy.NameReverse -> i18n["ui.sort.by_name_desc"]
-                                    DASortBy.CreateTime -> i18n["ui.sort.by_create_time"]
-                                    DASortBy.CreateTimeReverse -> i18n["ui.sort.by_create_time_desc"]
-                                    DASortBy.LastUpdateTime -> i18n["ui.sort.by_update_time"]
-                                    DASortBy.LastUpdateTimeReverse -> i18n["ui.sort.by_update_time_desc"]
+                                    DASortBy.Name -> i18n[I18N_R.UI_SORT_BY_NAME]
+                                    DASortBy.NameReverse -> i18n[I18N_R.UI_SORT_BY_NAME_DESC]
+                                    DASortBy.CreateTime -> i18n[I18N_R.UI_SORT_BY_CREATE_TIME]
+                                    DASortBy.CreateTimeReverse -> i18n[I18N_R.UI_SORT_BY_CREATE_TIME_DESC]
+                                    DASortBy.LastUpdateTime -> i18n[I18N_R.UI_SORT_BY_UPDATE_TIME]
+                                    DASortBy.LastUpdateTimeReverse -> i18n[I18N_R.UI_SORT_BY_UPDATE_TIME_DESC]
                                 }
                             )
                         },

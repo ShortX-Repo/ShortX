@@ -120,6 +120,7 @@ import java.util.UUID
 import java.util.concurrent.CancellationException
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 typealias AndroidKeyEvent = android.view.KeyEvent
 
@@ -341,7 +342,7 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
                 DirectAction.newBuilder()
                     .setId("UserGuide")
                     .setCreateTime(System.currentTimeMillis())
-                    .setTitle(i18NIns["ui.user.guide"])
+                    .setTitle(i18NIns[I18N_R.UI_USER_GUIDE])
                     .setDescription("\uD83E\uDD13")
                     .setAuthor(Author.newBuilder().setName("ShortX").build())
                     .addAllActions(
@@ -1589,8 +1590,8 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
 
             shortXContext.notification.post(
                 PostNotification.newBuilder()
-                    .setTitle(i18NIns["ui.shortx.force.disabled"])
-                    .setMessage(i18NIns["ui.shortx.force.disabled.message"])
+                    .setTitle(i18NIns[I18N_R.UI_SHORTX_FORCE_DISABLED])
+                    .setMessage(i18NIns[I18N_R.UI_SHORTX_FORCE_DISABLED_MESSAGE])
                     .setId("ShortX.Rule")
                     .setIsImportant(true)
                     .setSmallIcon(Remix.System.forbid_2_fill)

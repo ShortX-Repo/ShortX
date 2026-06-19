@@ -25,6 +25,7 @@ import tornaco.apps.shortx.ui.base.ShortXTextButton
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import java.util.UUID
 import kotlin.math.roundToInt
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class VibratePatternSelectorState(
     val selected: (Action.Vibrate) -> Unit
@@ -72,7 +73,7 @@ fun VibratePatternSelector(state: VibratePatternSelectorState) {
     if (state.isShowing) {
         ShortXDialog(onDismissRequest = { state.dismiss() },
             title = {
-                DialogTitle(text = LocalI18N.current["ui.action.vibrate"])
+                DialogTitle(text = LocalI18N.current[I18N_R.UI_ACTION_VIBRATE])
             },
             buttons = {
                 ShortXTextButton(onClick = {

@@ -55,6 +55,7 @@ import tornaco.apps.shortx.ui.base.TextDisplayActivity
 import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class ShellCommandEditorActivity : BaseSelectorActivity<Action.ShellCommand>() {
@@ -68,7 +69,7 @@ class ShellCommandEditorActivity : BaseSelectorActivity<Action.ShellCommand>() {
 fun ShellCommandEditorActivity.ShellCommandEditor(
     currentAction: Action.ShellCommand?,
 ) {
-    val outputTitle = LocalI18N.current["ui.action.shell"]
+    val outputTitle = LocalI18N.current[I18N_R.UI_ACTION_SHELL]
     val context = LocalContext.current
     var ceComposeBinding by remember { mutableStateOf<CEComposeBinding?>(null) }
     var moreMenuExpanded by remember { mutableStateOf(false) }
@@ -134,12 +135,12 @@ fun ShellCommandEditorActivity.ShellCommandEditor(
                             if (state.isExecuting) {
                                 Icon(
                                     imageVector = Icons.Outlined.Stop,
-                                    contentDescription = LocalI18N.current["ui.common.stop"]
+                                    contentDescription = LocalI18N.current[I18N_R.UI_COMMON_STOP]
                                 )
                             } else {
                                 Icon(
                                     imageVector = Icons.Outlined.PlayArrow,
-                                    contentDescription = LocalI18N.current["ui.common.run"]
+                                    contentDescription = LocalI18N.current[I18N_R.UI_COMMON_RUN]
                                 )
                             }
                         }
@@ -156,21 +157,21 @@ fun ShellCommandEditorActivity.ShellCommandEditor(
                                 onDismissRequest = { moreMenuExpanded = false }
                             ) {
                                 DropdownMenuItem(
-                                    text = { Text(LocalI18N.current["ui.action.shell.single.shot"]) },
+                                    text = { Text(LocalI18N.current[I18N_R.UI_ACTION_SHELL_SINGLE_SHOT]) },
                                     onClick = {
                                         moreMenuExpanded = false
                                         vm.setSingleShot(!state.isSingleShot)
                                     }
                                 )
                                 DropdownMenuItem(
-                                    text = { Text(LocalI18N.current["ui.code.editor.wordwrap"]) },
+                                    text = { Text(LocalI18N.current[I18N_R.UI_CODE_EDITOR_WORDWRAP]) },
                                     onClick = {
                                         moreMenuExpanded = false
                                         ceComposeBinding?.toggleWordwrap()
                                     }
                                 )
                                 DropdownMenuItem(
-                                    text = { Text(LocalI18N.current["ui.code.editor.whitespace"]) },
+                                    text = { Text(LocalI18N.current[I18N_R.UI_CODE_EDITOR_WHITESPACE]) },
                                     onClick = {
                                         moreMenuExpanded = false
                                         ceComposeBinding?.toggleNonPrintable()
@@ -188,7 +189,7 @@ fun ShellCommandEditorActivity.ShellCommandEditor(
                 ) {
                     if (!state.isInSystemUI) {
                         Box(modifier = Modifier.padding(horizontal = 8.dp)) {
-                            TipBody(text = LocalI18N.current["ui.action.shell.summary"])
+                            TipBody(text = LocalI18N.current[I18N_R.UI_ACTION_SHELL_SUMMARY])
                         }
                     }
 

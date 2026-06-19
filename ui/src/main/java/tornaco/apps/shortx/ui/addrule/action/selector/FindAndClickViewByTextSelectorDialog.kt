@@ -60,6 +60,7 @@ import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.gesture.ScreenRectPickerActivity
 import javax.inject.Inject
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class FindAndClickViewByTextSelectorActivity :
@@ -89,7 +90,7 @@ class FindAndClickViewByTextSelectorActivity :
         }
 
         ShortXAppBarScaffold(
-            title = LocalI18N.current["ui.action.find.click.view.by.text"],
+            title = LocalI18N.current[I18N_R.UI_ACTION_FIND_CLICK_VIEW_BY_TEXT],
             onBackPressed = {},
             actions = {
                 IconButton(onClick = {
@@ -114,7 +115,7 @@ class FindAndClickViewByTextSelectorActivity :
                     .padding(16.dp),
             ) {
                 FieldTitle(
-                    text = LocalI18N.current["ui.action.find.click.view.by.text.text"]
+                    text = LocalI18N.current[I18N_R.UI_ACTION_FIND_CLICK_VIEW_BY_TEXT_TEXT]
                 )
                 TinySpacer()
                 ShortXTextField(modifier = Modifier.fillMaxWidth(),
@@ -125,7 +126,7 @@ class FindAndClickViewByTextSelectorActivity :
                 StandardSpacer()
 
                 FieldTitle(
-                    text = LocalI18N.current["ui.action.find.click.view.by.text.is.regex"]
+                    text = LocalI18N.current[I18N_R.UI_ACTION_FIND_CLICK_VIEW_BY_TEXT_IS_REGEX]
                 )
                 TinySpacer()
                 ShortXSwitch(
@@ -135,7 +136,7 @@ class FindAndClickViewByTextSelectorActivity :
 
 
                 val methodMenuState = rememberMenuDialogState<String>(
-                    title = LocalI18N.current["ui.action.find.text.method"],
+                    title = LocalI18N.current[I18N_R.UI_ACTION_FIND_TEXT_METHOD],
                     menuItems = listOf(
                         FindTextMethod.FTM_UI_AUTO,
                         FindTextMethod.FTM_OCR,
@@ -150,16 +151,16 @@ class FindAndClickViewByTextSelectorActivity :
                 )
                 MenuDialog(state = methodMenuState)
                 Button(onClick = { methodMenuState.show() }) {
-                    Text(text = LocalI18N.current["ui.action.find.text.method"] + " ${LocalI18N.current[state.method.labelKey()]}")
+                    Text(text = LocalI18N.current[I18N_R.UI_ACTION_FIND_TEXT_METHOD] + " ${LocalI18N.current[state.method.labelKey()]}")
                 }
                 StandardSpacer()
 
                 AnimatedVisibility(visible = state.method != FindTextMethod.FTM_OCR) {
                     Column {
                         FieldTitle(
-                            text = LocalI18N.current["ui.action.find.click.view.by.text.timeout"]
+                            text = LocalI18N.current[I18N_R.UI_ACTION_FIND_CLICK_VIEW_BY_TEXT_TIMEOUT]
                         )
-                        TipBody(LocalI18N.current["ui.action.find.click.view.by.text.timeout.description"])
+                        TipBody(LocalI18N.current[I18N_R.UI_ACTION_FIND_CLICK_VIEW_BY_TEXT_TIMEOUT_DESCRIPTION])
                         TinySpacer()
                         ShortXTextField(
                             modifier = Modifier.fillMaxWidth(),
@@ -180,9 +181,9 @@ class FindAndClickViewByTextSelectorActivity :
                 AnimatedVisibility(visible = state.method != FindTextMethod.FTM_UI_AUTO) {
                     Column {
                         FieldTitle(
-                            text = LocalI18N.current["ui.action.rect.src.rect"]
+                            text = LocalI18N.current[I18N_R.UI_ACTION_RECT_SRC_RECT]
                         )
-                        TipBody(LocalI18N.current["ui.action.rect.src.rect.format"])
+                        TipBody(LocalI18N.current[I18N_R.UI_ACTION_RECT_SRC_RECT_FORMAT])
                         TinySpacer()
                         ShortXTextField(
                             modifier = Modifier.fillMaxWidth(),
@@ -207,7 +208,7 @@ class FindAndClickViewByTextSelectorActivity :
                             },
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            Text(LocalI18N.current["ui.fact.edge.gesture.select.screen.area"])
+                            Text(LocalI18N.current[I18N_R.UI_FACT_EDGE_GESTURE_SELECT_SCREEN_AREA])
                         }
                         
                         // 预览按钮 - 只有当矩形不为空时才显示
@@ -225,7 +226,7 @@ class FindAndClickViewByTextSelectorActivity :
                                     modifier = Modifier.size(18.dp)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text(LocalI18N.current["ui.fact.edge.gesture.show.selected.area"])
+                                Text(LocalI18N.current[I18N_R.UI_FACT_EDGE_GESTURE_SHOW_SELECTED_AREA])
                             }
                         }
                         

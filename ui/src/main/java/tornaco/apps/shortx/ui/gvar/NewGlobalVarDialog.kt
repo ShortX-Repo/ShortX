@@ -47,6 +47,7 @@ import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.base.UnderlineSmallText
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.util.ClipboardUtils
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 data class NewGlobalVar(
     val name: String,
@@ -100,7 +101,7 @@ fun NewGlobalVar.toGlobalVar(createdBy: ProtoAny? = null): GlobalVar =
 fun NewGlobalVarDialog(state: NewGlobalVarState) {
     if (state.isShowing) {
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
-            DialogTitle(text = LocalI18N.current["ui.global.var.title"])
+            DialogTitle(text = LocalI18N.current[I18N_R.UI_GLOBAL_VAR_TITLE])
         }, buttons = {
             ShortXTextButton(onClick = {
                 if (state.name.isNotBlank()) {
@@ -124,10 +125,10 @@ fun NewGlobalVarDialog(state: NewGlobalVarState) {
 
                 FieldTitle(
                     modifier = Modifier.padding(vertical = 12.dp),
-                    text = LocalI18N.current["ui.global.var.name"]
+                    text = LocalI18N.current[I18N_R.UI_GLOBAL_VAR_NAME]
                 )
                 SmallSpacer()
-                TipBody(text = LocalI18N.current["ui.global.var.name.description"])
+                TipBody(text = LocalI18N.current[I18N_R.UI_GLOBAL_VAR_NAME_DESCRIPTION])
                 SmallSpacer()
                 ShortXTextField(
                     modifier = Modifier
@@ -146,12 +147,12 @@ fun NewGlobalVarDialog(state: NewGlobalVarState) {
                     )
                     Toast.makeText(
                         context,
-                        i18N["ui.common.copied.to.clipboard"],
+                        i18N[I18N_R.UI_COMMON_COPIED_TO_CLIPBOARD],
                         Toast.LENGTH_LONG
                     ).show()
                 }) {
                     UnderlineSmallText(
-                        text = LocalI18N.current["ui.global.var.access.help.message", mapOf(
+                        text = LocalI18N.current[I18N_R.UI_GLOBAL_VAR_ACCESS_HELP_MESSAGE, mapOf(
                             "name" to "$GLOBAL_VAR_REF_PREFIX${state.name}"
                         )]
                     )
@@ -159,7 +160,7 @@ fun NewGlobalVarDialog(state: NewGlobalVarState) {
 
                 FieldTitle(
                     modifier = Modifier.padding(vertical = 12.dp),
-                    text = LocalI18N.current["ui.common.note"]
+                    text = LocalI18N.current[I18N_R.UI_COMMON_NOTE]
                 )
                 MediumSpacer()
                 ShortXTextField(
@@ -175,7 +176,7 @@ fun NewGlobalVarDialog(state: NewGlobalVarState) {
 
                 FieldTitle(
                     modifier = Modifier.padding(vertical = 12.dp),
-                    text = LocalI18N.current["ui.global.var.type"]
+                    text = LocalI18N.current[I18N_R.UI_GLOBAL_VAR_TYPE]
                 )
                 Box(modifier = Modifier) {
                     val typeDropdownState = rememberDropdownSelectorState()
@@ -213,13 +214,13 @@ fun NewGlobalVarDialog(state: NewGlobalVarState) {
                        horizontalArrangement = Arrangement.SpaceBetween,
                        verticalAlignment = Alignment.CenterVertically
                    ) {
-                       FieldTitle(text = LocalI18N.current["ui.global.var.secrets.title"])
+                       FieldTitle(text = LocalI18N.current[I18N_R.UI_GLOBAL_VAR_SECRETS_TITLE])
                        ShortXSwitch(checked = state.isSecret, onCheckedChange = {
                            state.isSecret = it
                        })
                    }
                    SmallSpacer()
-                   TipRow(text = LocalI18N.current["ui.global.var.secrets.message"])
+                   TipRow(text = LocalI18N.current[I18N_R.UI_GLOBAL_VAR_SECRETS_MESSAGE])
                }
             }
         })

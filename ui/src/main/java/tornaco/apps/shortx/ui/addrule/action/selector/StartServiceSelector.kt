@@ -61,6 +61,7 @@ import tornaco.apps.shortx.ui.base.SwitchRow
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class StartServiceSelectorActivity : BaseSelectorActivity<Action.StartService>() {
@@ -88,7 +89,7 @@ private fun BaseSelectorActivity<Action.StartService>.StartServiceSelector(curre
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(LocalI18N.current["ui.action.start.service"]) },
+                        title = { Text(LocalI18N.current[I18N_R.UI_ACTION_START_SERVICE]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 cancelAndFinish()
@@ -143,7 +144,7 @@ private fun Content(paddingValues: PaddingValues, vm: StartServiceSelectorViewMo
         SingleAppSelectorDialog(state = singleAppSelectorState)
         SmallTitle(
             modifier = Modifier.padding(vertical = 12.dp),
-            text = LocalI18N.current["ui.common.pkg.name"] + " - " + LocalI18N.current["ui.common.optional"]
+            text = LocalI18N.current[I18N_R.UI_COMMON_PKG_NAME] + " - " + LocalI18N.current[I18N_R.UI_COMMON_OPTIONAL]
         )
         ShortXTextField(
             modifier = Modifier.fillMaxWidth(),
@@ -175,7 +176,7 @@ private fun Content(paddingValues: PaddingValues, vm: StartServiceSelectorViewMo
         AppComponentSelectorDialog(componentSelectorState)
         SmallTitle(
             modifier = Modifier.padding(vertical = 12.dp),
-            text = LocalI18N.current["ui.common.class.name"] + " - " + LocalI18N.current["ui.common.optional"]
+            text = LocalI18N.current[I18N_R.UI_COMMON_CLASS_NAME] + " - " + LocalI18N.current[I18N_R.UI_COMMON_OPTIONAL]
         )
         ShortXTextField(
             modifier = Modifier.fillMaxWidth(),
@@ -204,7 +205,7 @@ private fun Content(paddingValues: PaddingValues, vm: StartServiceSelectorViewMo
 
         SmallTitle(
             modifier = Modifier.padding(vertical = 12.dp),
-            text = LocalI18N.current["ui.common.user.id"]
+            text = LocalI18N.current[I18N_R.UI_COMMON_USER_ID]
         )
         val userSelectorState = rememberUserSelectorDialogState(onSelected = {
             vm.updateUserId(it.userId)
@@ -223,7 +224,7 @@ private fun Content(paddingValues: PaddingValues, vm: StartServiceSelectorViewMo
 
         SmallTitle(
             modifier = Modifier.padding(vertical = 12.dp),
-            text = LocalI18N.current["ui.common.data"] + " - " + LocalI18N.current["ui.common.optional"]
+            text = LocalI18N.current[I18N_R.UI_COMMON_DATA] + " - " + LocalI18N.current[I18N_R.UI_COMMON_OPTIONAL]
         )
         ShortXTextField(
             modifier = Modifier.fillMaxWidth(),
@@ -237,14 +238,14 @@ private fun Content(paddingValues: PaddingValues, vm: StartServiceSelectorViewMo
 
         SmallTitle(
             modifier = Modifier.padding(vertical = 12.dp),
-            text = LocalI18N.current["ui.common.extras"]
+            text = LocalI18N.current[I18N_R.UI_COMMON_EXTRAS]
         )
         state.extras.forEachIndexed { index, extra ->
             Row(verticalAlignment = CenterVertically, horizontalArrangement = SpaceBetween) {
                 // Key
                 TextField(
                     modifier = Modifier.weight(1f),
-                    placeholder = { Text(text = LocalI18N.current["ui.common.extras.k"]) },
+                    placeholder = { Text(text = LocalI18N.current[I18N_R.UI_COMMON_EXTRAS_K]) },
                     value = extra.key,
                     onValueChange = {
                         vm.updateExtraKey(index, it)
@@ -254,7 +255,7 @@ private fun Content(paddingValues: PaddingValues, vm: StartServiceSelectorViewMo
                 // Value
                 TextField(
                     modifier = Modifier.weight(1f),
-                    placeholder = { Text(text = LocalI18N.current["ui.common.extras.v"]) },
+                    placeholder = { Text(text = LocalI18N.current[I18N_R.UI_COMMON_EXTRAS_V]) },
                     value = extra.value,
                     onValueChange = {
                         vm.updateExtraValue(index, it)
@@ -296,12 +297,12 @@ private fun Content(paddingValues: PaddingValues, vm: StartServiceSelectorViewMo
         Button(onClick = {
             vm.newExtra()
         }) {
-            Text(text = LocalI18N.current["ui.common.add"])
+            Text(text = LocalI18N.current[I18N_R.UI_COMMON_ADD])
         }
 
         StandardSpacer()
         SwitchRow(
-            text = LocalI18N.current["ui.action.start.service.is.fg"],
+            text = LocalI18N.current[I18N_R.UI_ACTION_START_SERVICE_IS_FG],
             isChecked = state.isFG,
             onCheckChange = {
                 vm.updateFG(it)

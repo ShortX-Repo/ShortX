@@ -58,6 +58,7 @@ import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import java.util.UUID
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class EvaluateScreenOnTimeSelectorDialogState(
     val onSelected: (Condition.EvaluateScreenOnTime) -> Unit
@@ -164,7 +165,7 @@ private fun EvaluateScreenOnTimeSelector(dialogState: EvaluateScreenOnTimeSelect
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(text = LocalI18N.current["ui.fact.screen.on.time"]) },
+                        title = { Text(text = LocalI18N.current[I18N_R.UI_FACT_SCREEN_ON_TIME]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 dialogState.dismiss()
@@ -210,7 +211,7 @@ private fun EvaluateScreenOnTimeSelector(dialogState: EvaluateScreenOnTimeSelect
                     }
                     SmallTitle(
                         modifier = Modifier.padding(vertical = 12.dp),
-                        text = LocalI18N.current["ui.action.select.global.var.op"]
+                        text = LocalI18N.current[I18N_R.UI_ACTION_SELECT_GLOBAL_VAR_OP]
                     )
                     TinySpacer()
                     val opSelectorState = rememberDropdownSelectorState()
@@ -246,13 +247,13 @@ private fun EvaluateScreenOnTimeSelector(dialogState: EvaluateScreenOnTimeSelect
                         Column {
                             SmallTitle(
                                 modifier = Modifier.padding(vertical = 12.dp),
-                                text = LocalI18N.current["ui.action.select.global.var.payload"]
+                                text = LocalI18N.current[I18N_R.UI_ACTION_SELECT_GLOBAL_VAR_PAYLOAD]
                             )
                             TinySpacer()
                             ShortXTextField(value = payloadValue, onValueChange = {
                                 dialogState.inputValue(it)
                             }, label = {
-                                Text(LocalI18N.current["ui.fact.screen.on.time.seconds"])
+                                Text(LocalI18N.current[I18N_R.UI_FACT_SCREEN_ON_TIME_SECONDS])
                             })
                             StandardSpacer()
                         }

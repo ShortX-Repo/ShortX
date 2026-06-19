@@ -19,6 +19,7 @@ import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.fact.trigger.BatteryTemperatureTrigger
 import kotlin.math.roundToInt
 import kotlin.random.Random
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 object SystemEnvInit {
     fun install(context: Context, shortXContext: ShortXContext) {
@@ -61,7 +62,7 @@ data class GetValueInput(
     val param: String?
 )
 
-private const val I18N_KEY_PREFIX = "ui.system.env"
+private const val I18N_KEY_PREFIX = I18N_R.UI_SYSTEM_ENV
 
 enum class Env(
     val displayName: String,

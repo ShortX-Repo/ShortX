@@ -1,5 +1,6 @@
 import tornaco.project.android.shortx.Configs.sxPackageName
 import tornaco.project.android.shortx.addAidlTask
+import tornaco.project.android.shortx.addGenerateI18NRTask
 import tornaco.project.android.shortx.aidlBuildDir
 
 plugins {
@@ -113,6 +114,8 @@ dependencies {
 }
 
 addAidlTask()
+
+addGenerateI18NRTask()
 
 protobuf {
     protoc {

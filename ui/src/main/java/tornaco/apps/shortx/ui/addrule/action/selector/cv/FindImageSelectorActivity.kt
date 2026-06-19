@@ -48,6 +48,7 @@ import tornaco.apps.shortx.ui.base.TextDisplayActivity
 import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class FindImageSelectorActivity : BaseSelectorActivity<Action.FindImagePosition>() {
@@ -68,7 +69,7 @@ private fun BaseSelectorActivity<Action.FindImagePosition>.Selector(currentActio
     val state by vm.state.collectAsState()
 
     ShortXAppBarScaffold(
-        title = LocalI18N.current["ui.action.find.image"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_FIND_IMAGE],
         onBackPressed = { cancelAndFinish() },
         actions = {
             IconButton(onClick = {
@@ -84,36 +85,36 @@ private fun BaseSelectorActivity<Action.FindImagePosition>.Selector(currentActio
         Column(Modifier.padding(horizontal = 16.dp)) {
             val i18N = LocalI18N.current
 
-            FieldTitle(text = LocalI18N.current["ui.action.find.image.image"])
+            FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_FIND_IMAGE_IMAGE])
             SmallSpacer()
-            ImageSourceSelector(state.image, i18N["ui.action.find.image.image"], true) {
+            ImageSourceSelector(state.image, i18N[I18N_R.UI_ACTION_FIND_IMAGE_IMAGE], true) {
                 vm.setImage(it)
             }
 
             SectionSpacer()
 
-            FieldTitle(text = LocalI18N.current["ui.action.find.image.template"])
+            FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_FIND_IMAGE_TEMPLATE])
             SmallSpacer()
-            ImageSourceSelector(state.template, i18N["ui.action.find.image.template"], false) {
+            ImageSourceSelector(state.template, i18N[I18N_R.UI_ACTION_FIND_IMAGE_TEMPLATE], false) {
                 vm.setTemplate(it)
             }
 
             StandardSpacer()
 
-            FieldTitle(text = i18N["ui.action.find.image.output.type"])
+            FieldTitle(text = i18N[I18N_R.UI_ACTION_FIND_IMAGE_OUTPUT_TYPE])
             SmallSpacer()
             val outputTypeMenuState = rememberMenuDialogState<String>(
-                title = i18N["ui.action.find.image.output.type"],
+                title = i18N[I18N_R.UI_ACTION_FIND_IMAGE_OUTPUT_TYPE],
                 menuItems = listOf(
                     MenuDialogItem(
                         id = FindImagePositionOutputType.FindImagePositionOutputType_Text.name,
-                        title = i18N["ui.action.find.image.output.text"],
-                        summary = i18N["ui.action.find.image.output.text.summary"],
+                        title = i18N[I18N_R.UI_ACTION_FIND_IMAGE_OUTPUT_TEXT],
+                        summary = i18N[I18N_R.UI_ACTION_FIND_IMAGE_OUTPUT_TEXT_SUMMARY],
                     ),
                     MenuDialogItem(
                         id = FindImagePositionOutputType.FindImagePositionOutputType_Json.name,
-                        title = i18N["ui.action.find.image.output.json"],
-                        summary = i18N["ui.action.find.image.output.json.summary"],
+                        title = i18N[I18N_R.UI_ACTION_FIND_IMAGE_OUTPUT_JSON],
+                        summary = i18N[I18N_R.UI_ACTION_FIND_IMAGE_OUTPUT_JSON_SUMMARY],
                     ),
                 ),
                 onItemSelected = { _, id ->
@@ -137,18 +138,18 @@ private fun BaseSelectorActivity<Action.FindImagePosition>.Selector(currentActio
                     }
                 },
                 titleLines = listOf(
-                    i18N["ui.action.find.image.output.type"],
+                    i18N[I18N_R.UI_ACTION_FIND_IMAGE_OUTPUT_TYPE],
                     when (state.outputType) {
                         FindImagePositionOutputType.FindImagePositionOutputType_Text ->
-                            i18N["ui.action.find.image.output.text"]
+                            i18N[I18N_R.UI_ACTION_FIND_IMAGE_OUTPUT_TEXT]
 
-                        else -> i18N["ui.action.find.image.output.json"]
+                        else -> i18N[I18N_R.UI_ACTION_FIND_IMAGE_OUTPUT_JSON]
                     },
                     when (state.outputType) {
                         FindImagePositionOutputType.FindImagePositionOutputType_Text ->
-                            i18N["ui.action.find.image.output.text.summary"]
+                            i18N[I18N_R.UI_ACTION_FIND_IMAGE_OUTPUT_TEXT_SUMMARY]
 
-                        else -> i18N["ui.action.find.image.output.json.summary"]
+                        else -> i18N[I18N_R.UI_ACTION_FIND_IMAGE_OUTPUT_JSON_SUMMARY]
                     },
                 ),
                 onClick = { outputTypeMenuState.show() }
@@ -189,7 +190,7 @@ fun ImageSourceSelector(
     )
 
     val pathInputDialogState = rememberTextInputState(
-        title = i18N["ui.action.find.image.src.path"],
+        title = i18N[I18N_R.UI_ACTION_FIND_IMAGE_SRC_PATH],
         message = null
     ) {
         onSelectSrc(ImageSource.Path(it))
@@ -201,15 +202,15 @@ fun ImageSourceSelector(
         menuItems = listOfNotNull(
             if (canSelectScreenshot) MenuDialogItem(
                 id = ImageSource.Screenshot::class.java.name,
-                title = i18N["ui.action.find.image.src.screenshot"]
+                title = i18N[I18N_R.UI_ACTION_FIND_IMAGE_SRC_SCREENSHOT]
             ) else null,
             MenuDialogItem(
                 id = ImageSource.Path::class.java.name,
-                title = i18N["ui.action.find.image.src.path"]
+                title = i18N[I18N_R.UI_ACTION_FIND_IMAGE_SRC_PATH]
             ),
             MenuDialogItem(
                 id = ImageSource.Base64::class.java.name,
-                title = i18N["ui.action.find.image.src.select"]
+                title = i18N[I18N_R.UI_ACTION_FIND_IMAGE_SRC_SELECT]
             ),
         ),
         onItemSelected = { _, id ->
@@ -242,7 +243,7 @@ fun ImageSourceSelector(
     when (image) {
         is ImageSource.Base64 -> {
             ListItem(
-                titleLines = listOf(i18N["ui.action.find.image.src.select"]),
+                titleLines = listOf(i18N[I18N_R.UI_ACTION_FIND_IMAGE_SRC_SELECT]),
                 icon = {
                     RemixIcon(remixName = Remix.Media.image_fill)
                 },
@@ -263,7 +264,7 @@ fun ImageSourceSelector(
         is ImageSource.Path -> {
             ListItem(
                 titleLines = listOf(
-                    i18N["ui.action.find.image.src.path"],
+                    i18N[I18N_R.UI_ACTION_FIND_IMAGE_SRC_PATH],
                     image.path
                 ),
                 icon = {
@@ -277,7 +278,7 @@ fun ImageSourceSelector(
 
         ImageSource.Screenshot -> {
             ListItem(
-                titleLines = listOf(i18N["ui.action.find.image.src.screenshot"]),
+                titleLines = listOf(i18N[I18N_R.UI_ACTION_FIND_IMAGE_SRC_SCREENSHOT]),
                 icon = {
                     RemixIcon(remixName = Remix.Device.smartphone_fill)
                 },
@@ -289,7 +290,7 @@ fun ImageSourceSelector(
 
         else -> {
             ListItem(
-                titleLines = listOf(i18N["ui.common.unselected"]),
+                titleLines = listOf(i18N[I18N_R.UI_COMMON_UNSELECTED]),
                 onClick = {
                     srcMenuState.show()
                 })
@@ -299,6 +300,6 @@ fun ImageSourceSelector(
     Button(onClick = {
         srcMenuState.show()
     }) {
-        Text(text = i18N["ui.common.edit"])
+        Text(text = i18N[I18N_R.UI_COMMON_EDIT])
     }
 }

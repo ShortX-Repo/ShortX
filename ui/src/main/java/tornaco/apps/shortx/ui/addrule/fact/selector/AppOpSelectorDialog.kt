@@ -40,6 +40,7 @@ import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 data class AppOpSelectorData(
@@ -173,9 +174,9 @@ fun AppOpSelectorDialog(state: AppOpSelectorState) {
 
                             val i18N = LocalI18N.current
 
-                            FieldTitle(text = LocalI18N.current["ui.fact.op.start.app"])
+                            FieldTitle(text = LocalI18N.current[I18N_R.UI_FACT_OP_START_APP])
                             ListItem(
-                                titleLines = mutableListOf(i18N["ui.fact.op.start.app"])
+                                titleLines = mutableListOf(i18N[I18N_R.UI_FACT_OP_START_APP])
                                     .labelLinesFromAppsAndPkgSets(
                                         state.currentValue.appList,
                                         state.currentValue.pkgSetList
@@ -193,7 +194,7 @@ fun AppOpSelectorDialog(state: AppOpSelectorState) {
 
                             StandardSpacer()
 
-                            FieldTitle(text = i18N["ui.fact.op.start.op"])
+                            FieldTitle(text = i18N[I18N_R.UI_FACT_OP_START_OP])
                             arrayOf(
                                 AppOpsManagerCompat.OP_GPS,
                                 AppOpsManagerCompat.OP_CAMERA,

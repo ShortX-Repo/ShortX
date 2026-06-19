@@ -31,6 +31,7 @@ import tornaco.apps.shortx.ui.main.MainViewModel
 import tornaco.apps.shortx.ui.main.model.ToggleUM
 import tornaco.apps.shortx.ui.main.uniqueUIKey
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 @Composable
@@ -54,7 +55,7 @@ fun ToggleListScreen() {
         state = mainState,
         appBarTitle = {
             Text(
-                text = LocalI18N.current["ui.feat.label.toggles"]
+                text = LocalI18N.current[I18N_R.UI_FEAT_LABEL_TOGGLES]
             )
         },
         appBarActions = {
@@ -97,7 +98,7 @@ fun ToggleListScreen() {
                     UserTip(
                         modifier = Modifier.padding(horizontal = 16.dp),
                         tipId = TipIds.commonRuleItem,
-                        message = LocalI18N.current["ui.common.rule.item.tip"]
+                        message = LocalI18N.current[I18N_R.UI_COMMON_RULE_ITEM_TIP]
                     )
                 }
 

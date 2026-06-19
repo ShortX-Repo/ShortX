@@ -112,6 +112,7 @@ import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.subscribe.SubscribeActivity
 import tornaco.apps.shortx.ui.theme.WarningYellow
 import tornaco.apps.shortx.ui.util.AssetUtils
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @Composable
 fun MainScaffold(
@@ -150,7 +151,7 @@ fun MainScaffold(
 
     val newSetDialogState =
         rememberTextInputState(
-            title = LocalI18N.current["ui.common.new.set"],
+            title = LocalI18N.current[I18N_R.UI_COMMON_NEW_SET],
             message = null,
             onSelected = {
                 onNewSetClick(it)
@@ -276,7 +277,7 @@ fun MainScaffold(
                                         appBarTitle()
                                         if (!state.isActivated) {
                                             SmallSpacer()
-                                            ClickableBadge(text = LocalI18N.current["ui.settings.core.info.na"]) {
+                                            ClickableBadge(text = LocalI18N.current[I18N_R.UI_SETTINGS_CORE_INFO_NA]) {
                                                 isShowActiveDialog = true
                                             }
                                         }
@@ -347,7 +348,7 @@ fun MainScaffold(
                             )
                             MediumSpacer()
                             Text(
-                                LocalI18N.current["ui.subscription.intro.message"],
+                                LocalI18N.current[I18N_R.UI_SUBSCRIPTION_INTRO_MESSAGE],
                             )
                         }
 
@@ -396,7 +397,7 @@ fun MainScaffold(
                         }
                         MediumSpacer()
                         Text(
-                            LocalI18N.current["ui.action.audio.recording.card.text"],
+                            LocalI18N.current[I18N_R.UI_ACTION_AUDIO_RECORDING_CARD_TEXT],
                         )
                     }
                 }
@@ -428,7 +429,7 @@ fun MainScaffold(
                             )
                             MediumSpacer()
                             Text(
-                                LocalI18N.current["ui.framework.updated", mapOf("app_name" to LocalAppName.current)],
+                                LocalI18N.current[I18N_R.UI_FRAMEWORK_UPDATED, mapOf("app_name" to LocalAppName.current)],
                             )
                         }
                     }
@@ -504,9 +505,9 @@ private fun ActiveDialog(
     onDismissRequest: () -> Unit,
 ) {
     ShortXAlertDialog(title = {
-        Text(text = LocalI18N.current["ui.settings.core.info.na"])
+        Text(text = LocalI18N.current[I18N_R.UI_SETTINGS_CORE_INFO_NA])
     }, text = {
-        Text(text = LocalI18N.current["ui.active.dialog.message", mapOf("app_name" to LocalAppName.current)])
+        Text(text = LocalI18N.current[I18N_R.UI_ACTIVE_DIALOG_MESSAGE, mapOf("app_name" to LocalAppName.current)])
     }, onDismissRequest = onDismissRequest, confirmButton = {
         ShortXTextButton(onClick = {
             onDismissRequest()
@@ -528,7 +529,7 @@ private fun PrivacyStatementDialog(
     }
     ShortXAlertDialog(
         title = {
-            Text(text = LocalI18N.current["ui.privacy.statement.title"])
+            Text(text = LocalI18N.current[I18N_R.UI_PRIVACY_STATEMENT_TITLE])
         },
         text = {
             Column(
@@ -567,27 +568,27 @@ private fun AddOptionsFab(
         MultiFabItem(
             id = MainScaffoldFabOptions.ImportFile.name,
             icon = Remix.Document.file_line,
-            label = LocalI18N.current["ui.common.import.from.file"]
+            label = LocalI18N.current[I18N_R.UI_COMMON_IMPORT_FROM_FILE]
         ),
         MultiFabItem(
             id = MainScaffoldFabOptions.ImportClipboard.name,
             icon = Remix.Document.clipboard_line,
-            label = LocalI18N.current["ui.common.import.from.clipboard"]
+            label = LocalI18N.current[I18N_R.UI_COMMON_IMPORT_FROM_CLIPBOARD]
         ),
         MultiFabItem(
             id = MainScaffoldFabOptions.ImportUrl.name,
             icon = Remix.Business.global_line,
-            label = LocalI18N.current["ui.common.import.from.url"]
+            label = LocalI18N.current[I18N_R.UI_COMMON_IMPORT_FROM_URL]
         ),
         MultiFabItem(
             id = MainScaffoldFabOptions.NewSet.name,
             icon = Remix.System.add_line,
-            label = LocalI18N.current["ui.common.new.set"]
+            label = LocalI18N.current[I18N_R.UI_COMMON_NEW_SET]
         ),
         MultiFabItem(
             id = MainScaffoldFabOptions.New.name,
             icon = Remix.System.add_line,
-            label = LocalI18N.current["ui.common.new"]
+            label = LocalI18N.current[I18N_R.UI_COMMON_NEW]
         ),
     ).filter { item -> options.any { it.name == item.id } }.toMutableList()
     val fabMenuExpanded = fabState.currentState.value == MultiFabState.Expanded

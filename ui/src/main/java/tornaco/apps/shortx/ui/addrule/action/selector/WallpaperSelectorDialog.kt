@@ -22,6 +22,7 @@ import tornaco.apps.shortx.ui.base.ShortXTextButton
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TipBody
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class SetWallpaperState(
     val onSelected: (Action.SetWallpaper) -> Unit
@@ -53,7 +54,7 @@ fun rememberSetWallpaperState(
 fun SetWallpaperSelectorDialog(state: SetWallpaperState) {
     if (state.isShowing) {
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
-            DialogTitle(text = LocalI18N.current["ui.action.set.wallpaper"])
+            DialogTitle(text = LocalI18N.current[I18N_R.UI_ACTION_SET_WALLPAPER])
         }, buttons = {
             ShortXTextButton(
                 enabled = state.currentValue.isNotEmpty(),
@@ -71,8 +72,8 @@ fun SetWallpaperSelectorDialog(state: SetWallpaperState) {
         }, content = {
             Column(modifier = Modifier.fillMaxWidth()) {
 
-                FieldTitle(text = LocalI18N.current["ui.action.set.wallpaper"])
-                TipBody(text = LocalI18N.current["ui.action.set.wallpaper.url"])
+                FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_SET_WALLPAPER])
+                TipBody(text = LocalI18N.current[I18N_R.UI_ACTION_SET_WALLPAPER_URL])
                 ShortXTextField(
                     value = state.currentValue,
                     onValueChange = {
@@ -82,8 +83,8 @@ fun SetWallpaperSelectorDialog(state: SetWallpaperState) {
                 StandardSpacer()
 
 
-                FieldTitle(text = LocalI18N.current["ui.action.set.wallpaper.crop"])
-                TipBody(text = LocalI18N.current["ui.action.set.wallpaper.crop.summary"])
+                FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_SET_WALLPAPER_CROP])
+                TipBody(text = LocalI18N.current[I18N_R.UI_ACTION_SET_WALLPAPER_CROP_SUMMARY])
                 ShortXSwitch(checked = state.crop, onCheckedChange = {
                     state.crop = it
                 })

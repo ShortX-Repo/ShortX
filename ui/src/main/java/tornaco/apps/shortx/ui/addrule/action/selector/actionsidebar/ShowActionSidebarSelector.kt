@@ -55,6 +55,7 @@ import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class ShowActionSidebarSelectorActivity : BaseSelectorActivity<Action.ShowActionSidebar>() {
@@ -76,7 +77,7 @@ private fun BaseSelectorActivity<Action.ShowActionSidebar>.ShowActionSidebarSele
     ActionSidebarButtonSortDialog(sortState)
 
     ShortXAppBarScaffold(
-        title = LocalI18N.current["ui.action.show.action.sidebar"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_SHOW_ACTION_SIDEBAR],
         onBackPressed = { cancelAndFinish() },
         actions = {
             IconButton(onClick = {
@@ -112,8 +113,8 @@ private fun ColumnScope.Content(vm: ShowActionSidebarSelectorViewModel, showSort
     }
     StandardSpacer()
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Button(onClick = { vm.addButton() }) { Text(LocalI18N.current["ui.action.show.add.button"]) }
-        TextButton(onClick = showSort, enabled = state.buttons.size > 1) { Text(LocalI18N.current["ui.common.long.press.sort"]) }
+        Button(onClick = { vm.addButton() }) { Text(LocalI18N.current[I18N_R.UI_ACTION_SHOW_ADD_BUTTON]) }
+        TextButton(onClick = showSort, enabled = state.buttons.size > 1) { Text(LocalI18N.current[I18N_R.UI_COMMON_LONG_PRESS_SORT]) }
     }
     state.buttons.forEachIndexed { index, button ->
         ButtonListItem(
@@ -134,7 +135,7 @@ private fun ActionSidebarPositionSelector(
     updatePosition: (ActionSidebarPosition) -> Unit,
 ) {
     val positionDropdownState = rememberDropdownSelectorState()
-    SmallTitle(Modifier.padding(vertical = 12.dp), LocalI18N.current["ui.action.show.action.sidebar.position"])
+    SmallTitle(Modifier.padding(vertical = 12.dp), LocalI18N.current[I18N_R.UI_ACTION_SHOW_ACTION_SIDEBAR_POSITION])
     Box(modifier = Modifier.fillMaxWidth()) {
         ShortXFilledTonalButton(onClick = { positionDropdownState.open() }) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -165,80 +166,80 @@ private fun ActionSidebarStyleEditor(
 ) {
     ShortXCard(modifier = Modifier.fillMaxWidth()) {
         Column(Modifier.padding(16.dp)) {
-            MediumTitle(text = LocalI18N.current["ui.action.show.action.sidebar.style"])
+            MediumTitle(text = LocalI18N.current[I18N_R.UI_ACTION_SHOW_ACTION_SIDEBAR_STYLE])
             StandardSpacer()
 
             StyleSlider(
-                label = LocalI18N.current["ui.action.show.action.sidebar.style.background.alpha"],
+                label = LocalI18N.current[I18N_R.UI_ACTION_SHOW_ACTION_SIDEBAR_STYLE_BACKGROUND_ALPHA],
                 value = style.backgroundAlphaPercent,
                 range = 20f..100f,
             ) { updateStyle(ActionSidebarStyleSettings.newBuilder(style).setBackgroundAlphaPercent(it).build()) }
             StyleSlider(
-                label = LocalI18N.current["ui.action.show.action.sidebar.style.panel.radius"],
+                label = LocalI18N.current[I18N_R.UI_ACTION_SHOW_ACTION_SIDEBAR_STYLE_PANEL_RADIUS],
                 value = style.panelCornerRadiusDp,
                 range = 0f..48f,
             ) { updateStyle(ActionSidebarStyleSettings.newBuilder(style).setPanelCornerRadiusDp(it).build()) }
             StyleSlider(
-                label = LocalI18N.current["ui.action.show.action.sidebar.style.button.radius"],
+                label = LocalI18N.current[I18N_R.UI_ACTION_SHOW_ACTION_SIDEBAR_STYLE_BUTTON_RADIUS],
                 value = style.buttonCornerRadiusDp,
                 range = 0f..36f,
             ) { updateStyle(ActionSidebarStyleSettings.newBuilder(style).setButtonCornerRadiusDp(it).build()) }
             StyleSlider(
-                label = LocalI18N.current["ui.action.show.action.sidebar.style.panel.width"],
+                label = LocalI18N.current[I18N_R.UI_ACTION_SHOW_ACTION_SIDEBAR_STYLE_PANEL_WIDTH],
                 value = style.panelWidthDp,
                 range = 72f..180f,
             ) { updateStyle(ActionSidebarStyleSettings.newBuilder(style).setPanelWidthDp(it).build()) }
             StyleSlider(
-                label = LocalI18N.current["ui.action.show.action.sidebar.style.max.height"],
+                label = LocalI18N.current[I18N_R.UI_ACTION_SHOW_ACTION_SIDEBAR_STYLE_MAX_HEIGHT],
                 value = style.maxHeightDp,
                 range = 240f..720f,
             ) { updateStyle(ActionSidebarStyleSettings.newBuilder(style).setMaxHeightDp(it).build()) }
             StyleSlider(
-                label = LocalI18N.current["ui.action.show.action.sidebar.style.icon.size"],
+                label = LocalI18N.current[I18N_R.UI_ACTION_SHOW_ACTION_SIDEBAR_STYLE_ICON_SIZE],
                 value = style.iconSizeDp,
                 range = 16f..48f,
             ) { updateStyle(ActionSidebarStyleSettings.newBuilder(style).setIconSizeDp(it).build()) }
             StyleSlider(
-                label = LocalI18N.current["ui.action.show.action.sidebar.style.icon.background.size"],
+                label = LocalI18N.current[I18N_R.UI_ACTION_SHOW_ACTION_SIDEBAR_STYLE_ICON_BACKGROUND_SIZE],
                 value = style.iconBackgroundSizeDp,
                 range = 28f..72f,
             ) { updateStyle(ActionSidebarStyleSettings.newBuilder(style).setIconBackgroundSizeDp(it).build()) }
             StyleSlider(
-                label = LocalI18N.current["ui.action.show.action.sidebar.style.text.size"],
+                label = LocalI18N.current[I18N_R.UI_ACTION_SHOW_ACTION_SIDEBAR_STYLE_TEXT_SIZE],
                 value = style.textSizeSp,
                 range = 8f..18f,
             ) { updateStyle(ActionSidebarStyleSettings.newBuilder(style).setTextSizeSp(it).build()) }
             StyleSlider(
-                label = LocalI18N.current["ui.action.show.action.sidebar.style.item.spacing"],
+                label = LocalI18N.current[I18N_R.UI_ACTION_SHOW_ACTION_SIDEBAR_STYLE_ITEM_SPACING],
                 value = style.itemSpacingDp,
                 range = 0f..28f,
             ) { updateStyle(ActionSidebarStyleSettings.newBuilder(style).setItemSpacingDp(it).build()) }
             StyleSlider(
-                label = LocalI18N.current["ui.action.show.action.sidebar.style.horizontal.padding"],
+                label = LocalI18N.current[I18N_R.UI_ACTION_SHOW_ACTION_SIDEBAR_STYLE_HORIZONTAL_PADDING],
                 value = style.contentPaddingHorizontalDp,
                 range = 0f..24f,
             ) { updateStyle(ActionSidebarStyleSettings.newBuilder(style).setContentPaddingHorizontalDp(it).build()) }
             StyleSlider(
-                label = LocalI18N.current["ui.action.show.action.sidebar.style.vertical.padding"],
+                label = LocalI18N.current[I18N_R.UI_ACTION_SHOW_ACTION_SIDEBAR_STYLE_VERTICAL_PADDING],
                 value = style.contentPaddingVerticalDp,
                 range = 0f..24f,
             ) { updateStyle(ActionSidebarStyleSettings.newBuilder(style).setContentPaddingVerticalDp(it).build()) }
 
             StandardSpacer()
             ColorStyleButton(
-                label = LocalI18N.current["ui.action.show.action.sidebar.style.background.color"],
+                label = LocalI18N.current[I18N_R.UI_ACTION_SHOW_ACTION_SIDEBAR_STYLE_BACKGROUND_COLOR],
                 color = style.backgroundColor,
             ) { updateStyle(ActionSidebarStyleSettings.newBuilder(style).setBackgroundColor(it).build()) }
             ColorStyleButton(
-                label = LocalI18N.current["ui.action.show.action.sidebar.style.icon.color"],
+                label = LocalI18N.current[I18N_R.UI_ACTION_SHOW_ACTION_SIDEBAR_STYLE_ICON_COLOR],
                 color = style.iconColor,
             ) { updateStyle(ActionSidebarStyleSettings.newBuilder(style).setIconColor(it).build()) }
             ColorStyleButton(
-                label = LocalI18N.current["ui.action.show.action.sidebar.style.icon.background.color"],
+                label = LocalI18N.current[I18N_R.UI_ACTION_SHOW_ACTION_SIDEBAR_STYLE_ICON_BACKGROUND_COLOR],
                 color = style.iconBackgroundColor,
             ) { updateStyle(ActionSidebarStyleSettings.newBuilder(style).setIconBackgroundColor(it).build()) }
             ColorStyleButton(
-                label = LocalI18N.current["ui.action.show.action.sidebar.style.text.color"],
+                label = LocalI18N.current[I18N_R.UI_ACTION_SHOW_ACTION_SIDEBAR_STYLE_TEXT_COLOR],
                 color = style.textColor,
             ) { updateStyle(ActionSidebarStyleSettings.newBuilder(style).setTextColor(it).build()) }
         }
@@ -301,7 +302,7 @@ private fun ButtonListItem(
     ShortXCard(modifier = Modifier.padding(top = 16.dp)) {
         Column(Modifier.padding(16.dp)) {
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                MediumTitle(text = LocalI18N.current["ui.action.show.overlay.button.of", mapOf("index" to "${index + 1}")])
+                MediumTitle(text = LocalI18N.current[I18N_R.UI_ACTION_SHOW_OVERLAY_BUTTON_OF, mapOf("index" to "${index + 1}")])
                 IconButton(onClick = { removeButton(index) }) { RemixIcon(remixName = Remix.System.close_line) }
             }
             StandardSpacer()
@@ -314,12 +315,12 @@ private fun ButtonListItem(
                 modifier = Modifier.fillMaxWidth(),
                 value = button.text,
                 onValueChange = { updateText(index, it) },
-                label = { Text(LocalI18N.current["ui.action.show.action.sidebar.button.label"]) },
+                label = { Text(LocalI18N.current[I18N_R.UI_ACTION_SHOW_ACTION_SIDEBAR_BUTTON_LABEL]) },
             )
             val tapHandle = remember(button) { button.tapActionHandle }
             val tapState by tapHandle.state.collectAsState()
             ActionContent(
-                header = { SmallTitle(Modifier.padding(vertical = 12.dp), LocalI18N.current["ui.actions.single.click.title"]) },
+                header = { SmallTitle(Modifier.padding(vertical = 12.dp), LocalI18N.current[I18N_R.UI_ACTIONS_SINGLE_CLICK_TITLE]) },
                 actions = tapState.actions,
                 evaluatingActions = evaluatingActions,
                 warnings = tapState.actionWarningMessages,
@@ -328,7 +329,7 @@ private fun ButtonListItem(
             val longPressHandle = remember(button) { button.longPressActionHandle }
             val longPressState by longPressHandle.state.collectAsState()
             ActionContent(
-                header = { SmallTitle(Modifier.padding(vertical = 12.dp), LocalI18N.current["ui.actions.long.click.title"]) },
+                header = { SmallTitle(Modifier.padding(vertical = 12.dp), LocalI18N.current[I18N_R.UI_ACTIONS_LONG_CLICK_TITLE]) },
                 actions = longPressState.actions,
                 evaluatingActions = evaluatingActions,
                 warnings = longPressState.actionWarningMessages,
@@ -339,8 +340,8 @@ private fun ButtonListItem(
 }
 
 private fun ActionSidebarPosition.labelKey(): String = when (this) {
-    ActionSidebarPosition.ActionSidebarPosition_Right -> "ui.action.show.action.sidebar.position.right"
-    ActionSidebarPosition.ActionSidebarPosition_Top -> "ui.action.show.action.sidebar.position.top"
-    ActionSidebarPosition.ActionSidebarPosition_Bottom -> "ui.action.show.action.sidebar.position.bottom"
-    else -> "ui.action.show.action.sidebar.position.left"
+    ActionSidebarPosition.ActionSidebarPosition_Right -> I18N_R.UI_ACTION_SHOW_ACTION_SIDEBAR_POSITION_RIGHT
+    ActionSidebarPosition.ActionSidebarPosition_Top -> I18N_R.UI_ACTION_SHOW_ACTION_SIDEBAR_POSITION_TOP
+    ActionSidebarPosition.ActionSidebarPosition_Bottom -> I18N_R.UI_ACTION_SHOW_ACTION_SIDEBAR_POSITION_BOTTOM
+    else -> I18N_R.UI_ACTION_SHOW_ACTION_SIDEBAR_POSITION_LEFT
 }

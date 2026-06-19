@@ -45,6 +45,7 @@ import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class NotificationAppAndMatcherSelectorState(
     val title: String,
@@ -172,13 +173,13 @@ fun NotificationAppAndMatcherSelectorDialog(state: NotificationAppAndMatcherSele
                                     )
                                     AppPkgSelectorDialog(state = appPkgSelectorState)
 
-                                    FieldTitle(text = LocalI18N.current["ui.dialog.title.select.app"] + " - " + LocalI18N.current["ui.common.optional"])
+                                    FieldTitle(text = LocalI18N.current[I18N_R.UI_DIALOG_TITLE_SELECT_APP] + " - " + LocalI18N.current[I18N_R.UI_COMMON_OPTIONAL])
                                     ListItem(
                                         icon = {
                                             RemixIcon(remixName = Remix.System.apps_2_line)
                                         },
                                         titleLines = mutableListOf(
-                                            LocalI18N.current["ui.dialog.title.select.app"],
+                                            LocalI18N.current[I18N_R.UI_DIALOG_TITLE_SELECT_APP],
                                         ).labelLinesFromAppsAndPkgSets(
                                             apps = state.selectedApps,
                                             pkgSets = state.selectedPkgSets
@@ -196,9 +197,9 @@ fun NotificationAppAndMatcherSelectorDialog(state: NotificationAppAndMatcherSele
                                 {
                                     if (state.canMatchTitle) {
                                         Column {
-                                            FieldTitle(text = LocalI18N.current["ui.fact.n.matcher.title"])
+                                            FieldTitle(text = LocalI18N.current[I18N_R.UI_FACT_N_MATCHER_TITLE])
                                             MediumSpacer()
-                                            TipBody(text = LocalI18N.current["ui.fact.n.matcher.title.message"])
+                                            TipBody(text = LocalI18N.current[I18N_R.UI_FACT_N_MATCHER_TITLE_MESSAGE])
                                             MediumSpacer()
                                             ShortXTextField(
                                                 modifier = Modifier.fillMaxWidth(),
@@ -219,9 +220,9 @@ fun NotificationAppAndMatcherSelectorDialog(state: NotificationAppAndMatcherSele
                                 {
                                     if (state.canMatchContent) {
                                         Column {
-                                            FieldTitle(text = LocalI18N.current["ui.fact.n.matcher.content"])
+                                            FieldTitle(text = LocalI18N.current[I18N_R.UI_FACT_N_MATCHER_CONTENT])
                                             MediumSpacer()
-                                            TipBody(text = LocalI18N.current["ui.fact.n.matcher.content.message"])
+                                            TipBody(text = LocalI18N.current[I18N_R.UI_FACT_N_MATCHER_CONTENT_MESSAGE])
                                             MediumSpacer()
                                             ShortXTextField(
                                                 modifier = Modifier.fillMaxWidth(),
@@ -240,9 +241,9 @@ fun NotificationAppAndMatcherSelectorDialog(state: NotificationAppAndMatcherSele
                                     }
                                 },
                                 {
-                                    FieldTitle(text = LocalI18N.current["ui.fact.n.matcher.tag"])
+                                    FieldTitle(text = LocalI18N.current[I18N_R.UI_FACT_N_MATCHER_TAG])
                                     MediumSpacer()
-                                    TipBody(text = LocalI18N.current["ui.fact.n.matcher.tag.message"])
+                                    TipBody(text = LocalI18N.current[I18N_R.UI_FACT_N_MATCHER_TAG_MESSAGE])
                                     MediumSpacer()
                                     ShortXTextField(
                                         modifier = Modifier.fillMaxWidth(),
@@ -252,9 +253,9 @@ fun NotificationAppAndMatcherSelectorDialog(state: NotificationAppAndMatcherSele
                                 {
                                     if (state.canMatchButtonTitle) {
                                         Column {
-                                            FieldTitle(text = LocalI18N.current["ui.fact.n.matcher.button"])
+                                            FieldTitle(text = LocalI18N.current[I18N_R.UI_FACT_N_MATCHER_BUTTON])
                                             MediumSpacer()
-                                            TipBody(text = LocalI18N.current["ui.fact.n.matcher.button.message"])
+                                            TipBody(text = LocalI18N.current[I18N_R.UI_FACT_N_MATCHER_BUTTON_MESSAGE])
                                             MediumSpacer()
                                             ShortXTextField(
                                                 modifier = Modifier.fillMaxWidth(),

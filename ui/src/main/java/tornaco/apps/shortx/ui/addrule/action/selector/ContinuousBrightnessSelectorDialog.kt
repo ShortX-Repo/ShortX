@@ -36,6 +36,7 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import kotlin.math.roundToInt
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class ContinuousBrightnessDialogState(
     val onSelected: (Action.ContinuousAdjustBrightness) -> Unit
@@ -83,7 +84,7 @@ private fun ContinuousBrightnessSelector(dialogState: ContinuousBrightnessDialog
                         title = {
                             Text(
                                 text = LocalI18N.current.get(
-                                    key = "ui.action.continuous.adjust.brightness",
+                                    key = I18N_R.UI_ACTION_CONTINUOUS_ADJUST_BRIGHTNESS,
                                     fallback = "Continuous brightness"
                                 )
                             )

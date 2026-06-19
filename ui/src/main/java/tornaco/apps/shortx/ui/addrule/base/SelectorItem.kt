@@ -43,6 +43,7 @@ import tornaco.apps.shortx.ui.base.rememberTipDialogState
 import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
 import tornaco.apps.shortx.ui.theme.NoteTextColor
 import kotlin.reflect.KClass
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 data class SelectorItem<out T : Any>(
     val type: KClass<out T>,
@@ -199,7 +200,7 @@ fun SelectorListItem(
                 TinySpacer()
 
                 if (isForSubscribedOnly) {
-                    OutlineBadge(text = LocalI18N.current["ui.subscription.subscribed.only"])
+                    OutlineBadge(text = LocalI18N.current[I18N_R.UI_SUBSCRIPTION_SUBSCRIBED_ONLY])
                     TinySpacer()
                 }
             }

@@ -24,6 +24,7 @@ import tornaco.apps.shortx.ui.addtoggle.AddToggleScreen
 import tornaco.apps.shortx.ui.base.BaseActivity
 import tornaco.apps.shortx.ui.base.LocalI18N
 import java.nio.charset.Charset
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class ViewerActivity : BaseActivity() {
@@ -61,7 +62,7 @@ class ViewerActivity : BaseActivity() {
                     da?.let {
                         AddDirectActionScreen(
                             da = da,
-                            screenTitle = da.title + " - " + LocalI18N.current["ui.common.share.viewer.title"],
+                            screenTitle = da.title + " - " + LocalI18N.current[I18N_R.UI_COMMON_SHARE_VIEWER_TITLE],
                             canSaveWithoutChanges = true,
                             saveIconName = Remix.System.download_line
                         ) {
@@ -87,7 +88,7 @@ class ViewerActivity : BaseActivity() {
                     rule?.let {
                         AddRuleScreen(
                             rule = rule,
-                            screenTitle = rule.title + " - " + LocalI18N.current["ui.common.share.viewer.title"],
+                            screenTitle = rule.title + " - " + LocalI18N.current[I18N_R.UI_COMMON_SHARE_VIEWER_TITLE],
                             canSaveWithoutChanges = true,
                             saveIconName = Remix.System.download_line
                         ) {
@@ -132,7 +133,7 @@ class ViewerActivity : BaseActivity() {
                     toggle?.let {
                         AddToggleScreen(
                             toggle = toggle,
-                            screenTitle = toggle.title + " - " + LocalI18N.current["ui.common.share.viewer.title"],
+                            screenTitle = toggle.title + " - " + LocalI18N.current[I18N_R.UI_COMMON_SHARE_VIEWER_TITLE],
                             canSaveWithoutChanges = true,
                             saveIconName = Remix.System.download_line
                         ) {
@@ -152,7 +153,7 @@ class ViewerActivity : BaseActivity() {
     private fun ToastUnknownContentAndFinish(context: Context) {
         Toast.makeText(
             context,
-            LocalI18N.current["ui.common.share.unknown.content"],
+            LocalI18N.current[I18N_R.UI_COMMON_SHARE_UNKNOWN_CONTENT],
             Toast.LENGTH_LONG
         ).show()
         finish()

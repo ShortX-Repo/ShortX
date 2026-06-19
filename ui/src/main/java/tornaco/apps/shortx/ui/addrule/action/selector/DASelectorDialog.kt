@@ -45,6 +45,7 @@ import tornaco.apps.shortx.ui.main.da.LocalDAItemHandler
 import tornaco.apps.shortx.ui.main.da.LocalDASetItemHandler
 import tornaco.apps.shortx.ui.main.model.DirectActionUM
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class DADialogState(
     val onSelected: (DirectActionUM) -> Unit
@@ -90,7 +91,7 @@ private fun DASelector(dialogState: DADialogState) {
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(LocalI18N.current["ui.title.select.action"]) },
+                        title = { Text(LocalI18N.current[I18N_R.UI_TITLE_SELECT_ACTION]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 dialogState.dismiss()

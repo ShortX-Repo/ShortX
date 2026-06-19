@@ -43,6 +43,7 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.i18NIns
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.BrowserUtils
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class StartActivityUrlSchemaDialogState(
     val onSelected: (Action.StartActivityUrlSchema) -> Unit
@@ -64,7 +65,7 @@ class StartActivityUrlSchemaDialogState(
     fun updateUser(id: Int) {
         this.userId = id
         this.userLabel = if (userId.isMainUser()) {
-            i18NIns["ui.common.user.main"]
+            i18NIns[I18N_R.UI_COMMON_USER_MAIN]
         } else {
             shortXManager.getAllUsers().firstOrNull { it.userId == userId }?.name ?: "N/A"
         }
@@ -103,7 +104,7 @@ private fun StartActivityIntentSelector(dialogState: StartActivityUrlSchemaDialo
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(LocalI18N.current["ui.action.start.activity.intent"]) },
+                        title = { Text(LocalI18N.current[I18N_R.UI_ACTION_START_ACTIVITY_INTENT]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 dialogState.dismiss()
@@ -158,7 +159,7 @@ private fun StartActivityIntentSelector(dialogState: StartActivityUrlSchemaDialo
 
                     FieldTitle(
                         modifier = Modifier.padding(vertical = 12.dp),
-                        text = LocalI18N.current["ui.common.user.id"]
+                        text = LocalI18N.current[I18N_R.UI_COMMON_USER_ID]
                     )
                     val userSelectorState = rememberUserSelectorDialogState(onSelected = {
                         dialogState.updateUser(it.userId)

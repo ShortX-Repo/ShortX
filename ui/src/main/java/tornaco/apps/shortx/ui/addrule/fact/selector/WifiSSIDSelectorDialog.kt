@@ -37,6 +37,7 @@ import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class WifiSSIDSelectorState(
     val title: String,
@@ -158,7 +159,7 @@ fun WifiSSIDSelectorDialog(state: WifiSSIDSelectorState) {
 
                             SectionSpacer()
 
-                            FieldTitle(text = LocalI18N.current["ui.fact.wifi.choose.ssid"])
+                            FieldTitle(text = LocalI18N.current[I18N_R.UI_FACT_WIFI_CHOOSE_SSID])
                             val ssidList = remember {
                                 state.loadSSID()
                             }

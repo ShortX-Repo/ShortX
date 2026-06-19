@@ -46,6 +46,7 @@ import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXFilledTonalButton
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class ConditionAppPkgSelectorDialogState(
     val onAppListSelected: ((List<App>, op: Op) -> Unit)?,
@@ -102,7 +103,7 @@ private fun AppPkgSelector(state: ConditionAppPkgSelectorDialogState) {
                 topBar = {
                     TopAppBar(
                         modifier = Modifier,
-                        title = { Text(text = LocalI18N.current["ui.dialog.title.select.app"]) },
+                        title = { Text(text = LocalI18N.current[I18N_R.UI_DIALOG_TITLE_SELECT_APP]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 state.dismiss()
@@ -141,7 +142,7 @@ private fun AppPkgSelector(state: ConditionAppPkgSelectorDialogState) {
                     ) {
                         Column(modifier = Modifier.padding(horizontal = 16.dp)) {
                             MediumTitle(
-                                text = LocalI18N.current["ui.condition.selector.app.all.any.op.title"]
+                                text = LocalI18N.current[I18N_R.UI_CONDITION_SELECTOR_APP_ALL_ANY_OP_TITLE]
                             )
                             MediumSpacer()
                             val opSelectorDialogState: MenuDialogState<String> =
@@ -165,8 +166,8 @@ private fun AppPkgSelector(state: ConditionAppPkgSelectorDialogState) {
 
                     TabRow(selectedTabIndex = selectedTabIndex) {
                         val titles = mutableListOf(
-                            LocalI18N.current["ui.dialog.title.select.app"],
-                            LocalI18N.current["ui.pkg.set.title"]
+                            LocalI18N.current[I18N_R.UI_DIALOG_TITLE_SELECT_APP],
+                            LocalI18N.current[I18N_R.UI_PKG_SET_TITLE]
                         )
                         titles.forEachIndexed { index, title ->
                             Tab(selected = selectedTabIndex == index,

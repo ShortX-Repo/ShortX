@@ -40,6 +40,7 @@ import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class SystemSettingsUrlSelectorState(
     val onSelected: (Fact.SystemSettingsChanged) -> Unit
@@ -89,7 +90,7 @@ fun SystemSettingsUrlSelectorDialog(state: SystemSettingsUrlSelectorState) {
                         topBar = {
                             ShortXTopAppBar(
                                 modifier = Modifier,
-                                title = { Text(text = LocalI18N.current["ui.fact.system.settings.changed"]) },
+                                title = { Text(text = LocalI18N.current[I18N_R.UI_FACT_SYSTEM_SETTINGS_CHANGED]) },
                                 actions = {
                                     IconButton(onClick = {
                                         if (state.inputUrl.isNotEmpty() && state.inputValueRegex.isNotEmpty()) {
@@ -125,7 +126,7 @@ fun SystemSettingsUrlSelectorDialog(state: SystemSettingsUrlSelectorState) {
                                 .verticalScroll(rememberScrollState())
                         ) {
                             val inputState = rememberTextInputState(
-                                title = LocalI18N.current["ui.fact.system.settings.changed.url"],
+                                title = LocalI18N.current[I18N_R.UI_FACT_SYSTEM_SETTINGS_CHANGED_URL],
                                 message = LocalI18N.current["ui.fact.system.settings.changed.summary"],
                                 onSelected = {
                                     state.inputUrl(it)
@@ -133,9 +134,9 @@ fun SystemSettingsUrlSelectorDialog(state: SystemSettingsUrlSelectorState) {
                             )
                             TextInputDialog(state = inputState)
 
-                            FieldTitle(text = LocalI18N.current["ui.fact.system.settings.changed.url"])
+                            FieldTitle(text = LocalI18N.current[I18N_R.UI_FACT_SYSTEM_SETTINGS_CHANGED_URL])
                             SmallSpacer()
-                            TipRow(text = LocalI18N.current["ui.fact.system.settings.changed.url.summary"])
+                            TipRow(text = LocalI18N.current[I18N_R.UI_FACT_SYSTEM_SETTINGS_CHANGED_URL_SUMMARY])
                             MediumSpacer()
                             ShortXTextField(
                                 value = state.inputUrl,
@@ -143,9 +144,9 @@ fun SystemSettingsUrlSelectorDialog(state: SystemSettingsUrlSelectorState) {
 
                             LargeSpacer()
 
-                            FieldTitle(text = LocalI18N.current["ui.fact.system.settings.changed.regex"])
+                            FieldTitle(text = LocalI18N.current[I18N_R.UI_FACT_SYSTEM_SETTINGS_CHANGED_REGEX])
                             SmallSpacer()
-                            TipRow(text = LocalI18N.current["ui.fact.system.settings.changed.regex.summary"])
+                            TipRow(text = LocalI18N.current[I18N_R.UI_FACT_SYSTEM_SETTINGS_CHANGED_REGEX_SUMMARY])
                             MediumSpacer()
                             ShortXTextField(
                                 value = state.inputValueRegex,

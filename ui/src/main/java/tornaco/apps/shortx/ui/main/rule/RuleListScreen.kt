@@ -77,6 +77,7 @@ import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.theme.gradientColorsFromThemeColor
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 import java.io.File
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 @Composable
@@ -124,9 +125,9 @@ fun RuleScreen() {
                     }
                 },
                 text = if (isSelectionMode) {
-                    LocalI18N.current["ui.common.selected.count", mapOf("selected" to selectedRuleIds.size.toString())]
+                    LocalI18N.current[I18N_R.UI_COMMON_SELECTED_COUNT, mapOf("selected" to selectedRuleIds.size.toString())]
                 } else {
-                    LocalI18N.current["ui.feat.label.rule"]
+                    LocalI18N.current[I18N_R.UI_FEAT_LABEL_RULE]
                 }
             )
         },
@@ -344,7 +345,7 @@ fun RuleContent(
             UserTip(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 tipId = TipIds.commonRuleItem,
-                message = LocalI18N.current["ui.common.rule.item.tip"]
+                message = LocalI18N.current[I18N_R.UI_COMMON_RULE_ITEM_TIP]
             )
 
             val subscribeState by LVLStateHolder.collectAsState()

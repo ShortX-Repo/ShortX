@@ -54,6 +54,7 @@ import tornaco.apps.shortx.ui.pkgset.PkgSetSelectorDialog
 import tornaco.apps.shortx.ui.pkgset.rememberPkgSetSelectorState
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 @AndroidEntryPoint
@@ -135,7 +136,7 @@ private fun BaseSelectorActivity<Action.ForEachPkgSet>.ForEachPkgSetSelectorDial
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(i18N["ui.action.for.each.pkg.set"]) },
+                        title = { Text(i18N[I18N_R.UI_ACTION_FOR_EACH_PKG_SET]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 cancelAndFinish()
@@ -177,7 +178,7 @@ private fun BaseSelectorActivity<Action.ForEachPkgSet>.ForEachPkgSetSelectorDial
                     PkgSetSelectorDialog(state = pkgSetSelectorState)
 
                     FieldTitle(
-                        text = i18N["ui.pkg.set.title"]
+                        text = i18N[I18N_R.UI_PKG_SET_TITLE]
                     )
                     MediumSpacer()
                     FilledTonalButton(onClick = {
@@ -186,7 +187,7 @@ private fun BaseSelectorActivity<Action.ForEachPkgSet>.ForEachPkgSetSelectorDial
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Text(
                                 text = dialogState.pkgSet?.label
-                                    ?: i18N["ui.common.unselected"]
+                                    ?: i18N[I18N_R.UI_COMMON_UNSELECTED]
                             )
                             StandardSpacer()
                             RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)
@@ -197,9 +198,9 @@ private fun BaseSelectorActivity<Action.ForEachPkgSet>.ForEachPkgSetSelectorDial
                     val contextDataInfoDialogState = rememberContextDataInfoDialogState()
                     ContextDataInfoDialog(state = contextDataInfoDialogState)
 
-                    LinkText(text = i18N["ui.action.for.each.pkg.set.context.data.tip"]) {
+                    LinkText(text = i18N[I18N_R.UI_ACTION_FOR_EACH_PKG_SET_CONTEXT_DATA_TIP]) {
                         contextDataInfoDialogState.show(
-                            objName = i18N["ui.action.for.each.pkg.set"],
+                            objName = i18N[I18N_R.UI_ACTION_FOR_EACH_PKG_SET],
                             contextData = dats<ContextDataMapping.ForEachPkgSet>(
                                 CustomContextDataKey.getDefaultInstance()
                             ),

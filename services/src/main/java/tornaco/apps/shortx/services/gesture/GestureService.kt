@@ -36,6 +36,7 @@ import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.watchdog.postSafety
 import tornaco.apps.shortx.services.wm.ColorPalette
 import kotlin.math.abs
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 private const val GUIDELINE_VIEW_SHOWN_TIME = 6000L
@@ -297,7 +298,7 @@ class GestureService(shortXContext: ShortXContext) :
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
                         context,
-                        i18NIns["ui.action.gesture.record.inject.stopped"],
+                        i18NIns[I18N_R.UI_ACTION_GESTURE_RECORD_INJECT_STOPPED],
                         Toast.LENGTH_LONG
                     ).show()
                 }
@@ -426,7 +427,7 @@ class GestureService(shortXContext: ShortXContext) :
                     handler.postSafety("showDanmu") {
                         shortXContext.ui.showDanmu(
                             null,
-                            i18NIns["ui.settings.gesture.record"] + i18NIns["ui.common.saved"]
+                            i18NIns[I18N_R.UI_SETTINGS_GESTURE_RECORD] + i18NIns[I18N_R.UI_COMMON_SAVED]
                         )
                     }
                 }

@@ -29,6 +29,7 @@ import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class ParseQRCodeSelectorState(
     val onSelected: (Action.ParseQRCode) -> Unit
@@ -63,7 +64,7 @@ private fun ParseQRCodeSelector(state: ParseQRCodeSelectorState) {
     Scaffold(
         topBar = {
             ShortXTopAppBar(
-                title = { Text(text = i18N.get(key = "ui.action.parse.qrcode", fallback = "Parse QR code")) },
+                title = { Text(text = i18N.get(key = I18N_R.UI_ACTION_PARSE_QRCODE, fallback = "Parse QR code")) },
                 navigationIcon = {
                     IconButton(onClick = { state.dismiss() }) {
                         RemixIcon(remixName = Remix.System.close_line)
@@ -96,7 +97,7 @@ private fun ParseQRCodeSelector(state: ParseQRCodeSelectorState) {
                 label = {
                     Text(
                         i18N.get(
-                            key = "ui.action.parse.qrcode.image.path",
+                            key = I18N_R.UI_ACTION_PARSE_QRCODE_IMAGE_PATH,
                             fallback = "Image file path (supports variables)"
                         )
                     )

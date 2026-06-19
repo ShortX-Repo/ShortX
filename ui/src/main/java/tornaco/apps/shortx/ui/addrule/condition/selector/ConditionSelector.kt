@@ -30,16 +30,17 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberSearchBarState
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 enum class ConditionCategory(val i18NKey: String, val icon: String) {
-    All("ui.fact.all", Remix.Buildings.store_2_line),
+    All(I18N_R.UI_FACT_ALL, Remix.Buildings.store_2_line),
     Ui("UI", Remix.System.apps_2_line),
-    Apps("ui.action.category.app", Remix.System.apps_2_line),
-    ScreenTime("ui.fact.category.screen.time", Remix.System.history_line),
-    State("ui.fact.category.state", Remix.System.settings_2_fill),
-    Device("ui.condition.category.device", Remix.Map.riding_fill),
-    System("ui.fact.category.system", Remix.System.settings_2_line),
-    Advanced("ui.fact.category.advanced", Remix.Development.bug_line),
+    Apps(I18N_R.UI_ACTION_CATEGORY_APP, Remix.System.apps_2_line),
+    ScreenTime(I18N_R.UI_FACT_CATEGORY_SCREEN_TIME, Remix.System.history_line),
+    State(I18N_R.UI_FACT_CATEGORY_STATE, Remix.System.settings_2_fill),
+    Device(I18N_R.UI_CONDITION_CATEGORY_DEVICE, Remix.Map.riding_fill),
+    System(I18N_R.UI_FACT_CATEGORY_SYSTEM, Remix.System.settings_2_line),
+    Advanced(I18N_R.UI_FACT_CATEGORY_ADVANCED, Remix.Development.bug_line),
 }
 
 
@@ -54,7 +55,7 @@ fun ConditionSelector(
 ) {
     ShortXTheme {
         ShortXAppBarScaffold(
-            title = LocalI18N.current["ui.conditions.add"],
+            title = LocalI18N.current[I18N_R.UI_CONDITIONS_ADD],
             onBackPressed = { close() },
         ) {
             Column(

@@ -53,6 +53,7 @@ import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import java.time.LocalTime
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class AlarmSelectorState(
     val selected: (Alarm) -> Unit
@@ -105,7 +106,7 @@ fun AlarmSelector(state: AlarmSelectorState) {
                 ) {
                     Scaffold(topBar = {
                         ShortXTopAppBar(
-                            title = { Text(text = LocalI18N.current["ui.fact.time.of.a.day"]) },
+                            title = { Text(text = LocalI18N.current[I18N_R.UI_FACT_TIME_OF_A_DAY]) },
                             navigationIcon = {
                                 IconButton(onClick = { state.dismiss() }) {
                                     RemixIcon(remixName = Remix.System.close_line)
@@ -199,7 +200,7 @@ private fun RepeatSelector(state: AlarmSelectorState) {
         horizontalAlignment = Alignment.Start
     ) {
         Text(
-            text = LocalI18N.current["ui.fact.time.of.a.day.repeat"],
+            text = LocalI18N.current[I18N_R.UI_FACT_TIME_OF_A_DAY_REPEAT],
             style = MaterialTheme.typography.bodySmall
         )
         StandardSpacer()

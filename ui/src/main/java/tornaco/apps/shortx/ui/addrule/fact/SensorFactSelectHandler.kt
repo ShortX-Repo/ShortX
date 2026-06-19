@@ -17,6 +17,7 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MenuDialog
 import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @Composable
 fun sensorFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Boolean {
@@ -56,7 +57,7 @@ fun sensorFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Bool
     )
 
     val proximitySensorStateMenu = rememberMenuDialogState<String>(
-        title = i18N["ui.fact.sensor.proximity.state"],
+        title = i18N[I18N_R.UI_FACT_SENSOR_PROXIMITY_STATE],
         menuItems = ProximitySensorState.entries.filterNot { it == ProximitySensorState.UNRECOGNIZED }
             .map {
                 MenuDialogItem(

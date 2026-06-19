@@ -73,6 +73,7 @@ import tornaco.apps.shortx.ui.base.rememberTipDialogState
 import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.rememberClipboardDialogState
 import tornaco.apps.shortx.ui.theme.ErrorRed
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class FactHandler(
     val addFact: (Fact) -> Unit,
@@ -89,7 +90,7 @@ class FactHandler(
 @Composable
 fun FactSelectors(
     header: @Composable ColumnScope.() -> Unit = {
-        LargeTitle(LocalI18N.current["ui.fact.title"])
+        LargeTitle(LocalI18N.current[I18N_R.UI_FACT_TITLE])
     },
     state: FactContentState,
     handler: FactHandler,
@@ -147,7 +148,7 @@ fun FactSelectors(
                             tint = MaterialTheme.colorScheme.onPrimary
                         )
                         TinySpacer()
-                        Text(text = LocalI18N.current["ui.fact.select"])
+                        Text(text = LocalI18N.current[I18N_R.UI_FACT_SELECT])
                     }
                 }
             }
@@ -157,7 +158,7 @@ fun FactSelectors(
             state = cardDropdownState,
             items = listOf(
                 DropdownItem(
-                    labelLines = listOf(LocalI18N.current["ui.common.paste"]),
+                    labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_PASTE]),
                     data = "paste",
                 )
             ),
@@ -315,7 +316,7 @@ private fun FactItem(
                     rememberTipDialogState(
                         title = fact.tag,
                         textToCopy = GenericContextData.CONTEXT_FACT_TAG.asAccessExample(),
-                        tip = LocalI18N.current[LocalI18N.current["ui.context.data.fact.tag", mapOf(
+                        tip = LocalI18N.current[LocalI18N.current[I18N_R.UI_CONTEXT_DATA_FACT_TAG, mapOf(
                             "eg" to GenericContextData.CONTEXT_FACT_TAG.asAccessExample()
                         )]]
                     )
@@ -354,7 +355,7 @@ private fun FactItem(
 
         val noteDialogState =
             rememberTextInputState(
-                title = LocalI18N.current["ui.common.note"],
+                title = LocalI18N.current[I18N_R.UI_COMMON_NOTE],
                 message = null,
                 inputValidator = {
                     InputValidateResult.OK
@@ -366,7 +367,7 @@ private fun FactItem(
 
         val tagDialogState =
             rememberTextInputState(
-                title = LocalI18N.current["ui.common.set.tag"],
+                title = LocalI18N.current[I18N_R.UI_COMMON_SET_TAG],
                 message = null,
                 inputValidator = {
                     InputValidateResult.OK
@@ -380,7 +381,7 @@ private fun FactItem(
             state = clickDropdownState,
             items = listOf(
                 DropdownItem(
-                    labelLines = listOf(LocalI18N.current["ui.common.paste.above"]),
+                    labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_PASTE_ABOVE]),
                     data = currentFact.id to FactItemOptions.PasteAbove,
                     icon = {
                         RemixIcon(
@@ -390,7 +391,7 @@ private fun FactItem(
                     }
                 ),
                 DropdownItem(
-                    labelLines = listOf(LocalI18N.current["ui.common.paste.below"]),
+                    labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_PASTE_BELOW]),
                     data = currentFact.id to FactItemOptions.PasteBelow,
                     icon = {
                         RemixIcon(
@@ -400,7 +401,7 @@ private fun FactItem(
                     }
                 ),
                 DropdownItem(
-                    labelLines = listOf(LocalI18N.current["ui.common.copy"]),
+                    labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_COPY]),
                     data = currentFact.id to FactItemOptions.Copy,
                     icon = {
                         RemixIcon(
@@ -410,7 +411,7 @@ private fun FactItem(
                     }
                 ),
                 DropdownItem(
-                    labelLines = listOf(LocalI18N.current["ui.common.note"]),
+                    labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_NOTE]),
                     data = currentFact.id to FactItemOptions.Note,
                     icon = {
                         RemixIcon(
@@ -420,7 +421,7 @@ private fun FactItem(
                     }
                 ),
                 DropdownItem(
-                    labelLines = listOf(LocalI18N.current["ui.common.set.tag"]),
+                    labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_SET_TAG]),
                     data = currentFact.id to FactItemOptions.SetTag,
                     icon = {
                         RemixIcon(
@@ -431,8 +432,8 @@ private fun FactItem(
                 ),
                 DropdownItem(
                     labelLines = listOf(
-                        LocalI18N.current["ui.common.toggle.enable.disable"],
-                        LocalI18N.current["ui.common.toggle.enable.disable.summary"]
+                        LocalI18N.current[I18N_R.UI_COMMON_TOGGLE_ENABLE_DISABLE],
+                        LocalI18N.current[I18N_R.UI_COMMON_TOGGLE_ENABLE_DISABLE_SUMMARY]
                     ),
                     data = currentFact.id to FactItemOptions.EnabledDisabled,
                     icon = {

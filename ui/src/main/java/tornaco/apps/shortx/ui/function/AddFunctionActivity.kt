@@ -47,6 +47,7 @@ import tornaco.apps.shortx.ui.base.UnderlineSmallText
 import tornaco.apps.shortx.ui.base.handleSideEffect
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.util.ClipboardUtils
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class AddFunctionActivity : BaseActivity() {
@@ -77,9 +78,9 @@ class AddFunctionActivity : BaseActivity() {
     override fun Content() {
         val functionId = intent.getStringExtra(KEY_FUNCTION_ID)
         val screenTitle = if (functionId == null) {
-            LocalI18N.current["ui.title.add.function"]
+            LocalI18N.current[I18N_R.UI_TITLE_ADD_FUNCTION]
         } else {
-            LocalI18N.current["ui.title.edit.function"]
+            LocalI18N.current[I18N_R.UI_TITLE_EDIT_FUNCTION]
         }
         AddFunctionScreen(functionId = functionId, screenTitle = screenTitle) {
             setResult(if (it) RESULT_OK else RESULT_CANCELED)
@@ -108,7 +109,7 @@ fun AddFunctionScreen(
     vm.handleSideEffect {
         when (it) {
             is AddFunctionEffect.FunctionSaved -> {
-                Toast.makeText(context, i18n["ui.common.saved"], Toast.LENGTH_SHORT)
+                Toast.makeText(context, i18n[I18N_R.UI_COMMON_SAVED], Toast.LENGTH_SHORT)
                     .show()
                 back(true)
             }
@@ -120,18 +121,18 @@ fun AddFunctionScreen(
             is AddFunctionEffect.AddParamFailNameExists -> {
                 Toast.makeText(
                     context,
-                    i18n["ui.function.param.exists", mapOf("name" to it.name)],
+                    i18n[I18N_R.UI_FUNCTION_PARAM_EXISTS, mapOf("name" to it.name)],
                     Toast.LENGTH_SHORT
                 ).show()
             }
 
             AddFunctionEffect.FunctionNameRequired -> {
-                Toast.makeText(context, i18n["ui.function.name.required"], Toast.LENGTH_SHORT)
+                Toast.makeText(context, i18n[I18N_R.UI_FUNCTION_NAME_REQUIRED], Toast.LENGTH_SHORT)
                     .show()
             }
 
             AddFunctionEffect.FunctionDeleteNotFound -> {
-                Toast.makeText(context, i18n["ui.function.delete.not.found"], Toast.LENGTH_SHORT)
+                Toast.makeText(context, i18n[I18N_R.UI_FUNCTION_DELETE_NOT_FOUND], Toast.LENGTH_SHORT)
                     .show()
                 back(false)
             }
@@ -140,10 +141,10 @@ fun AddFunctionScreen(
 
     val backConfirmDialogState = rememberConfirmDialogState()
     ConfirmDialog(
-        title = "ui.edit.discard.dialog.title",
-        messageHint = { i18n["ui.edit.discard.dialog.message"] },
-        confirmButton = i18n["ui.edit.discard.dialog.discard"],
-        dismissButton = i18n["ui.edit.discard.dialog.stay"],
+        title = I18N_R.UI_EDIT_DISCARD_DIALOG_TITLE,
+        messageHint = { i18n[I18N_R.UI_EDIT_DISCARD_DIALOG_MESSAGE] },
+        confirmButton = i18n[I18N_R.UI_EDIT_DISCARD_DIALOG_DISCARD],
+        dismissButton = i18n[I18N_R.UI_EDIT_DISCARD_DIALOG_STAY],
         state = backConfirmDialogState,
         data = "",
         onConfirm = { back(false) }
@@ -151,9 +152,9 @@ fun AddFunctionScreen(
 
     val deleteDialogState = rememberConfirmDialogState()
     ConfirmDialog(
-        title = "ui.common.delete",
+        title = I18N_R.UI_COMMON_DELETE,
         messageHint = {
-            i18n["ui.delete.dialog.confirm", mapOf("wht" to state.name)]
+            i18n[I18N_R.UI_DELETE_DIALOG_CONFIRM, mapOf("wht" to state.name)]
         },
         state = deleteDialogState,
         data = state.id,
@@ -198,7 +199,7 @@ fun AddFunctionScreen(
             ) {
                 ShortXTextField(
                     modifier = Modifier.fillMaxWidth(),
-                    label = { Text(LocalI18N.current["ui.function.name"]) },
+                    label = { Text(LocalI18N.current[I18N_R.UI_FUNCTION_NAME]) },
                     value = state.name,
                     readOnly = readOnly,
                     onValueChange = { vm.setName(it) },
@@ -207,7 +208,7 @@ fun AddFunctionScreen(
 
                 LargeSpacer()
 
-                FieldTitle(text = LocalI18N.current["ui.function.return.type"])
+                FieldTitle(text = LocalI18N.current[I18N_R.UI_FUNCTION_RETURN_TYPE])
                 Spacer(modifier = Modifier.size(8.dp))
                 ShortXTextField(
                     modifier = Modifier.fillMaxWidth(),
@@ -220,8 +221,8 @@ fun AddFunctionScreen(
                 LargeSpacer()
 
                 FieldTitleWithTip(
-                    text = LocalI18N.current["ui.function.result.context.key"],
-                    tipText = LocalI18N.current["ui.function.result.context.key.description"]
+                    text = LocalI18N.current[I18N_R.UI_FUNCTION_RESULT_CONTEXT_KEY],
+                    tipText = LocalI18N.current[I18N_R.UI_FUNCTION_RESULT_CONTEXT_KEY_DESCRIPTION]
                 )
                 Spacer(modifier = Modifier.size(8.dp))
                 ShortXTextField(
@@ -242,12 +243,12 @@ fun AddFunctionScreen(
                         )
                         Toast.makeText(
                             context,
-                            i18n["ui.common.copied.to.clipboard"],
+                            i18n[I18N_R.UI_COMMON_COPIED_TO_CLIPBOARD],
                             Toast.LENGTH_LONG
                         ).show()
                     }) {
                         UnderlineSmallText(
-                            text = i18n["ui.context.data.example", mapOf("eg" to accessExample)]
+                            text = i18n[I18N_R.UI_CONTEXT_DATA_EXAMPLE, mapOf("eg" to accessExample)]
                         )
                     }
                 }
@@ -256,7 +257,7 @@ fun AddFunctionScreen(
 
                 FuncParamList(
                     params = state.parameters,
-                    i18nKeyPrefix = "ui.function.params",
+                    i18nKeyPrefix = I18N_R.UI_FUNCTION_PARAMS,
                     add = { param, override -> vm.addParameter(param, override) },
                     remove = { vm.removeParameter(it) }
                 )

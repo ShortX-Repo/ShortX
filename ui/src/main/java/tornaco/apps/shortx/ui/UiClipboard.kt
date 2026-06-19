@@ -46,6 +46,7 @@ import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.thenIf
 import tornaco.apps.shortx.ui.theme.ErrorRed
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 object UiClipboard {
@@ -161,7 +162,7 @@ fun ClipboardDialog(
                         topBar = {
                             ShortXTopAppBar(
                                 modifier = Modifier,
-                                title = { Text(LocalI18N.current["ui.title.ui.clipboard"]) },
+                                title = { Text(LocalI18N.current[I18N_R.UI_TITLE_UI_CLIPBOARD]) },
                                 navigationIcon = {
                                     IconButton(onClick = {
                                         state.dismiss()
@@ -175,7 +176,7 @@ fun ClipboardDialog(
                                             state.onSelected(state.selections)
                                             state.dismiss()
                                         }) {
-                                            Text(LocalI18N.current["ui.common.done"] + " ${state.selections.size}")
+                                            Text(LocalI18N.current[I18N_R.UI_COMMON_DONE] + " ${state.selections.size}")
                                         }
                                     }
                                 },
@@ -201,7 +202,7 @@ fun ClipboardDialog(
                                 stickyHeader {
                                     FieldTitle(
                                         modifier = Modifier.padding(16.dp),
-                                        text = LocalI18N.current["ui.fact.title"]
+                                        text = LocalI18N.current[I18N_R.UI_FACT_TITLE]
                                     )
                                 }
                             }
@@ -237,7 +238,7 @@ fun ClipboardDialog(
                                 stickyHeader {
                                     FieldTitle(
                                         modifier = Modifier.padding(16.dp),
-                                        text = LocalI18N.current["ui.conditions.title"]
+                                        text = LocalI18N.current[I18N_R.UI_CONDITIONS_TITLE]
                                     )
                                 }
                             }
@@ -272,7 +273,7 @@ fun ClipboardDialog(
                                 stickyHeader {
                                     FieldTitle(
                                         modifier = Modifier.padding(16.dp),
-                                        text = LocalI18N.current["ui.actions.title"]
+                                        text = LocalI18N.current[I18N_R.UI_ACTIONS_TITLE]
                                     )
                                 }
                             }

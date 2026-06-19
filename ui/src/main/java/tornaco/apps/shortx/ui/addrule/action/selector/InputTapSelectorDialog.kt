@@ -36,6 +36,7 @@ import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class InputTapSelectorState(
     val onSelected: (Action.InputTap) -> Unit
@@ -92,7 +93,7 @@ private fun InputTapSelector(
             Scaffold(modifier = Modifier, topBar = {
                 ShortXTopAppBar(
                     modifier = Modifier,
-                    title = { Text(text = LocalI18N.current["ui.action.input.tap"]) },
+                    title = { Text(text = LocalI18N.current[I18N_R.UI_ACTION_INPUT_TAP]) },
                     navigationIcon = {
                         IconButton(onClick = {
                             state.dismiss()
@@ -132,7 +133,7 @@ private fun InputTapSelector(
                             state.setX(it)
                         },
                         label = {
-                            Text(LocalI18N.current["ui.action.input.tap.x"])
+                            Text(LocalI18N.current[I18N_R.UI_ACTION_INPUT_TAP_X])
                         },
                         showSymbolButton = false,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
@@ -146,7 +147,7 @@ private fun InputTapSelector(
                             state.setY(it)
                         },
                         label = {
-                            Text(LocalI18N.current["ui.action.input.tap.y"])
+                            Text(LocalI18N.current[I18N_R.UI_ACTION_INPUT_TAP_Y])
                         },
                         showSymbolButton = false,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)

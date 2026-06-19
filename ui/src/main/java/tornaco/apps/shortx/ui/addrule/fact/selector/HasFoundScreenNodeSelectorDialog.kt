@@ -53,6 +53,7 @@ import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberRegexTextInputState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 private const val DEFAULT_TIMEOUT = 5000L
 
@@ -163,9 +164,9 @@ private fun HasFoundNodeOnScreen(dialogState: HasFoundNodeOnScreenSelectorDialog
                         .verticalScroll(rememberScrollState())
                 ) {
                     if (dialogState.canSelectPkgName) {
-                        FieldTitle(text = LocalI18N.current["ui.fact.has.found.node.on.screen.pkg"])
+                        FieldTitle(text = LocalI18N.current[I18N_R.UI_FACT_HAS_FOUND_NODE_ON_SCREEN_PKG])
                         SmallSpacer()
-                        TipBody(text = LocalI18N.current["ui.fact.has.found.node.on.screen.pkg.description"])
+                        TipBody(text = LocalI18N.current[I18N_R.UI_FACT_HAS_FOUND_NODE_ON_SCREEN_PKG_DESCRIPTION])
                         MediumSpacer()
                         ShortXTextField(
                             modifier = Modifier.fillMaxWidth(),
@@ -178,9 +179,9 @@ private fun HasFoundNodeOnScreen(dialogState: HasFoundNodeOnScreenSelectorDialog
                     }
 
                     if (dialogState.canSelectActivity) {
-                        FieldTitle(text = LocalI18N.current["ui.fact.has.found.node.on.screen.component"])
+                        FieldTitle(text = LocalI18N.current[I18N_R.UI_FACT_HAS_FOUND_NODE_ON_SCREEN_COMPONENT])
                         SmallSpacer()
-                        TipBody(text = LocalI18N.current["ui.fact.has.found.node.on.screen.component.description"])
+                        TipBody(text = LocalI18N.current[I18N_R.UI_FACT_HAS_FOUND_NODE_ON_SCREEN_COMPONENT_DESCRIPTION])
                         MediumSpacer()
 
                         val activityComponentSelectorState = rememberAppComponentSelectorState(
@@ -223,9 +224,9 @@ private fun HasFoundNodeOnScreen(dialogState: HasFoundNodeOnScreenSelectorDialog
 
 
                     if (dialogState.canSelectTimeout) {
-                        FieldTitle(text = LocalI18N.current["ui.fact.has.found.node.on.screen.timeout"])
+                        FieldTitle(text = LocalI18N.current[I18N_R.UI_FACT_HAS_FOUND_NODE_ON_SCREEN_TIMEOUT])
                         SmallSpacer()
-                        TipBody(text = LocalI18N.current["ui.fact.has.found.node.on.screen.timeout.description"])
+                        TipBody(text = LocalI18N.current[I18N_R.UI_FACT_HAS_FOUND_NODE_ON_SCREEN_TIMEOUT_DESCRIPTION])
                         MediumSpacer()
                         ShortXTextField(
                             modifier = Modifier.fillMaxWidth(),
@@ -238,9 +239,9 @@ private fun HasFoundNodeOnScreen(dialogState: HasFoundNodeOnScreenSelectorDialog
                         StandardSpacer()
                     }
 
-                    FieldTitle(text = LocalI18N.current["ui.fact.has.found.node.on.screen.matcher"])
+                    FieldTitle(text = LocalI18N.current[I18N_R.UI_FACT_HAS_FOUND_NODE_ON_SCREEN_MATCHER])
                     SmallSpacer()
-                    TipBody(text = LocalI18N.current["ui.fact.has.found.node.on.screen.matcher.description"])
+                    TipBody(text = LocalI18N.current[I18N_R.UI_FACT_HAS_FOUND_NODE_ON_SCREEN_MATCHER_DESCRIPTION])
                     MediumSpacer()
                     dialogState.matchers.forEachIndexed { index, it ->
                         ListItem(
@@ -265,7 +266,7 @@ private fun HasFoundNodeOnScreen(dialogState: HasFoundNodeOnScreenSelectorDialog
                     StandardSpacer()
 
                     val textInputState = rememberTextInputState(
-                        title = LocalI18N.current["ui.fact.has.found.node.on.screen.view.text"],
+                        title = LocalI18N.current[I18N_R.UI_FACT_HAS_FOUND_NODE_ON_SCREEN_VIEW_TEXT],
                         message = null,
                         onSelected = {
                             dialogState.addMatcher(
@@ -280,7 +281,7 @@ private fun HasFoundNodeOnScreen(dialogState: HasFoundNodeOnScreenSelectorDialog
                     TextInputDialog(state = textInputState)
 
                     val textInputRegexState = rememberRegexTextInputState(
-                        title = LocalI18N.current["ui.fact.has.found.node.on.screen.view.text.regex"],
+                        title = LocalI18N.current[I18N_R.UI_FACT_HAS_FOUND_NODE_ON_SCREEN_VIEW_TEXT_REGEX],
                         message = null,
                         inputValidator = {
                             InputValidateResult.OK
@@ -298,7 +299,7 @@ private fun HasFoundNodeOnScreen(dialogState: HasFoundNodeOnScreenSelectorDialog
                     RegexTextInputDialog(state = textInputRegexState)
 
                     val viewIdInputState = rememberTextInputState(
-                        title = LocalI18N.current["ui.fact.has.found.node.on.screen.view.id"],
+                        title = LocalI18N.current[I18N_R.UI_FACT_HAS_FOUND_NODE_ON_SCREEN_VIEW_ID],
                         message = null,
                         onSelected = {
                             dialogState.addMatcher(NodeMatcher.ViewId(it))
@@ -307,19 +308,19 @@ private fun HasFoundNodeOnScreen(dialogState: HasFoundNodeOnScreenSelectorDialog
                     TextInputDialog(state = viewIdInputState)
 
                     val matcherTypeMenuDialogState = rememberMenuDialogState<Unit>(
-                        title = LocalI18N.current["ui.common.add"],
+                        title = LocalI18N.current[I18N_R.UI_COMMON_ADD],
                         menuItems = listOf(
                             MenuDialogItem(
                                 id = "id",
-                                title = LocalI18N.current["ui.fact.has.found.node.on.screen.view.id"]
+                                title = LocalI18N.current[I18N_R.UI_FACT_HAS_FOUND_NODE_ON_SCREEN_VIEW_ID]
                             ),
                             MenuDialogItem(
                                 id = "text",
-                                title = LocalI18N.current["ui.fact.has.found.node.on.screen.view.text"]
+                                title = LocalI18N.current[I18N_R.UI_FACT_HAS_FOUND_NODE_ON_SCREEN_VIEW_TEXT]
                             ),
                             MenuDialogItem(
                                 id = "regex",
-                                title = LocalI18N.current["ui.fact.has.found.node.on.screen.view.text.regex"]
+                                title = LocalI18N.current[I18N_R.UI_FACT_HAS_FOUND_NODE_ON_SCREEN_VIEW_TEXT_REGEX]
                             ),
                         ),
                         onItemSelected = { _: Unit?, s: String ->
@@ -337,7 +338,7 @@ private fun HasFoundNodeOnScreen(dialogState: HasFoundNodeOnScreenSelectorDialog
                     androidx.compose.material3.Button(onClick = {
                         matcherTypeMenuDialogState.show()
                     }) {
-                        Text(text = LocalI18N.current["ui.common.add"])
+                        Text(text = LocalI18N.current[I18N_R.UI_COMMON_ADD])
                     }
                 }
             }

@@ -50,6 +50,7 @@ import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.UnderlineSmallText
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.ClipboardUtils
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class NewFuncParameterState(
     val onSelected: (FuncParameter) -> Unit
@@ -81,7 +82,7 @@ fun rememberNewFuncParameterState(
 @Composable
 fun NewFunctionParameterDialog(
     state: NewFuncParameterState,
-    i18nKeyPrefix: String = "ui.da.params"
+    i18nKeyPrefix: String = I18N_R.UI_DA_PARAMS
 ) {
     if (state.isShowing) {
         ShortFullScreenXDialog(onDismissRequest = { state.dismiss() }) {
@@ -154,7 +155,7 @@ fun NewFunctionParameterDialog(
                                     )
                                     Toast.makeText(
                                         context,
-                                        i18N["ui.common.copied.to.clipboard"],
+                                        i18N[I18N_R.UI_COMMON_COPIED_TO_CLIPBOARD],
                                         Toast.LENGTH_LONG
                                     ).show()
                                 }) {
@@ -188,7 +189,7 @@ fun NewFunctionParameterDialog(
                                         .padding(vertical = 12.dp)
                                         .heightIn(max = 120.dp)
                                         .verticalScroll(rememberScrollState()),
-                                    text = LocalI18N.current["ui.common.note"]
+                                    text = LocalI18N.current[I18N_R.UI_COMMON_NOTE]
                                 )
                                 MediumSpacer()
                                 ShortXTextField(

@@ -54,6 +54,7 @@ import tornaco.apps.shortx.ui.draw.DrawBoardView
 import tornaco.apps.shortx.ui.overlay.IdViewerView
 import tornaco.apps.shortx.ui.overlay.UniversalCopyView
 import tornaco.apps.shortx.ui.screencap.AreaSelectorView
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 class WindowManagerService(shortXContext: ShortXContext) :
@@ -513,7 +514,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
         systemServiceScope.launchSafety("showAreaSelectorTips") {
             shortXContext.ui.showDanmu(
                 null,
-                i18NIns["ui.action.select.screen.area.tip"]
+                i18NIns[I18N_R.UI_ACTION_SELECT_SCREEN_AREA_TIP]
             )
         }
     }
@@ -633,7 +634,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
             if (matchText == null) {
                 shortXContext.ui.showDanmu(
                     null,
-                    i18NIns["ui.action.enable.universal.copy.text.not.found"]
+                    i18NIns[I18N_R.UI_ACTION_ENABLE_UNIVERSAL_COPY_TEXT_NOT_FOUND]
                 )
             } else {
                 UniversalCopyEditDialog(context, matchText.text).show()
@@ -677,7 +678,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
                 )
                 Toast.makeText(
                     context,
-                    i18NIns["ui.common.copied.to.clipboard"] + "\t" + matchNodes[0].viewId,
+                    i18NIns[I18N_R.UI_COMMON_COPIED_TO_CLIPBOARD] + "\t" + matchNodes[0].viewId,
                     Toast.LENGTH_LONG
                 ).show()
             } else {

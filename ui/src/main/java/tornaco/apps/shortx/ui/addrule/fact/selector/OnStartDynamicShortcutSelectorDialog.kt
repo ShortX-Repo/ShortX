@@ -42,6 +42,7 @@ import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.settings.DynamicShortcutSettingsActivity
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 data class OnStartDynamicShortcutData(
@@ -188,7 +189,7 @@ fun OnStartDynamicShortcutDialog(state: OnStartDynamicShortcutState) {
                                 }
                             )
                             val context = LocalContext.current
-                            FieldTitle(text = i18N["ui.settings.dynamic.shortcut"])
+                            FieldTitle(text = i18N[I18N_R.UI_SETTINGS_DYNAMIC_SHORTCUT])
                             val label = remember(state.currentValue) {
                                 shortXManager.getDynamicShortcutSettingsByNumber(state.currentValue.shortcut.number)?.label
                                     ?: "N/A"

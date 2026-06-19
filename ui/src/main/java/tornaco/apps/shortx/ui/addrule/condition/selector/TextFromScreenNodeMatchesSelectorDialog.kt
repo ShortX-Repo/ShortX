@@ -35,6 +35,7 @@ import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.labelKey
 import tornaco.apps.shortx.ui.base.rememberRegexTextInputState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class TextFromScreenNodeMatchesState(
     val selected: (Condition.TextFromScreenNodeMatches) -> Unit
@@ -71,7 +72,7 @@ fun TextFromScreenNodeMatchesSelector(dialogState: TextFromScreenNodeMatchesStat
                         topBar = {
                             ShortXTopAppBar(
                                 modifier = Modifier,
-                                title = { Text(text = LocalI18N.current["ui.condition.text.from.screen.node.matches"]) },
+                                title = { Text(text = LocalI18N.current[I18N_R.UI_CONDITION_TEXT_FROM_SCREEN_NODE_MATCHES]) },
                                 navigationIcon = {
                                     IconButton(onClick = {
                                         dialogState.dismiss()
@@ -101,7 +102,7 @@ fun TextFromScreenNodeMatchesSelector(dialogState: TextFromScreenNodeMatchesStat
                                 .padding(paddingValues)
                                 .padding(16.dp)
                         ) {
-                            FieldTitle(text = LocalI18N.current["ui.fact.has.found.node.on.screen.view.id"])
+                            FieldTitle(text = LocalI18N.current[I18N_R.UI_FACT_HAS_FOUND_NODE_ON_SCREEN_VIEW_ID])
                             TinySpacer()
                             ShortXTextField(
                                 value = dialogState.nodeId,
@@ -111,7 +112,7 @@ fun TextFromScreenNodeMatchesSelector(dialogState: TextFromScreenNodeMatchesStat
 
 
                             val textInputRegexState = rememberRegexTextInputState(
-                                title = LocalI18N.current["ui.fact.has.found.node.on.screen.view.text.regex"],
+                                title = LocalI18N.current[I18N_R.UI_FACT_HAS_FOUND_NODE_ON_SCREEN_VIEW_TEXT_REGEX],
                                 message = null,
                                 inputValidator = {
                                     InputValidateResult.OK
@@ -126,7 +127,7 @@ fun TextFromScreenNodeMatchesSelector(dialogState: TextFromScreenNodeMatchesStat
 
                             ListItem(
                                 titleLines = listOf(
-                                    LocalI18N.current["ui.fact.has.found.node.on.screen.view.text"],
+                                    LocalI18N.current[I18N_R.UI_FACT_HAS_FOUND_NODE_ON_SCREEN_VIEW_TEXT],
                                     dialogState.regex,
                                     LocalI18N.current[dialogState.options.labelKey()]
                                 ),

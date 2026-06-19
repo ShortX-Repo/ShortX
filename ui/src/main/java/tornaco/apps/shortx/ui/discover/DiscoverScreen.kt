@@ -85,11 +85,12 @@ import tornaco.apps.shortx.ui.main.rule.rememberRuleViewerState
 import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.util.BrowserUtils
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 enum class DiscoverTabItem(val titleKey: String, val iconName: String) {
-    DA("ui.feat.label.da", Remix.Development.command_line),
-    Rule("ui.feat.label.rule", Remix.Weather.meteor_line),
-    Code("ui.feat.label.code_library", Remix.Development.code_line)
+    DA(I18N_R.UI_FEAT_LABEL_DA, Remix.Development.command_line),
+    Rule(I18N_R.UI_FEAT_LABEL_RULE, Remix.Weather.meteor_line),
+    Code(I18N_R.UI_FEAT_LABEL_CODE_LIBRARY, Remix.Development.code_line)
 }
 
 @Composable
@@ -132,18 +133,18 @@ fun DiscoverScreen() {
             }
 
             DiscoverRepo.PrebuiltLocal -> {
-                LocalI18N.current["ui.discover.source.prebuilt"]
+                LocalI18N.current[I18N_R.UI_DISCOVER_SOURCE_PREBUILT]
             }
         }
     }
 
     val repoSelectState = rememberMenuDialogState<String>(
         key1 = discoverState.customRepos,
-        title = LocalI18N.current["ui.discover.select.source"],
+        title = LocalI18N.current[I18N_R.UI_DISCOVER_SELECT_SOURCE],
         menuItems = mutableListOf(
             MenuDialogItem(
                 id = "local",
-                title = LocalI18N.current["ui.discover.source.prebuilt"],
+                title = LocalI18N.current[I18N_R.UI_DISCOVER_SOURCE_PREBUILT],
                 iconName = Remix.Document.file_2_line
             ),
             MenuDialogItem(
@@ -181,7 +182,7 @@ fun DiscoverScreen() {
             add(
                 MenuDialogItem(
                     id = "new",
-                    title = LocalI18N.current["ui.discover.source.add.custom"],
+                    title = LocalI18N.current[I18N_R.UI_DISCOVER_SOURCE_ADD_CUSTOM],
                     textColor = MaterialTheme.colorScheme.primary,
                     iconName = Remix.System.add_line
                 ),
@@ -223,7 +224,7 @@ fun DiscoverScreen() {
         appBarTitle = {
             Column {
                 Text(
-                    text = LocalI18N.current["ui.feat.label.discover"]
+                    text = LocalI18N.current[I18N_R.UI_FEAT_LABEL_DISCOVER]
                 )
                 if (discoverState.discoverRepo == DiscoverRepo.PrebuiltLocal) {
                     Text(

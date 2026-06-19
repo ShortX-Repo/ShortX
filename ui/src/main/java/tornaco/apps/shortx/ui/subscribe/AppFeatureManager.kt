@@ -25,6 +25,7 @@ import tornaco.apps.shortx.ui.base.ShortXBottomSheet
 import tornaco.apps.shortx.ui.base.ShortXBottomSheetState
 import tornaco.apps.shortx.ui.composeLogger
 import kotlin.reflect.KClass
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @Composable
 fun FeatureAccessDialog(state: ShortXBottomSheetState) {
@@ -62,7 +63,7 @@ private fun SubscriptionIntro(
             contentDescription = null,
         )
 
-        MediumTitle(text = LocalI18N.current["ui.subscription.intro.message"])
+        MediumTitle(text = LocalI18N.current[I18N_R.UI_SUBSCRIPTION_INTRO_MESSAGE])
         SectionSpacer()
 
         Button(
@@ -72,7 +73,7 @@ private fun SubscriptionIntro(
                 SubscribeActivity.start(context)
             }) {
             Text(
-                text = LocalI18N.current["ui.subscription.intro.yes"],
+                text = LocalI18N.current[I18N_R.UI_SUBSCRIPTION_INTRO_YES],
                 style = MaterialTheme.typography.bodySmall
             )
         }

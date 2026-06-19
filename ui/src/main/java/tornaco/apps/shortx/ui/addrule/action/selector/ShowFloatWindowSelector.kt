@@ -50,6 +50,7 @@ import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class ShowFloatWindowSelectorActivity : BaseSelectorActivity<Action.ShowFloatWindow>() {
@@ -74,7 +75,7 @@ private fun BaseSelectorActivity<Action.ShowFloatWindow>.ShowFloatWindowButtonSe
 
     ShortXTheme {
         ShortXAppBarScaffold(
-            title = LocalI18N.current["ui.action.show.float.window"],
+            title = LocalI18N.current[I18N_R.UI_ACTION_SHOW_FLOAT_WINDOW],
             onBackPressed = {
                 cancelAndFinish()
             },
@@ -108,7 +109,7 @@ private fun ColumnScope.Content(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = SpaceBetween
     ) {
-        FieldTitle(text = LocalI18N.current["ui.action.show.add.button"])
+        FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_SHOW_ADD_BUTTON])
         Row(verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = {
                 vm.setButtonListExpanded(!state.isButtonListExpanded)
@@ -142,11 +143,11 @@ private fun ColumnScope.Content(
         onClick = {
             vm.addButton()
         }) {
-        Text(text = LocalI18N.current["ui.action.show.add.button"])
+        Text(text = LocalI18N.current[I18N_R.UI_ACTION_SHOW_ADD_BUTTON])
     }
 
     StandardSpacer()
-    FieldTitle(text = LocalI18N.current["ui.action.show.float.window.panel.radius.scale"])
+    FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_SHOW_FLOAT_WINDOW_PANEL_RADIUS_SCALE])
     SmallSpacer()
     Text(text = "${state.panelRadiusScale.takeIf { it > 0 } ?: 1f} x")
     Slider(
@@ -191,7 +192,7 @@ private fun ButtonListItem(
         ) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = SpaceBetween) {
                 MediumTitle(
-                    text = LocalI18N.current["ui.action.show.overlay.button.of", mapOf(
+                    text = LocalI18N.current[I18N_R.UI_ACTION_SHOW_OVERLAY_BUTTON_OF, mapOf(
                         "index" to "${index + 1}"
                     )]
                 )
@@ -208,7 +209,7 @@ private fun ButtonListItem(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     SmallTitle(
                         modifier = Modifier.padding(vertical = 12.dp),
-                        LocalI18N.current["ui.action.show.overlay.icon"]
+                        LocalI18N.current[I18N_R.UI_ACTION_SHOW_OVERLAY_ICON]
                     )
                     IconButton(onClick = {
                         updateIcon(index, "")
@@ -254,7 +255,7 @@ private fun ButtonListItem(
                 header = {
                     SmallTitle(
                         modifier = Modifier.padding(vertical = 12.dp),
-                        text = LocalI18N.current["ui.actions.single.click.title"]
+                        text = LocalI18N.current[I18N_R.UI_ACTIONS_SINGLE_CLICK_TITLE]
                     )
                 },
                 actions = actionState.actions,
@@ -271,7 +272,7 @@ private fun ButtonListItem(
                 header = {
                     SmallTitle(
                         modifier = Modifier.padding(vertical = 12.dp),
-                        text = LocalI18N.current["ui.actions.long.click.title"]
+                        text = LocalI18N.current[I18N_R.UI_ACTIONS_LONG_CLICK_TITLE]
                     )
                 },
                 actions = longClickActionState.actions,

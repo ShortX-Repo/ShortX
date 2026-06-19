@@ -31,6 +31,7 @@ import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.gvar.GlobalVarSelectorDialog
 import tornaco.apps.shortx.ui.gvar.rememberGlobalVarSelectorState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class GVSelectorDialogState(
     val onSelected: (String) -> Unit
@@ -75,7 +76,7 @@ private fun GVSelector(dialogState: GVSelectorDialogState) {
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(text = LocalI18N.current["ui.fact.global.var.changed"]) },
+                        title = { Text(text = LocalI18N.current[I18N_R.UI_FACT_GLOBAL_VAR_CHANGED]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 dialogState.dismiss()
@@ -111,7 +112,7 @@ private fun GVSelector(dialogState: GVSelectorDialogState) {
                         modifier = Modifier.fillMaxWidth(),
                         value = dialogState.selectedGVName,
                         label = {
-                            Text(LocalI18N.current["ui.action.select.global.var"])
+                            Text(LocalI18N.current[I18N_R.UI_ACTION_SELECT_GLOBAL_VAR])
                         },
                         trailingIcon = {
                             IconButton(onClick = { globalVarToWriteSelectorState.show() }) {

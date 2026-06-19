@@ -30,6 +30,7 @@ import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class ActionSidebarButtonSortState(
     val buttons: () -> List<ActionSidebarButtonEditorState>,
@@ -51,7 +52,7 @@ fun ActionSidebarButtonSortDialog(state: ActionSidebarButtonSortState) {
                 Surface(Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
                     Scaffold(topBar = {
                         ShortXTopAppBar(
-                            title = { Text(LocalI18N.current["ui.common.long.press.sort"]) },
+                            title = { Text(LocalI18N.current[I18N_R.UI_COMMON_LONG_PRESS_SORT]) },
                             navigationIcon = {
                                 IconButton(onClick = { state.dismiss() }) {
                                     RemixIcon(remixName = Remix.System.close_line)

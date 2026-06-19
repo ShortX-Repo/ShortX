@@ -36,6 +36,7 @@ import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 class SetRuleEnabledDialogState(
@@ -124,18 +125,18 @@ private fun SetRuleEnabledSelector(dialogState: SetRuleEnabledDialogState) {
                         .animateContentSize()
                         .verticalScroll(rememberScrollState())
                 ) {
-                    FieldTitle(text = LocalI18N.current["ui.action.set.rule.enabled.select.rule"])
+                    FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_SET_RULE_ENABLED_SELECT_RULE])
                     SmallSpacer()
                     ListItem(
                         title = dialogState.currentRule?.title
-                            ?: LocalI18N.current["ui.common.unselected"],
+                            ?: LocalI18N.current[I18N_R.UI_COMMON_UNSELECTED],
                         onClick = {
                             ruleSelectDialog.show()
                         })
                     StandardSpacer()
 
 
-                    FieldTitle(text = LocalI18N.current["ui.action.set.rule.enabled.toggle"])
+                    FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_SET_RULE_ENABLED_TOGGLE])
                     SmallSpacer()
                     ShortXSwitch(checked = dialogState.isEnable, onCheckedChange = {
                         dialogState.isEnable = it

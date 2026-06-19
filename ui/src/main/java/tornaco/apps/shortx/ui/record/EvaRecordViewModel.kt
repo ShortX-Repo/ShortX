@@ -28,6 +28,7 @@ import tornaco.apps.shortx.ui.addrule.fact.model.Fact
 import tornaco.apps.shortx.ui.addrule.fact.model.toFact
 import tornaco.apps.shortx.ui.base.i18NIns
 import javax.inject.Inject
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 sealed interface EvaRecord {
     val formattedTimeStr: String
@@ -147,9 +148,9 @@ class EvaRecordViewModel @Inject constructor(@ApplicationContext private val con
             state.copy(onlyShowSrc = showSrc)
         }
         if (showSrc != null) {
-            postSideEffect(i18NIns["ui.common.only.show"] + " ${showSrc.srcTitle}")
+            postSideEffect(i18NIns[I18N_R.UI_COMMON_ONLY_SHOW] + " ${showSrc.srcTitle}")
         } else {
-            postSideEffect(i18NIns["ui.common.show.all"])
+            postSideEffect(i18NIns[I18N_R.UI_COMMON_SHOW_ALL])
         }
         loadRecords()
     }

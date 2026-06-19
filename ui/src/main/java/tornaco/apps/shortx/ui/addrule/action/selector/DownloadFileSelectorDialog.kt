@@ -40,6 +40,7 @@ import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class DownloadFileSelectorState(
     val onSelected: (Action.DownloadFile) -> Unit
@@ -89,7 +90,7 @@ private fun DownloadFileSelector(
             Scaffold(modifier = Modifier, topBar = {
                 ShortXTopAppBar(
                     modifier = Modifier,
-                    title = { Text(text = LocalI18N.current["ui.action.download.file"]) },
+                    title = { Text(text = LocalI18N.current[I18N_R.UI_ACTION_DOWNLOAD_FILE]) },
                     navigationIcon = {
                         IconButton(onClick = {
                             state.dismiss()
@@ -125,7 +126,7 @@ private fun DownloadFileSelector(
                 ) {
                     FieldTitle(
                         modifier = Modifier.padding(vertical = 12.dp),
-                        LocalI18N.current["ui.action.download.file.url"]
+                        LocalI18N.current[I18N_R.UI_ACTION_DOWNLOAD_FILE_URL]
                     )
                     TinySpacer()
                     ShortXTextField(modifier = Modifier.fillMaxWidth(),
@@ -138,8 +139,8 @@ private fun DownloadFileSelector(
                     StandardSpacer()
 
                     FieldTitleWithTip(
-                        LocalI18N.current["ui.action.download.file.file.name"],
-                        LocalI18N.current["ui.action.download.file.tip"],
+                        LocalI18N.current[I18N_R.UI_ACTION_DOWNLOAD_FILE_FILE_NAME],
+                        LocalI18N.current[I18N_R.UI_ACTION_DOWNLOAD_FILE_TIP],
                     )
                     TinySpacer()
                     ShortXTextField(modifier = Modifier.fillMaxWidth(),
@@ -151,7 +152,7 @@ private fun DownloadFileSelector(
 
                     FieldTitle(
                         modifier = Modifier.padding(vertical = 12.dp),
-                        LocalI18N.current["ui.action.download.file.title"]
+                        LocalI18N.current[I18N_R.UI_ACTION_DOWNLOAD_FILE_TITLE]
                     )
                     TinySpacer()
                     ShortXTextField(modifier = Modifier.fillMaxWidth(),
@@ -163,7 +164,7 @@ private fun DownloadFileSelector(
 
                     FieldTitle(
                         modifier = Modifier.padding(vertical = 12.dp),
-                        LocalI18N.current["ui.action.download.file.description"]
+                        LocalI18N.current[I18N_R.UI_ACTION_DOWNLOAD_FILE_DESCRIPTION]
                     )
                     TinySpacer()
                     ShortXTextField(modifier = Modifier.fillMaxWidth(),

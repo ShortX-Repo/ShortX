@@ -57,6 +57,7 @@ import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.ClipboardUtils
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 class ContextDataInfoDialogState : CommonDialogState() {
@@ -111,7 +112,7 @@ fun ContextDataInfoDialog(state: ContextDataInfoDialogState) {
                     modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
                     ShortXAppBarScaffold(
-                        title = i18N["ui.context.data.title"],
+                        title = i18N[I18N_R.UI_CONTEXT_DATA_TITLE],
                         onBackPressed = { state.dismiss() },
                         actions = {
                             IconButton(onClick = {
@@ -128,7 +129,7 @@ fun ContextDataInfoDialog(state: ContextDataInfoDialogState) {
                                 )
                                 Toast.makeText(
                                     context,
-                                    i18N["ui.common.copied.to.clipboard"],
+                                    i18N[I18N_R.UI_COMMON_COPIED_TO_CLIPBOARD],
                                     Toast.LENGTH_SHORT
                                 ).show()
                             }) {
@@ -143,7 +144,7 @@ fun ContextDataInfoDialog(state: ContextDataInfoDialogState) {
                             item {
                                 Box(modifier = Modifier.padding(16.dp)) {
                                     DialogMessage(
-                                        text = i18N["ui.context.data.message", mapOf(
+                                        text = i18N[I18N_R.UI_CONTEXT_DATA_MESSAGE, mapOf(
                                             "obj" to state.objName,
                                             "accessor" to "{NAME}"
                                         )]
@@ -155,7 +156,7 @@ fun ContextDataInfoDialog(state: ContextDataInfoDialogState) {
                                 ContextDataItem(
                                     title = contextData.selectedKey,
                                     text1 = contextData.description,
-                                    text2 = i18N["ui.context.data.example", mapOf("eg" to contextData.selectedKey.asAccessExample())],
+                                    text2 = i18N[I18N_R.UI_CONTEXT_DATA_EXAMPLE, mapOf("eg" to contextData.selectedKey.asAccessExample())],
                                     text1IsMD = contextData.descriptionIsMarkdown,
                                     onClick = {
                                         ClipboardUtils.copyToClipboard(
@@ -165,7 +166,7 @@ fun ContextDataInfoDialog(state: ContextDataInfoDialogState) {
                                         )
                                         Toast.makeText(
                                             context,
-                                            i18N["ui.common.copied.to.clipboard"],
+                                            i18N[I18N_R.UI_COMMON_COPIED_TO_CLIPBOARD],
                                             Toast.LENGTH_LONG
                                         ).show()
                                     },
@@ -225,7 +226,7 @@ private fun ContextDataItem(
                             )
                         )
                         MediumSpacer()
-                        if (isCustomKey) OutlineBadge(text = LocalI18N.current["ui.context.data.custom.hint"])
+                        if (isCustomKey) OutlineBadge(text = LocalI18N.current[I18N_R.UI_CONTEXT_DATA_CUSTOM_HINT])
                     }
                 }
                 TinySpacer()
@@ -276,7 +277,7 @@ private fun ContextDataItem(
 
         val textInputDialogState =
             rememberTextInputState(
-                title = LocalI18N.current["ui.context.data.custom.key"],
+                title = LocalI18N.current[I18N_R.UI_CONTEXT_DATA_CUSTOM_KEY],
                 message = null,
                 onSelected = {
                     setCustomKey(it)

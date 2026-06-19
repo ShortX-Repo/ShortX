@@ -41,6 +41,7 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class Toggle5GSelectorDialogState(
     val onSelected: (Action.Toggle5G) -> Unit
@@ -108,7 +109,7 @@ fun Toggle5GSelectorDialog(dialogState: Toggle5GSelectorDialogState) {
                                 .padding(16.dp)
                         ) {
                             // On off
-                            FieldTitle(text = LocalI18N.current["ui.common.on"])
+                            FieldTitle(text = LocalI18N.current[I18N_R.UI_COMMON_ON])
                             TinySpacer()
                             val onOffState = rememberDropdownSelectorState()
                             Box {
@@ -146,7 +147,7 @@ fun Toggle5GSelectorDialog(dialogState: Toggle5GSelectorDialogState) {
                                 })
                             SIMSlotSelectorDialog(state = slotIdState)
 
-                            FieldTitle(text = LocalI18N.current["ui.action.switch.mobile.data.slot"])
+                            FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_SWITCH_MOBILE_DATA_SLOT])
                             TinySpacer()
                             FilledTonalButton(
                                 colors = ButtonDefaults.filledTonalButtonColors(
@@ -158,7 +159,7 @@ fun Toggle5GSelectorDialog(dialogState: Toggle5GSelectorDialogState) {
                                 }) {
                                 Text(
                                     (dialogState.slotId >= 0).select(
-                                        LocalI18N.current["ui.common.mobile.data.enabled.slot", mapOf(
+                                        LocalI18N.current[I18N_R.UI_COMMON_MOBILE_DATA_ENABLED_SLOT, mapOf(
                                             "slotId" to dialogState.slotId.toString(),
                                             "label" to (shortXManager.getSlotLabel(dialogState.slotId)
                                                 ?: "")

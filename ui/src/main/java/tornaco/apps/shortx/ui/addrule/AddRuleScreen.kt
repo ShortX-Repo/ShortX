@@ -92,6 +92,7 @@ import tornaco.apps.shortx.ui.flow.InstructionFlowDialog
 import tornaco.apps.shortx.ui.flow.RuleFlowSpec
 import tornaco.apps.shortx.ui.record.EvaRecordSetting
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class AddRuleActivity : BaseActivity() {
@@ -126,9 +127,9 @@ class AddRuleActivity : BaseActivity() {
             ruleSetId = ruleSetId,
             readOnly = isReadOnly,
             screenTitle = if (ruleId != null) {
-                LocalI18N.current["ui.title.edit.rule"]
+                LocalI18N.current[I18N_R.UI_TITLE_EDIT_RULE]
             } else {
-                LocalI18N.current["ui.title.add.rule"]
+                LocalI18N.current[I18N_R.UI_TITLE_ADD_RULE]
             }
         ) {
             finish()
@@ -155,7 +156,7 @@ fun AddRuleScreen(
 
     val context = LocalContext.current
     val i18n = LocalI18N.current
-    val savedMessage = i18n["ui.toast.rule.saved"]
+    val savedMessage = i18n[I18N_R.UI_TOAST_RULE_SAVED]
     val showRuleSavedToast = {
         Toast.makeText(context, savedMessage, Toast.LENGTH_SHORT).show()
     }
@@ -218,12 +219,12 @@ fun AddRuleScreen(
 
     val backConfirmDialogState = rememberConfirmDialogState()
     ConfirmDialog(
-        title = i18n["ui.edit.discard.dialog.title"],
+        title = i18n[I18N_R.UI_EDIT_DISCARD_DIALOG_TITLE],
         messageHint = {
-            i18n["ui.edit.discard.dialog.message"]
+            i18n[I18N_R.UI_EDIT_DISCARD_DIALOG_MESSAGE]
         },
-        confirmButton = i18n["ui.edit.discard.dialog.discard"],
-        dismissButton = i18n["ui.edit.discard.dialog.stay"],
+        confirmButton = i18n[I18N_R.UI_EDIT_DISCARD_DIALOG_DISCARD],
+        dismissButton = i18n[I18N_R.UI_EDIT_DISCARD_DIALOG_STAY],
         state = backConfirmDialogState,
         data = "",
         onConfirm = {
@@ -367,7 +368,7 @@ fun AddRuleScreen(
 
         flowSpec?.let { spec ->
             InstructionFlowDialog(
-                title = i18n["ui.flow.view"],
+                title = i18n[I18N_R.UI_FLOW_VIEW],
                 root = spec,
                 shortXManager = vm.shortXManager,
                 onDismissRequest = { flowSpec = null }
@@ -412,8 +413,8 @@ private fun LazyListScope.ruleContent(
                     modifier = Modifier
                         .padding(vertical = 16.dp),
                     iconName = Remix.UserAndFaces.skull_2_fill,
-                    title = LocalI18N.current["ui.rule.action.secure.warning.title"],
-                    warnings = listOf(LocalI18N.current["ui.rule.action.secure.warning.message"])
+                    title = LocalI18N.current[I18N_R.UI_RULE_ACTION_SECURE_WARNING_TITLE],
+                    warnings = listOf(LocalI18N.current[I18N_R.UI_RULE_ACTION_SECURE_WARNING_MESSAGE])
                 )
                 LargeSpacer()
             }
@@ -434,7 +435,7 @@ private fun LazyListScope.ruleContent(
                             .padding(16.dp)
                     ) {
                         Text(
-                            text = LocalI18N.current["ui.rule.contains.send.sms.message"],
+                            text = LocalI18N.current[I18N_R.UI_RULE_CONTAINS_SEND_SMS_MESSAGE],
                             style = MaterialTheme.typography.titleSmall
                         )
                     }
@@ -521,7 +522,7 @@ private fun LazyListScope.ruleContent(
         )
         ExpandableSectionBar(
             isExpand = addRuleState.showAdvancedOptions,
-            text = LocalI18N.current["ui.advanced.options"],
+            text = LocalI18N.current[I18N_R.UI_ADVANCED_OPTIONS],
             iconName = Remix.System.star_fill,
             shape = RoundedCornerShape(cornerDp),
             modifier = Modifier.padding(horizontal = paddingDp)
@@ -536,8 +537,8 @@ private fun LazyListScope.ruleContent(
             Column {
                 // Async Mode
                 MediumTitleWithTip(
-                    text = LocalI18N.current["ui.rule.async.mode"],
-                    tipText = LocalI18N.current["ui.rule.async.mode.description"]
+                    text = LocalI18N.current[I18N_R.UI_RULE_ASYNC_MODE],
+                    tipText = LocalI18N.current[I18N_R.UI_RULE_ASYNC_MODE_DESCRIPTION]
                 )
                 SmallSpacer()
 
@@ -597,7 +598,7 @@ private fun LazyListScope.ruleContent(
         )
         SwitchBar(
             isChecked = addRuleState.isQuitEnabled,
-            text = LocalI18N.current["ui.rule.quit.title"],
+            text = LocalI18N.current[I18N_R.UI_RULE_QUIT_TITLE],
             iconName = Remix.System.logout_circle_fill,
             cornerSize = cornerDp,
             modifier = Modifier.padding(horizontal = paddingDp),
@@ -612,7 +613,7 @@ private fun LazyListScope.ruleContent(
         AnimatedVisibility(visible = addRuleState.isQuitEnabled) {
             Column {
                 StandardSpacer()
-                TipBody(LocalI18N.current["ui.rule.quit.description"])
+                TipBody(LocalI18N.current[I18N_R.UI_RULE_QUIT_DESCRIPTION])
                 StandardSpacer()
                 // Policy
                 QuitEvaluatePolicy(addRuleState.quitEvaluatePolicy) {
@@ -624,7 +625,7 @@ private fun LazyListScope.ruleContent(
                     header = {
                         FieldTitle(
                             modifier = Modifier.padding(bottom = 12.dp),
-                            text = "${LocalI18N.current["ui.rule.quit.title"]} - ${LocalI18N.current["ui.fact.title"]}"
+                            text = "${LocalI18N.current[I18N_R.UI_RULE_QUIT_TITLE]} - ${LocalI18N.current[I18N_R.UI_FACT_TITLE]}"
                         )
                     },
                     state = quitFactContentState,
@@ -637,7 +638,7 @@ private fun LazyListScope.ruleContent(
                     header = {
                         FieldTitle(
                             modifier = Modifier.padding(bottom = 12.dp),
-                            text = "${LocalI18N.current["ui.rule.quit.title"]} - ${LocalI18N.current["ui.conditions.title"]}"
+                            text = "${LocalI18N.current[I18N_R.UI_RULE_QUIT_TITLE]} - ${LocalI18N.current[I18N_R.UI_CONDITIONS_TITLE]}"
                         )
                     },
                     state = quitConditionContentState,
@@ -651,11 +652,11 @@ private fun LazyListScope.ruleContent(
                     header = {
                         FieldTitle(
                             modifier = Modifier.padding(bottom = 6.dp),
-                            text = "${LocalI18N.current["ui.rule.quit.title"]} - ${LocalI18N.current["ui.actions.title"]}"
+                            text = "${LocalI18N.current[I18N_R.UI_RULE_QUIT_TITLE]} - ${LocalI18N.current[I18N_R.UI_ACTIONS_TITLE]}"
                         )
                     },
                     summary = {
-                        TipBody(text = LocalI18N.current["ui.rule.quit.action.description"])
+                        TipBody(text = LocalI18N.current[I18N_R.UI_RULE_QUIT_ACTION_DESCRIPTION])
                     },
                     srcId = addRuleState.id,
                     actions = quitActionState.actions,
@@ -702,8 +703,8 @@ private fun LazyListScope.ruleContent(
                 ActionContent(
                     header = {
                         FieldTitleWithTip(
-                            LocalI18N.current["ui.actions.hook.on.enabled.title"],
-                            LocalI18N.current["ui.actions.hook.on.enabled.description"]
+                            LocalI18N.current[I18N_R.UI_ACTIONS_HOOK_ON_ENABLED_TITLE],
+                            LocalI18N.current[I18N_R.UI_ACTIONS_HOOK_ON_ENABLED_DESCRIPTION]
                         )
                     },
                     srcId = addRuleState.id,
@@ -720,8 +721,8 @@ private fun LazyListScope.ruleContent(
                 ActionContent(
                     header = {
                         FieldTitleWithTip(
-                            LocalI18N.current["ui.actions.hook.on.disabled.title"],
-                            LocalI18N.current["ui.actions.hook.on.disabled.description"]
+                            LocalI18N.current[I18N_R.UI_ACTIONS_HOOK_ON_DISABLED_TITLE],
+                            LocalI18N.current[I18N_R.UI_ACTIONS_HOOK_ON_DISABLED_DESCRIPTION]
                         )
                     },
                     srcId = addRuleState.id,
@@ -738,8 +739,8 @@ private fun LazyListScope.ruleContent(
                 ActionContent(
                     header = {
                         FieldTitleWithTip(
-                            LocalI18N.current["ui.actions.hook.on.deleted.title"],
-                            LocalI18N.current["ui.actions.hook.on.deleted.description"]
+                            LocalI18N.current[I18N_R.UI_ACTIONS_HOOK_ON_DELETED_TITLE],
+                            LocalI18N.current[I18N_R.UI_ACTIONS_HOOK_ON_DELETED_DESCRIPTION]
                         )
                     },
                     srcId = addRuleState.id,
@@ -756,8 +757,8 @@ private fun LazyListScope.ruleContent(
                 ActionContent(
                     header = {
                         FieldTitleWithTip(
-                            LocalI18N.current["ui.actions.hook.on.stopped.title"],
-                            LocalI18N.current["ui.actions.hook.on.stopped.description"]
+                            LocalI18N.current[I18N_R.UI_ACTIONS_HOOK_ON_STOPPED_TITLE],
+                            LocalI18N.current[I18N_R.UI_ACTIONS_HOOK_ON_STOPPED_DESCRIPTION]
                         )
                     },
                     srcId = addRuleState.id,
@@ -774,8 +775,8 @@ private fun LazyListScope.ruleContent(
                 ActionContent(
                     header = {
                         FieldTitleWithTip(
-                            LocalI18N.current["ui.actions.hook.on.updated.title"],
-                            LocalI18N.current["ui.actions.hook.on.updated.description"]
+                            LocalI18N.current[I18N_R.UI_ACTIONS_HOOK_ON_UPDATED_TITLE],
+                            LocalI18N.current[I18N_R.UI_ACTIONS_HOOK_ON_UPDATED_DESCRIPTION]
                         )
                     },
                     srcId = addRuleState.id,
@@ -798,7 +799,7 @@ private fun LazyListScope.ruleContent(
     stickyHeader {
         ExpandableSectionBar(
             isExpand = addRuleState.showGeeksOptions,
-            text = LocalI18N.current["ui.geeks.options"],
+            text = LocalI18N.current[I18N_R.UI_GEEKS_OPTIONS],
             iconName = Remix.UserAndFaces.aliens_fill,
             modifier = Modifier.padding(horizontal = SECTION_BAR_H_PADDING.dp)
         ) {
@@ -822,7 +823,7 @@ private fun LazyListScope.ruleContent(
     stickyHeader {
         ExpandableSectionBar(
             isExpand = addRuleState.showOtherOptions,
-            text = LocalI18N.current["ui.other.options"],
+            text = LocalI18N.current[I18N_R.UI_OTHER_OPTIONS],
             iconName = Remix.System.more_2_fill,
             modifier = Modifier.padding(horizontal = SECTION_BAR_H_PADDING.dp)
         ) {
@@ -862,8 +863,8 @@ fun ConflictStrategy(
     setConflictStrategy: (ConflictStrategy) -> Unit
 ) {
     MediumTitleWithTip(
-        text = LocalI18N.current["ui.rule.conflict.strategy"],
-        tipText = LocalI18N.current["ui.rule.conflict.strategy.description"]
+        text = LocalI18N.current[I18N_R.UI_RULE_CONFLICT_STRATEGY],
+        tipText = LocalI18N.current[I18N_R.UI_RULE_CONFLICT_STRATEGY_DESCRIPTION]
     )
     SmallSpacer()
 
@@ -895,7 +896,7 @@ fun QuitEvaluatePolicy(
     policy: Quit_EvaluatePolicy,
     setPolicy: (Quit_EvaluatePolicy) -> Unit
 ) {
-    FieldTitle(text = LocalI18N.current["ui.rule.quit.eva.policy"])
+    FieldTitle(text = LocalI18N.current[I18N_R.UI_RULE_QUIT_EVA_POLICY])
     SmallSpacer()
 
     val dropState = rememberDropdownSelectorState()
@@ -937,7 +938,7 @@ private fun TitleAndDescription(
     ShortXTextField(
         modifier = Modifier.fillMaxWidth(),
         label = {
-            Text(text = LocalI18N.current["ui.rule.title"])
+            Text(text = LocalI18N.current[I18N_R.UI_RULE_TITLE])
         },
         value = state.title,
         readOnly = readOnly,
@@ -959,7 +960,7 @@ private fun TitleAndDescription(
                 .fillMaxWidth()
                 .padding(top = 16.dp),
             label = {
-                Text(text = LocalI18N.current["ui.rule.description"])
+                Text(text = LocalI18N.current[I18N_R.UI_RULE_DESCRIPTION])
             },
             value = state.description,
             readOnly = readOnly,
@@ -972,9 +973,9 @@ private fun TitleAndDescription(
 
 fun AsyncMode.labelKey(): String {
     return when (this) {
-        AsyncMode.AsyncMode_Async -> "ui.rule.async.mode.async"
-        AsyncMode.AsyncMode_Sync -> "ui.rule.async.mode.sync"
-        AsyncMode.AsyncMode_Sync_InRule -> "ui.rule.async.mode.sync_in_rule"
+        AsyncMode.AsyncMode_Async -> I18N_R.UI_RULE_ASYNC_MODE_ASYNC
+        AsyncMode.AsyncMode_Sync -> I18N_R.UI_RULE_ASYNC_MODE_SYNC
+        AsyncMode.AsyncMode_Sync_InRule -> I18N_R.UI_RULE_ASYNC_MODE_SYNC_IN_RULE
         AsyncMode.UNRECOGNIZED -> ""
     }
 }
@@ -982,15 +983,15 @@ fun AsyncMode.labelKey(): String {
 fun ConflictStrategy.labelKey(): String {
     return when (this) {
         ConflictStrategy.ConflictStrategy_ExecuteBoth -> {
-            "ui.rule.conflict.strategy.both"
+            I18N_R.UI_RULE_CONFLICT_STRATEGY_BOTH
         }
 
         ConflictStrategy.ConflictStrategy_ReplaceOld -> {
-            "ui.rule.conflict.strategy.replace"
+            I18N_R.UI_RULE_CONFLICT_STRATEGY_REPLACE
         }
 
         ConflictStrategy.ConflictStrategy_SkipNew -> {
-            "ui.rule.conflict.strategy.skip"
+            I18N_R.UI_RULE_CONFLICT_STRATEGY_SKIP
         }
 
         ConflictStrategy.UNRECOGNIZED -> {

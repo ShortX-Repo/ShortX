@@ -22,6 +22,7 @@ import tornaco.apps.shortx.ui.addrule.action.model.toProtoAction
 import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import java.util.UUID
 import javax.inject.Inject
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 private fun newButtonId() = "ASB-${UUID.randomUUID()}"
 
@@ -205,8 +206,8 @@ class ShowActionSidebarSelectorViewModel @Inject constructor(@ApplicationContext
 
     fun validate(): Boolean {
         val message = when {
-            state.value.buttons.isEmpty() -> "ui.action.show.action.sidebar.empty"
-            state.value.buttons.any { it.icon.isBlank() && it.text.isBlank() } -> "ui.action.show.action.sidebar.empty"
+            state.value.buttons.isEmpty() -> I18N_R.UI_ACTION_SHOW_ACTION_SIDEBAR_EMPTY
+            state.value.buttons.any { it.icon.isBlank() && it.text.isBlank() } -> I18N_R.UI_ACTION_SHOW_ACTION_SIDEBAR_EMPTY
             else -> null
         }
         updateState { copy(validationMessage = message) }

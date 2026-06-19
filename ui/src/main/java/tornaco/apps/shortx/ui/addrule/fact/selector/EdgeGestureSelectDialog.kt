@@ -78,6 +78,7 @@ import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.gesture.ScreenRectPickerActivity
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 data class EdgeGestureSelectDialogResult(
     val edge: Edge,
@@ -230,7 +231,7 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                         topBar = {
                             ShortXTopAppBar(
                                 modifier = Modifier,
-                                title = { Text(LocalI18N.current["ui.fact.edge.gesture"]) },
+                                title = { Text(LocalI18N.current[I18N_R.UI_FACT_EDGE_GESTURE]) },
                                 navigationIcon = {
                                     IconButton(onClick = {
                                         state.dismiss()
@@ -258,7 +259,7 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                             val i18N = LocalI18N.current
                             FieldTitle(
                                 modifier = Modifier.padding(vertical = 12.dp),
-                                text = i18N["ui.fact.edge.gesture.position"]
+                                text = i18N[I18N_R.UI_FACT_EDGE_GESTURE_POSITION]
                             )
 
                             // Custom Rect selection area
@@ -266,7 +267,7 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                                 Column {
                                     SmallTitle(
                                         modifier = Modifier.padding(vertical = 12.dp),
-                                        text = i18N["ui.fact.edge.gesture.custom.rect.area"]
+                                        text = i18N[I18N_R.UI_FACT_EDGE_GESTURE_CUSTOM_RECT_AREA]
                                     )
 
                                     // Rect输入框
@@ -278,7 +279,7 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                                         },
                                         label = {
                                             Text(
-                                                i18N["ui.fact.edge.gesture.rect.input.label"]
+                                                i18N[I18N_R.UI_FACT_EDGE_GESTURE_RECT_INPUT_LABEL]
                                             )
                                         },
                                         placeholder = { Text("例如: 100 200 300 400") },
@@ -289,7 +290,7 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
 
                                     if (state.rectInputText.isNotEmpty() && state.parseRectFromInput() == null) {
                                         Text(
-                                            text = i18N["ui.fact.edge.gesture.rect.input.error"],
+                                            text = i18N[I18N_R.UI_FACT_EDGE_GESTURE_RECT_INPUT_ERROR],
                                             color = androidx.compose.material3.MaterialTheme.colorScheme.error,
                                             modifier = Modifier.padding(top = 4.dp)
                                         )
@@ -301,7 +302,7 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                                     val rect = state.customRect
                                     if (rect != null) {
                                         Text(
-                                            text = i18N["ui.fact.edge.gesture.selected.area"].replace(
+                                            text = i18N[I18N_R.UI_FACT_EDGE_GESTURE_SELECTED_AREA].replace(
                                                 "{left}",
                                                 rect.left.toString()
                                             )
@@ -313,7 +314,7 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
 
                                     } else {
                                         Text(
-                                            text = i18N["ui.fact.edge.gesture.no.area.selected"],
+                                            text = i18N[I18N_R.UI_FACT_EDGE_GESTURE_NO_AREA_SELECTED],
                                             modifier = Modifier.padding(vertical = 8.dp)
                                         )
                                     }
@@ -327,11 +328,11 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                                         },
                                         modifier = Modifier.fillMaxWidth()
                                     ) {
-                                        Text(i18N["ui.fact.edge.gesture.select.screen.area"])
+                                        Text(i18N[I18N_R.UI_FACT_EDGE_GESTURE_SELECT_SCREEN_AREA])
                                     }
 
                                     StandardSpacer()
-                                    TipRow(text = i18N["ui.fact.edge.gesture.select.area.tip"])
+                                    TipRow(text = i18N[I18N_R.UI_FACT_EDGE_GESTURE_SELECT_AREA_TIP])
                                     StandardSpacer()
                                 }
                             }
@@ -403,7 +404,7 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                                     modifier = Modifier.size(18.dp)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
-                                Text(i18N["ui.fact.edge.gesture.show.selected.area"])
+                                Text(i18N[I18N_R.UI_FACT_EDGE_GESTURE_SHOW_SELECTED_AREA])
                             }
 
                             // Custom Rect toggle
@@ -412,7 +413,7 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                SmallTitle(text = i18N["ui.fact.edge.gesture.use.custom.rect"])
+                                SmallTitle(text = i18N[I18N_R.UI_FACT_EDGE_GESTURE_USE_CUSTOM_RECT])
                                 ShortXSwitch(checked = state.useCustomRect, onCheckedChange = {
                                     state.useCustomRect = it
                                     if (!it) {
@@ -430,7 +431,7 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                                         verticalAlignment = Alignment.CenterVertically,
                                         horizontalArrangement = Arrangement.SpaceBetween
                                     ) {
-                                        SmallTitle(text = i18N["ui.fact.edge.gesture.use.absolute.area"])
+                                        SmallTitle(text = i18N[I18N_R.UI_FACT_EDGE_GESTURE_USE_ABSOLUTE_AREA])
                                         ShortXSwitch(
                                             checked = state.useAbsoluteArea,
                                             onCheckedChange = {
@@ -438,7 +439,7 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                                             }
                                         )
                                     }
-                                    TipRow(text = i18N["ui.fact.edge.gesture.use.absolute.area.description"])
+                                    TipRow(text = i18N[I18N_R.UI_FACT_EDGE_GESTURE_USE_ABSOLUTE_AREA_DESCRIPTION])
                                     StandardSpacer()
                                 }
                             }
@@ -448,7 +449,7 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                                 Column {
                                     FieldTitle(
                                         modifier = Modifier.padding(vertical = 12.dp),
-                                        text = i18N["ui.fact.edge.gesture.gesture"]
+                                        text = i18N[I18N_R.UI_FACT_EDGE_GESTURE_GESTURE]
                                     )
                                     ListItem(
                                         title = i18N[state.gesture.displayNameKey()],
@@ -487,18 +488,18 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                                         Column {
                                             FieldTitle(
                                                 modifier = Modifier.padding(vertical = 12.dp),
-                                                text = i18N["ui.fact.edge.gesture.child.gesture"]
+                                                text = i18N[I18N_R.UI_FACT_EDGE_GESTURE_CHILD_GESTURE]
                                             )
 
                                             if (state.childSteps.isEmpty()) {
                                                 ListItem(
-                                                    title = i18N["ui.fact.edge.gesture.child.gesture.none"],
+                                                    title = i18N[I18N_R.UI_FACT_EDGE_GESTURE_CHILD_GESTURE_NONE],
                                                     action1 = {
                                                         TextButton(onClick = {
                                                             childStepEditIndex = null
                                                             dropdownState.open()
                                                         }) {
-                                                            Text(i18N["ui.common.add"])
+                                                            Text(i18N[I18N_R.UI_COMMON_ADD])
                                                         }
                                                     },
                                                     onClick = {
@@ -516,12 +517,12 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                                                                     childStepEditIndex = index
                                                                     dropdownState.open()
                                                                 }) {
-                                                                    Text(i18N["ui.common.edit"])
+                                                                    Text(i18N[I18N_R.UI_COMMON_EDIT])
                                                                 }
                                                                 TextButton(onClick = {
                                                                     state.childSteps.removeAt(index)
                                                                 }) {
-                                                                    Text(i18N["ui.common.delete"])
+                                                                    Text(i18N[I18N_R.UI_COMMON_DELETE])
                                                                 }
                                                             }
                                                         },
@@ -566,7 +567,7 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
-                                    FieldTitle(text = i18N["ui.fact.edge.gesture.indicator"])
+                                    FieldTitle(text = i18N[I18N_R.UI_FACT_EDGE_GESTURE_INDICATOR])
                                     ShortXSwitch(
                                         checked = state.enableGestureHint,
                                         onCheckedChange = {
@@ -583,7 +584,7 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
-                                    FieldTitle(text = i18N["ui.fact.edge.gesture.haptic"])
+                                    FieldTitle(text = i18N[I18N_R.UI_FACT_EDGE_GESTURE_HAPTIC])
                                     ShortXSwitch(
                                         checked = state.enableGestureHaptic,
                                         onCheckedChange = {
@@ -600,7 +601,7 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                FieldTitle(text = i18N["ui.fact.edge.gesture.disable.when.ime"])
+                                FieldTitle(text = i18N[I18N_R.UI_FACT_EDGE_GESTURE_DISABLE_WHEN_IME])
                                 ShortXSwitch(
                                     checked = state.disableWhenIME,
                                     onCheckedChange = {
@@ -608,7 +609,7 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                                     }
                                 )
                             }
-                            TipRow(text = i18N["ui.fact.edge.gesture.disable.when.ime.description"])
+                            TipRow(text = i18N[I18N_R.UI_FACT_EDGE_GESTURE_DISABLE_WHEN_IME_DESCRIPTION])
 
                             val appFgPkgSelectorState =
                                 rememberAppPkgSelectorState(
@@ -626,9 +627,9 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                             val appPkgSetText = mutableListOf(
                                 LocalI18N.current[
                                     if (state.apps.isEmpty() && state.pkgSets.isEmpty()) {
-                                        "ui.fact.edge.gesture.front.app.any"
+                                        I18N_R.UI_FACT_EDGE_GESTURE_FRONT_APP_ANY
                                     } else {
-                                        "ui.fact.edge.gesture.front.app"
+                                        I18N_R.UI_FACT_EDGE_GESTURE_FRONT_APP
                                     }
                                 ]
                             ).labelLinesFromAppsAndPkgSets(
@@ -636,7 +637,7 @@ fun EdgeGestureSelector(state: EdgeGestureSelectorState) {
                                 state.pkgSets
                             )
                             StandardSpacer()
-                            FieldTitle(text = LocalI18N.current["ui.fact.edge.gesture.front.app"])
+                            FieldTitle(text = LocalI18N.current[I18N_R.UI_FACT_EDGE_GESTURE_FRONT_APP])
                             ListItem(titleLines = appPkgSetText, onClick = {
                                 appFgPkgSelectorState.show(
                                     state.apps,

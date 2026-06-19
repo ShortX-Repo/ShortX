@@ -37,6 +37,7 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.pkgset.PkgSetSelectorDialog
 import tornaco.apps.shortx.ui.pkgset.rememberPkgSetSelectorState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class PkgSetAppMutationSelectorDialogState(
     val title: String,
@@ -128,7 +129,7 @@ private fun PkgSetAppMutationDialogContent(state: PkgSetAppMutationSelectorDialo
 
                     FilledTonalButton(onClick = { pkgSetSelectorState.show() }) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(state.pkgSetLabel.ifBlank { i18N["ui.common.unselected"] })
+                            Text(state.pkgSetLabel.ifBlank { i18N[I18N_R.UI_COMMON_UNSELECTED] })
                             StandardSpacer()
                             RemixIcon(remixName = Remix.Arrows.arrow_drop_down_fill)
                         }
@@ -158,7 +159,7 @@ private fun PkgSetAppMutationDialogContent(state: PkgSetAppMutationSelectorDialo
                     SinglePkgAndUserSelectorDialog(state = singlePkgAndUserSelectState)
 
                     Button(onClick = { singlePkgAndUserSelectState.show() }) {
-                        Text(text = i18N["ui.common.add"])
+                        Text(text = i18N[I18N_R.UI_COMMON_ADD])
                     }
                 }
             }

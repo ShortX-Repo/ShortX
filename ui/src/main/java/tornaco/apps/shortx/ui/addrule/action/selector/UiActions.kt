@@ -39,13 +39,14 @@ import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @Composable
 fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> Boolean {
     val context = LocalContext.current
 
     val toastSelectionState =
-        rememberTextInputState(title = LocalI18N.current["ui.action.show.toast"],
+        rememberTextInputState(title = LocalI18N.current[I18N_R.UI_ACTION_SHOW_TOAST],
             message = null,
             onSelected = {
                 addAction(Action.ShowToast(message = it))
@@ -83,8 +84,8 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
     )
 
     val removeStatusBarIconState = rememberTextInputState(
-        title = LocalI18N.current["ui.action.set.statusbar.icon.slot"],
-        message = LocalI18N.current["ui.action.set.statusbar.icon.slot.summary"]
+        title = LocalI18N.current[I18N_R.UI_ACTION_SET_STATUSBAR_ICON_SLOT],
+        message = LocalI18N.current[I18N_R.UI_ACTION_SET_STATUSBAR_ICON_SLOT_SUMMARY]
     ) {
         addAction(Action.RemoveStatusBarIcon(slot = it))
     }
@@ -222,8 +223,8 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
     )
 
     val getNodeTextSelectorState = rememberTextInputState(
-        title = LocalI18N.current["ui.action.get.text.from.node"],
-        message = LocalI18N.current["ui.action.get.text.from.node.tip.get.all"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_GET_TEXT_FROM_NODE],
+        message = LocalI18N.current[I18N_R.UI_ACTION_GET_TEXT_FROM_NODE_TIP_GET_ALL],
         inputValidator = { InputValidateResult.OK },
         onSelected = {
             addAction(Action.GetTextFromScreenNode(nodeId = it))
@@ -232,7 +233,7 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
     TextInputDialog(state = getNodeTextSelectorState)
 
     val scrollToSelectorState = rememberMenuDialogState<String>(
-        title = LocalI18N.current["ui.action.scroll.view.to"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_SCROLL_VIEW_TO],
         menuItems = ScrollViewToLocation.entries
             .filterNot { it == ScrollViewToLocation.UNRECOGNIZED }
             .map {
@@ -249,7 +250,7 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
     MenuDialog(state = scrollToSelectorState)
 
     val inputTextSelectorState = rememberTextInputState(
-        title = LocalI18N.current["ui.action.input.text"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_INPUT_TEXT],
         message = null,
         onSelected = {
             addAction(Action.InputText(text = it))
@@ -258,7 +259,7 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
 
 
     val performContextMenuSelectorState = rememberMenuDialogState<String>(
-        title = LocalI18N.current["ui.action.perform.context.menu.action"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_PERFORM_CONTEXT_MENU_ACTION],
         menuItems = ContextMenuAction.entries
             .filterNot { it == ContextMenuAction.UNRECOGNIZED }
             .map {

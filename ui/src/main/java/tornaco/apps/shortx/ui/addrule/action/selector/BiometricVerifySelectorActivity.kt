@@ -36,6 +36,7 @@ import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class BiometricVerifySelectorActivity : BaseSelectorActivity<Action.BiometricVerify>() {
@@ -58,7 +59,7 @@ private fun BaseSelectorActivity<Action.BiometricVerify>.Selector(currentAction:
         topBar = {
             ShortXTopAppBar(
                 modifier = Modifier,
-                title = { Text(LocalI18N.current["ui.action.biometric.verify"]) },
+                title = { Text(LocalI18N.current[I18N_R.UI_ACTION_BIOMETRIC_VERIFY]) },
                 navigationIcon = {
                     IconButton(onClick = {
                         cancelAndFinish()
@@ -86,7 +87,7 @@ private fun BaseSelectorActivity<Action.BiometricVerify>.Selector(currentAction:
         ) {
             FieldTitle(
                 modifier = Modifier.fillMaxWidth(),
-                text = LocalI18N.current["ui.action.biometric.verify.title"]
+                text = LocalI18N.current[I18N_R.UI_ACTION_BIOMETRIC_VERIFY_TITLE]
             )
             MediumSpacer()
             ShortXTextField(
@@ -99,7 +100,7 @@ private fun BaseSelectorActivity<Action.BiometricVerify>.Selector(currentAction:
 
             FieldTitle(
                 modifier = Modifier.fillMaxWidth(),
-                text = LocalI18N.current["ui.action.biometric.verify.subtitle"]
+                text = LocalI18N.current[I18N_R.UI_ACTION_BIOMETRIC_VERIFY_SUBTITLE]
             )
             MediumSpacer()
             ShortXTextField(
@@ -119,7 +120,7 @@ private fun BaseSelectorActivity<Action.BiometricVerify>.Selector(currentAction:
 
             val allowHandler = remember(vm) { vm.allowedActionHandler }
             val allowState by allowHandler.state.collectAsState()
-            FieldTitle(text = LocalI18N.current["ui.action.biometric.verify.allow.action"])
+            FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_BIOMETRIC_VERIFY_ALLOW_ACTION])
             MediumSpacer()
             tornaco.apps.shortx.ui.addrule.action.ActionContent(
                 actions = allowState.actions,
@@ -132,7 +133,7 @@ private fun BaseSelectorActivity<Action.BiometricVerify>.Selector(currentAction:
 
             val denyHandler = remember(vm) { vm.deniedActionHandler }
             val denyState by denyHandler.state.collectAsState()
-            FieldTitle(text = LocalI18N.current["ui.action.biometric.verify.deny.action"])
+            FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_BIOMETRIC_VERIFY_DENY_ACTION])
             MediumSpacer()
             tornaco.apps.shortx.ui.addrule.action.ActionContent(
                 actions = denyState.actions,

@@ -23,6 +23,7 @@ import tornaco.apps.shortx.ui.base.ShortXTextButton
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.settings.pref.DiscoveryRepoSetting
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class NewDiscoveryRepoState(
     val onSelected: (DiscoveryRepoSetting) -> Unit
@@ -50,7 +51,7 @@ fun rememberNewDiscoveryRepoState(
 fun NewDiscoveryRepoDialog(state: NewDiscoveryRepoState) {
     if (state.isShowing) {
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
-            DialogTitle(text = LocalI18N.current["ui.discover.source.add.custom"])
+            DialogTitle(text = LocalI18N.current[I18N_R.UI_DISCOVER_SOURCE_ADD_CUSTOM])
         }, buttons = {
             ShortXTextButton(
                 enabled = state.alias.trim().isNotEmpty() && state.url.trim().isNotEmpty(),
@@ -72,10 +73,10 @@ fun NewDiscoveryRepoDialog(state: NewDiscoveryRepoState) {
 
                 FieldTitle(
                     modifier = Modifier.padding(vertical = 12.dp),
-                    text = i18N["ui.discover.source.add.custom.alias"]
+                    text = i18N[I18N_R.UI_DISCOVER_SOURCE_ADD_CUSTOM_ALIAS]
                 )
                 SmallSpacer()
-                DialogMessage(text = i18N["ui.discover.source.add.custom.alias.description"])
+                DialogMessage(text = i18N[I18N_R.UI_DISCOVER_SOURCE_ADD_CUSTOM_ALIAS_DESCRIPTION])
                 SmallSpacer()
                 ShortXTextField(
                     modifier = Modifier.fillMaxWidth(),
@@ -90,10 +91,10 @@ fun NewDiscoveryRepoDialog(state: NewDiscoveryRepoState) {
 
                 FieldTitle(
                     modifier = Modifier.padding(vertical = 12.dp),
-                    text = i18N["ui.discover.source.add.custom.url"]
+                    text = i18N[I18N_R.UI_DISCOVER_SOURCE_ADD_CUSTOM_URL]
                 )
                 SmallSpacer()
-                DialogMessage(text = i18N["ui.discover.source.add.custom.description"])
+                DialogMessage(text = i18N[I18N_R.UI_DISCOVER_SOURCE_ADD_CUSTOM_DESCRIPTION])
                 SmallSpacer()
                 ShortXTextField(
                     modifier = Modifier.fillMaxWidth(),

@@ -13,6 +13,7 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.ShortXAlertDialog
 import tornaco.apps.shortx.ui.base.ShortXTextButton
 import tornaco.apps.shortx.ui.util.ClipboardUtils
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class GlobalVarAccessHelpDialogState(val globalVar: GlobalVar) : CommonDialogState()
 
@@ -46,7 +47,7 @@ fun GlobalVarAccessHelpDialog(state: GlobalVarAccessHelpDialogState) {
                     )
                     Toast.makeText(
                         context,
-                        i18N["ui.common.copied.to.clipboard"],
+                        i18N[I18N_R.UI_COMMON_COPIED_TO_CLIPBOARD],
                         Toast.LENGTH_LONG
                     ).show()
 
@@ -55,11 +56,11 @@ fun GlobalVarAccessHelpDialog(state: GlobalVarAccessHelpDialogState) {
                 }
             },
             title = {
-                Text(text = i18N["ui.global.var.access.help.title"] + " " + state.globalVar.name)
+                Text(text = i18N[I18N_R.UI_GLOBAL_VAR_ACCESS_HELP_TITLE] + " " + state.globalVar.name)
             },
             text = {
                 Text(
-                    text = i18N["ui.global.var.access.help.message", mapOf("name" to GLOBAL_VAR_REF_PREFIX + state.globalVar.name)]
+                    text = i18N[I18N_R.UI_GLOBAL_VAR_ACCESS_HELP_MESSAGE, mapOf("name" to GLOBAL_VAR_REF_PREFIX + state.globalVar.name)]
                 )
             })
     }

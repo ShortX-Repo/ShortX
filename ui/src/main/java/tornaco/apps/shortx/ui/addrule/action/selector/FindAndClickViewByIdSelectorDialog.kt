@@ -40,6 +40,7 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class FindAndClickViewByIdSelectorState(
     val onSelected: (Action.FindAndClickViewById) -> Unit
@@ -103,7 +104,7 @@ private fun FindAndClickViewByIdSelector(
             Scaffold(modifier = Modifier, topBar = {
                 ShortXTopAppBar(
                     modifier = Modifier,
-                    title = { Text(text = LocalI18N.current["ui.action.find.click.view.by.id"]) },
+                    title = { Text(text = LocalI18N.current[I18N_R.UI_ACTION_FIND_CLICK_VIEW_BY_ID]) },
                     navigationIcon = {
                         IconButton(onClick = {
                             state.dismiss()
@@ -137,7 +138,7 @@ private fun FindAndClickViewByIdSelector(
                 ) {
                     SmallTitle(
                         modifier = Modifier.padding(vertical = 12.dp),
-                        LocalI18N.current["ui.action.find.click.view.by.id.id"]
+                        LocalI18N.current[I18N_R.UI_ACTION_FIND_CLICK_VIEW_BY_ID_ID]
                     )
                     TinySpacer()
                     ShortXTextField(modifier = Modifier.fillMaxWidth(),
@@ -149,7 +150,7 @@ private fun FindAndClickViewByIdSelector(
 
                     SmallTitle(
                         modifier = Modifier.padding(vertical = 12.dp),
-                        LocalI18N.current["ui.action.find.click.view.by.id.is.regex"]
+                        LocalI18N.current[I18N_R.UI_ACTION_FIND_CLICK_VIEW_BY_ID_IS_REGEX]
                     )
                     TinySpacer()
                     ShortXSwitch(
@@ -159,9 +160,9 @@ private fun FindAndClickViewByIdSelector(
 
                     SmallTitle(
                         modifier = Modifier.padding(vertical = 12.dp),
-                        LocalI18N.current["ui.action.find.click.view.by.id.timeout"]
+                        LocalI18N.current[I18N_R.UI_ACTION_FIND_CLICK_VIEW_BY_ID_TIMEOUT]
                     )
-                    TipBody(LocalI18N.current["ui.action.find.click.view.by.id.timeout.description"])
+                    TipBody(LocalI18N.current[I18N_R.UI_ACTION_FIND_CLICK_VIEW_BY_ID_TIMEOUT_DESCRIPTION])
                     TinySpacer()
                     ShortXTextField(
                         modifier = Modifier.fillMaxWidth(),

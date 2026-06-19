@@ -44,6 +44,7 @@ import tornaco.apps.shortx.ui.base.SelectionDialog
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberSelectionDialogState
 import java.util.UUID
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @Composable
 fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSelectSource) -> Boolean {
@@ -53,8 +54,8 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     EvaluateGlobalVarSelectorDialog(state = evaluateGlobalVarSelectorDialogState)
 
     val batteryPercentDialog = rememberIntOpSelectorState(
-        title = LocalI18N.current["ui.conditions.battery.percent"],
-        valueTitle = LocalI18N.current["ui.conditions.battery.percent.value"],
+        title = LocalI18N.current[I18N_R.UI_CONDITIONS_BATTERY_PERCENT],
+        valueTitle = LocalI18N.current[I18N_R.UI_CONDITIONS_BATTERY_PERCENT_VALUE],
         maxValue = 100,
         evaluate = {
             val res = shortXManager.evaluateCondition(
@@ -74,8 +75,8 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     IntOpSelectorDialog(state = batteryPercentDialog)
 
     val availableMemoryDialog = rememberIntOpSelectorState(
-        title = LocalI18N.current["ui.conditions.memory.available"],
-        valueTitle = LocalI18N.current["ui.conditions.memory.available.value"],
+        title = LocalI18N.current[I18N_R.UI_CONDITIONS_MEMORY_AVAILABLE],
+        valueTitle = LocalI18N.current[I18N_R.UI_CONDITIONS_MEMORY_AVAILABLE_VALUE],
         evaluate = {
             val res = shortXManager.evaluateCondition(
                 context = EvaluateContext.newBuilder()
@@ -94,8 +95,8 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     IntOpSelectorDialog(state = availableMemoryDialog)
 
     val wifiSignalSelectorState = rememberIntOpSelectorState(
-        title = LocalI18N.current["ui.conditions.wifi.signal"],
-        valueTitle = LocalI18N.current["ui.conditions.wifi.signal.level", mapOf(
+        title = LocalI18N.current[I18N_R.UI_CONDITIONS_WIFI_SIGNAL],
+        valueTitle = LocalI18N.current[I18N_R.UI_CONDITIONS_WIFI_SIGNAL_LEVEL, mapOf(
             "max" to shortXManager.getMaxSignalLevel().toString()
         )],
         maxValue = shortXManager.getMaxSignalLevel(),
@@ -122,7 +123,7 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     TimeOfADayRangeSelector(state = timeInRangeSelectorState)
 
     val calendarDayMatchSelectDialogState = rememberSelectionDialogState(
-        title = LocalI18N.current["ui.conditions.calendar.day.match"],
+        title = LocalI18N.current[I18N_R.UI_CONDITIONS_CALENDAR_DAY_MATCH],
         message = calendarDayTypeDetailsText(LocalI18N.current),
         selectionLabel2Ids = listOf(
             CalendarDayType.AnyDay,
@@ -140,15 +141,15 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     SelectionDialog(state = calendarDayMatchSelectDialogState)
 
     val chargeStateSelectorState = rememberMenuDialogState<String>(
-        title = LocalI18N.current["ui.conditions.charge.state"],
+        title = LocalI18N.current[I18N_R.UI_CONDITIONS_CHARGE_STATE],
         menuItems = listOf(
             MenuDialogItem(
                 id = "charge",
-                title = LocalI18N.current["ui.conditions.charge.state.charge"],
+                title = LocalI18N.current[I18N_R.UI_CONDITIONS_CHARGE_STATE_CHARGE],
             ),
             MenuDialogItem(
                 id = "notCharge",
-                title = LocalI18N.current["ui.conditions.charge.state.not.charge"],
+                title = LocalI18N.current[I18N_R.UI_CONDITIONS_CHARGE_STATE_NOT_CHARGE],
             ),
         ),
         onItemSelected = { data, id ->
@@ -158,7 +159,7 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     MenuDialog(state = chargeStateSelectorState)
 
     val plugStateSelectorState = rememberMenuDialogState<String>(
-        title = LocalI18N.current["ui.conditions.plug.state"],
+        title = LocalI18N.current[I18N_R.UI_CONDITIONS_PLUG_STATE],
         menuItems = PlugType.entries.filterNot { it == PlugType.UNRECOGNIZED }.map {
             MenuDialogItem(
                 id = it.name,
@@ -172,8 +173,8 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     MenuDialog(state = plugStateSelectorState)
 
     val wifiConnectedToSelectorState = rememberWifiSSIDSelectorState(
-        title = LocalI18N.current["ui.conditions.wifi.connected"],
-        message = LocalI18N.current["ui.conditions.wifi.connected.target"],
+        title = LocalI18N.current[I18N_R.UI_CONDITIONS_WIFI_CONNECTED],
+        message = LocalI18N.current[I18N_R.UI_CONDITIONS_WIFI_CONNECTED_TARGET],
         loadSSID = {
             shortXManager.getWifiScanResults().filterNot { it.isBlank() }
         },
@@ -185,7 +186,7 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     WifiSSIDSelectorDialog(state = wifiConnectedToSelectorState)
 
     val btConnectedSelectorState = rememberBTDeviceSelectorState(
-        title = LocalI18N.current["ui.conditions.bt.connected"],
+        title = LocalI18N.current[I18N_R.UI_CONDITIONS_BT_CONNECTED],
         onSelected = { name, address, timeout ->
             addCondition(Condition.RequireBTConnected(requiredDevice = name))
         }
@@ -193,8 +194,8 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     BTDeviceSelectorDialog(state = btConnectedSelectorState)
 
     val btFoundSelectorState = rememberBTDeviceSelectorState(
-        title = LocalI18N.current["ui.conditions.bt.device.found"],
-        message = LocalI18N.current["ui.conditions.bt.device.found.tip"],
+        title = LocalI18N.current[I18N_R.UI_CONDITIONS_BT_DEVICE_FOUND],
+        message = LocalI18N.current[I18N_R.UI_CONDITIONS_BT_DEVICE_FOUND_TIP],
         showTimeoutSelector = true,
         onSelected = { name, address, timeout ->
             addCondition(
@@ -214,15 +215,15 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     SIMSlotSelectorDialog(state = mobileDataEnableSelectorState)
 
     val screenLockStateSelectorState = rememberMenuDialogState<Boolean>(
-        title = LocalI18N.current["ui.conditions.screen.lock.state"],
+        title = LocalI18N.current[I18N_R.UI_CONDITIONS_SCREEN_LOCK_STATE],
         menuItems = listOf(
             MenuDialogItem(
                 id = false.toString(),
-                title = LocalI18N.current["ui.conditions.screen.locked.y"],
+                title = LocalI18N.current[I18N_R.UI_CONDITIONS_SCREEN_LOCKED_Y],
             ),
             MenuDialogItem(
                 id = true.toString(),
-                title = LocalI18N.current["ui.conditions.screen.unlocked"],
+                title = LocalI18N.current[I18N_R.UI_CONDITIONS_SCREEN_UNLOCKED],
             ),
         ),
         onItemSelected = { _, id ->
@@ -232,15 +233,15 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     MenuDialog(state = screenLockStateSelectorState)
 
     val screenStayAwakeStateSelectorState = rememberMenuDialogState<Boolean>(
-        title = LocalI18N.current["ui.conditions.screen.stay.awake.state"],
+        title = LocalI18N.current[I18N_R.UI_CONDITIONS_SCREEN_STAY_AWAKE_STATE],
         menuItems = listOf(
             MenuDialogItem(
                 id = false.toString(),
-                title = LocalI18N.current["ui.conditions.screen.stay.awake.on"],
+                title = LocalI18N.current[I18N_R.UI_CONDITIONS_SCREEN_STAY_AWAKE_ON],
             ),
             MenuDialogItem(
                 id = true.toString(),
-                title = LocalI18N.current["ui.conditions.screen.stay.awake.off"],
+                title = LocalI18N.current[I18N_R.UI_CONDITIONS_SCREEN_STAY_AWAKE_OFF],
             ),
         ),
         onItemSelected = { _, id ->
@@ -250,15 +251,15 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     MenuDialog(state = screenStayAwakeStateSelectorState)
 
     val vpnStateSelectorState = rememberMenuDialogState<Boolean>(
-        title = LocalI18N.current["ui.conditions.vpn.state"],
+        title = LocalI18N.current[I18N_R.UI_CONDITIONS_VPN_STATE],
         menuItems = listOf(
             MenuDialogItem(
                 id = false.toString(),
-                title = LocalI18N.current["ui.conditions.vpn.connected"],
+                title = LocalI18N.current[I18N_R.UI_CONDITIONS_VPN_CONNECTED],
             ),
             MenuDialogItem(
                 id = true.toString(),
-                title = LocalI18N.current["ui.conditions.vpn.disconnected"],
+                title = LocalI18N.current[I18N_R.UI_CONDITIONS_VPN_DISCONNECTED],
             ),
         ),
         onItemSelected = { _, id ->
@@ -268,15 +269,15 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     MenuDialog(state = vpnStateSelectorState)
 
     val screenOrientationStateSelectorState = rememberMenuDialogState<Boolean>(
-        title = LocalI18N.current["ui.conditions.screen.orientation"],
+        title = LocalI18N.current[I18N_R.UI_CONDITIONS_SCREEN_ORIENTATION],
         menuItems = listOf(
             MenuDialogItem(
                 id = false.toString(),
-                title = LocalI18N.current["ui.conditions.screen.orientation.portrait"],
+                title = LocalI18N.current[I18N_R.UI_CONDITIONS_SCREEN_ORIENTATION_PORTRAIT],
             ),
             MenuDialogItem(
                 id = true.toString(),
-                title = LocalI18N.current["ui.conditions.screen.orientation.landscape"],
+                title = LocalI18N.current[I18N_R.UI_CONDITIONS_SCREEN_ORIENTATION_LANDSCAPE],
             ),
         ),
         onItemSelected = { _, id ->
@@ -286,15 +287,15 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     MenuDialog(state = screenOrientationStateSelectorState)
 
     val callStateSelectorState = rememberMenuDialogState<Boolean>(
-        title = LocalI18N.current["ui.condition.call.state"],
+        title = LocalI18N.current[I18N_R.UI_CONDITION_CALL_STATE],
         menuItems = listOf(
             MenuDialogItem(
                 id = false.toString(),
-                title = LocalI18N.current["ui.condition.call.state.incall"],
+                title = LocalI18N.current[I18N_R.UI_CONDITION_CALL_STATE_INCALL],
             ),
             MenuDialogItem(
                 id = true.toString(),
-                title = LocalI18N.current["ui.condition.call.state.not.incall"],
+                title = LocalI18N.current[I18N_R.UI_CONDITION_CALL_STATE_NOT_INCALL],
             ),
         ),
         onItemSelected = { _, id ->
@@ -304,15 +305,15 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     MenuDialog(state = callStateSelectorState)
 
     val ringingStateSelectorState = rememberMenuDialogState<Boolean>(
-        title = LocalI18N.current["ui.condition.ringing.state"],
+        title = LocalI18N.current[I18N_R.UI_CONDITION_RINGING_STATE],
         menuItems = listOf(
             MenuDialogItem(
                 id = false.toString(),
-                title = LocalI18N.current["ui.condition.ringing.state.ringing"],
+                title = LocalI18N.current[I18N_R.UI_CONDITION_RINGING_STATE_RINGING],
             ),
             MenuDialogItem(
                 id = true.toString(),
-                title = LocalI18N.current["ui.condition.ringing.state.not.ringing"],
+                title = LocalI18N.current[I18N_R.UI_CONDITION_RINGING_STATE_NOT_RINGING],
             ),
         ),
         onItemSelected = { _, id ->
@@ -323,10 +324,10 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
 
 
     val headsetPlugMenuState = rememberMenuDialogState<String>(
-        title = LocalI18N.current["ui.fact.headset.plug"],
+        title = LocalI18N.current[I18N_R.UI_FACT_HEADSET_PLUG],
         menuItems = listOf(
-            MenuDialogItem(id = "in", title = LocalI18N.current["ui.condition.headset.plugged"]),
-            MenuDialogItem(id = "out", title = LocalI18N.current["ui.condition.headset.unplugged"]),
+            MenuDialogItem(id = "in", title = LocalI18N.current[I18N_R.UI_CONDITION_HEADSET_PLUGGED]),
+            MenuDialogItem(id = "out", title = LocalI18N.current[I18N_R.UI_CONDITION_HEADSET_UNPLUGGED]),
         ),
         onItemSelected = { _, id ->
             addCondition(Condition.IsHeadsetPlug(isPlug = id == "in"))
@@ -334,7 +335,7 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     MenuDialog(state = headsetPlugMenuState)
 
     val screenRotateSelectorState = rememberMenuDialogState<String>(
-        title = LocalI18N.current["ui.fact.screen.rotate"],
+        title = LocalI18N.current[I18N_R.UI_FACT_SCREEN_ROTATE],
         menuItems = ScreenRotateDegree.entries
             .filterNot { it == ScreenRotateDegree.UNRECOGNIZED || it == ScreenRotateDegree.ScreenRotateDegree_Any }
             .map {
@@ -348,7 +349,7 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     MenuDialog(state = screenRotateSelectorState)
 
     val windowRotationSelectorState = rememberMenuDialogState<String>(
-        title = LocalI18N.current["ui.fact.window.rotate"],
+        title = LocalI18N.current[I18N_R.UI_FACT_WINDOW_ROTATE],
         menuItems = ScreenRotateDegree.entries
             .filterNot { it == ScreenRotateDegree.UNRECOGNIZED || it == ScreenRotateDegree.ScreenRotateDegree_Any }
             .map {
@@ -362,15 +363,15 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     MenuDialog(state = windowRotationSelectorState)
 
     val sensorOffSelectorState = rememberMenuDialogState<String>(
-        title = LocalI18N.current["ui.action.sensors.off"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_SENSORS_OFF],
         menuItems = listOf(
             MenuDialogItem(
                 "on",
-                LocalI18N.current["ui.common.on"],
+                LocalI18N.current[I18N_R.UI_COMMON_ON],
             ),
             MenuDialogItem(
                 "off",
-                LocalI18N.current["ui.common.off"],
+                LocalI18N.current[I18N_R.UI_COMMON_OFF],
             )
         ),
         onItemSelected = { data, id ->
@@ -382,7 +383,7 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
 
 
     val tileStateSelectorState = rememberMenuDialogState<String>(
-        title = LocalI18N.current["ui.conditions.tile.state"],
+        title = LocalI18N.current[I18N_R.UI_CONDITIONS_TILE_STATE],
         menuItems = QSTileState.entries
             .filterNot { it == QSTileState.UNRECOGNIZED }
             .map {
@@ -401,7 +402,7 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     MenuDialog(state = tileStateSelectorState)
 
     val targetTileSelectorState = rememberQSTileSelectorState(
-        title = LocalI18N.current["ui.conditions.tile.state"],
+        title = LocalI18N.current[I18N_R.UI_CONDITIONS_TILE_STATE],
         onSelected = {
             tileStateSelectorState.show(it.tileSpec)
         }
@@ -409,7 +410,7 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     QSTileSelectorDialog(state = targetTileSelectorState)
 
     val apmModeSelectorState = rememberOnOffAnyStateSelectorState(
-        title = LocalI18N.current["ui.condition.apm.mode"],
+        title = LocalI18N.current[I18N_R.UI_CONDITION_APM_MODE],
         options = listOf(OnOffAny.On, OnOffAny.Off),
         selected = {
             addCondition(Condition.RequireAPMMode(isEnableAPM = (it == OnOffAny.On)))
@@ -417,15 +418,15 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     OnOffAnyStateSelectorDialog(state = apmModeSelectorState)
 
     val imeVisibilitySelectorState = rememberMenuDialogState<String>(
-        title = LocalI18N.current["ui.condition.ime.visibility"],
+        title = LocalI18N.current[I18N_R.UI_CONDITION_IME_VISIBILITY],
         menuItems = listOf(
             MenuDialogItem(
                 id = true.toString(),
-                title = LocalI18N.current["ui.fact.ime.visibility.show"],
+                title = LocalI18N.current[I18N_R.UI_FACT_IME_VISIBILITY_SHOW],
             ),
             MenuDialogItem(
                 id = false.toString(),
-                title = LocalI18N.current["ui.fact.ime.visibility.hide"],
+                title = LocalI18N.current[I18N_R.UI_FACT_IME_VISIBILITY_HIDE],
             ),
         ),
         onItemSelected = { data, id ->
@@ -436,15 +437,15 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     MenuDialog(state = imeVisibilitySelectorState)
 
     val notificationPanelExpandState = rememberMenuDialogState<String>(
-        title = LocalI18N.current["ui.condition.n.panel.expanded"],
+        title = LocalI18N.current[I18N_R.UI_CONDITION_N_PANEL_EXPANDED],
         menuItems = listOf(
             MenuDialogItem(
                 id = true.toString(),
-                title = LocalI18N.current["ui.condition.n.panel.expanded.y"],
+                title = LocalI18N.current[I18N_R.UI_CONDITION_N_PANEL_EXPANDED_Y],
             ),
             MenuDialogItem(
                 id = false.toString(),
-                title = LocalI18N.current["ui.condition.n.panel.expanded.n"],
+                title = LocalI18N.current[I18N_R.UI_CONDITION_N_PANEL_EXPANDED_N],
             ),
         ),
         onItemSelected = { _, id ->
@@ -455,7 +456,7 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
     MenuDialog(state = notificationPanelExpandState)
 
     val ringerModeSelectDialogState = rememberSelectionDialogState(
-        title = LocalI18N.current["ui.condition.ringer.mode"],
+        title = LocalI18N.current[I18N_R.UI_CONDITION_RINGER_MODE],
         message = null,
         selectionLabel2Ids = listOf(RingerMode.normal, RingerMode.vibrate, RingerMode.silent).map {
             LocalI18N.current[it.labelKey()] to it.name

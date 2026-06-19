@@ -14,6 +14,7 @@ import tornaco.apps.shortx.ui.base.rememberShareDialogState
 import tornaco.apps.shortx.ui.main.model.DirectActionUM
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 import tornaco.apps.shortx.ui.util.Permissions.shouldCheckStoragePermissionBeforeWriteDownloads
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @Composable
 fun getLocalDAItemHandler(
@@ -66,7 +67,7 @@ fun getLocalDAItemHandler(
             ClipboardUtils.copyToClipboard(context, "uri", uri)
             Toast.makeText(
                 context,
-                i18N["ui.common.copied.to.clipboard"],
+                i18N[I18N_R.UI_COMMON_COPIED_TO_CLIPBOARD],
                 Toast.LENGTH_LONG
             ).show()
         }
@@ -76,7 +77,7 @@ fun getLocalDAItemHandler(
             ClipboardUtils.copyToClipboard(context, "cmd", cmd)
             Toast.makeText(
                 context,
-                i18N["ui.common.copied.to.clipboard"],
+                i18N[I18N_R.UI_COMMON_COPIED_TO_CLIPBOARD],
                 Toast.LENGTH_LONG
             ).show()
         }

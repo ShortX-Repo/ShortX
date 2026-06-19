@@ -85,6 +85,7 @@ import util.Reflections
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 class AppStateService(shortXContext: ShortXContext) :
@@ -330,7 +331,7 @@ class AppStateService(shortXContext: ShortXContext) :
 
                 Dirs.baseServerDir.deleteRecursively()
                 logger.w("onShortXRemoved, all file deleted!")
-                Toast.makeText(context, i18NIns["ui.shortx.removed.toast"], Toast.LENGTH_LONG)
+                Toast.makeText(context, i18NIns[I18N_R.UI_SHORTX_REMOVED_TOAST], Toast.LENGTH_LONG)
                     .show()
 
             }
@@ -341,13 +342,13 @@ class AppStateService(shortXContext: ShortXContext) :
             delay(2000)
 
             AlertDialog.Builder(context)
-                .setTitle(i18NIns["ui.shortx.uninstalled.title"])
-                .setMessage(i18NIns["ui.shortx.uninstalled.message"])
+                .setTitle(i18NIns[I18N_R.UI_SHORTX_UNINSTALLED_TITLE])
+                .setMessage(i18NIns[I18N_R.UI_SHORTX_UNINSTALLED_MESSAGE])
                 .setCancelable(false)
                 .setPositiveButton(
-                    i18NIns["ui.shortx.uninstalled.clear"]
+                    i18NIns[I18N_R.UI_SHORTX_UNINSTALLED_CLEAR]
                 ) { _, _ -> resetAndClearData() }
-                .setNegativeButton(i18NIns["ui.shortx.uninstalled.keep"]) { dialog, which ->
+                .setNegativeButton(i18NIns[I18N_R.UI_SHORTX_UNINSTALLED_KEEP]) { dialog, which ->
                     // Noop.
                 }
                 .create().apply {

@@ -25,6 +25,7 @@ import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXAppBarScaffold
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.SmallSpacer
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class WSSendSelectorActivity : BaseSelectorActivity<Action.WebSocketSend>() {
@@ -72,7 +73,7 @@ private fun BaseSelectorActivity<Action.WebSocketSend>.WSSendSelector(currentAct
         ) {
             FieldTitleWithTip(
                 text = "Url",
-                tipText = LocalI18N.current["ui.action.websocket.send.url.tip"]
+                tipText = LocalI18N.current[I18N_R.UI_ACTION_WEBSOCKET_SEND_URL_TIP]
             )
             SmallSpacer()
             ShortXTextField(

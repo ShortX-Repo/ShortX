@@ -57,6 +57,7 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import java.time.LocalTime
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class RandomInPeriodSelectorState(
     val selected: (Fact.RandomInPeriod) -> Unit
@@ -78,7 +79,7 @@ class RandomInPeriodSelectorState(
     private fun checkError() {
         val isStartEndError = (end != null && start != null && !end!!.isAfter(start))
         errorMessages = if (isStartEndError) {
-            listOf("ui.fact.time.of.a.day.error.end.before.start")
+            listOf(I18N_R.UI_FACT_TIME_OF_A_DAY_ERROR_END_BEFORE_START)
         } else {
             emptyList()
         }
@@ -134,7 +135,7 @@ fun PeriodSelector(state: RandomInPeriodSelectorState) {
                 ) {
                     Scaffold(topBar = {
                         ShortXTopAppBar(
-                            title = { Text(text = LocalI18N.current["ui.fact.time.of.a.day.random"]) },
+                            title = { Text(text = LocalI18N.current[I18N_R.UI_FACT_TIME_OF_A_DAY_RANDOM]) },
                             navigationIcon = {
                                 IconButton(onClick = { state.dismiss() }) {
                                     RemixIcon(remixName = Remix.System.close_line)
@@ -184,7 +185,7 @@ private fun PeriodContent(state: RandomInPeriodSelectorState) {
             .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.Start
     ) {
-        TipRow(text = LocalI18N.current["ui.fact.time.of.a.day.random.summary"])
+        TipRow(text = LocalI18N.current[I18N_R.UI_FACT_TIME_OF_A_DAY_RANDOM_SUMMARY])
         StandardSpacer()
 
         TimeContent(
@@ -230,21 +231,21 @@ fun TimeContent(
     })
     TimePickerDialog(dialogState = endSelectState)
 
-    FieldTitle(text = LocalI18N.current["ui.fact.time.of.a.day.random.start"])
+    FieldTitle(text = LocalI18N.current[I18N_R.UI_FACT_TIME_OF_A_DAY_RANDOM_START])
     ShortXFilledTonalButton(onClick = { startSelectState.show() }) {
         Text(
             text = start?.let { DateUtils.formatLocalTime(it) }
-                ?: LocalI18N.current["ui.common.unselected"]
+                ?: LocalI18N.current[I18N_R.UI_COMMON_UNSELECTED]
         )
     }
 
     StandardSpacer()
 
-    FieldTitle(text = LocalI18N.current["ui.fact.time.of.a.day.random.end"])
+    FieldTitle(text = LocalI18N.current[I18N_R.UI_FACT_TIME_OF_A_DAY_RANDOM_END])
     ShortXFilledTonalButton(onClick = { endSelectState.show() }) {
         Text(
             text = end?.let { DateUtils.formatLocalTime(it) }
-                ?: LocalI18N.current["ui.common.unselected"]
+                ?: LocalI18N.current[I18N_R.UI_COMMON_UNSELECTED]
         )
     }
 }
@@ -261,7 +262,7 @@ fun RepeatSelector(
         horizontalAlignment = Alignment.Start
     ) {
         FieldTitle(
-            text = LocalI18N.current["ui.fact.time.of.a.day.repeat"],
+            text = LocalI18N.current[I18N_R.UI_FACT_TIME_OF_A_DAY_REPEAT],
         )
         StandardSpacer()
         Row(
@@ -317,7 +318,7 @@ fun CalendarDayTypeSelector(
         modifier = Modifier.padding(bottom = 32.dp),
         horizontalAlignment = Alignment.Start
     ) {
-        FieldTitle(text = LocalI18N.current["ui.conditions.calendar.day.match"])
+        FieldTitle(text = LocalI18N.current[I18N_R.UI_CONDITIONS_CALENDAR_DAY_MATCH])
         StandardSpacer()
         Row(
             modifier = Modifier.horizontalScroll(rememberScrollState()),

@@ -47,6 +47,7 @@ import tornaco.apps.shortx.ui.base.SearchBar
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.rememberSearchBarState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class ContextVarListActivity : BaseActivity() {
     companion object {
@@ -96,7 +97,7 @@ fun ContextVarListScreen(back: () -> Unit) {
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(text = i18N["ui.system.env"]) },
+                        title = { Text(text = i18N[I18N_R.UI_SYSTEM_ENV]) },
                         actions = {
                             IconButton(onClick = {
                                 context.clipboardManager.setPrimaryClip(
@@ -107,7 +108,7 @@ fun ContextVarListScreen(back: () -> Unit) {
                                 )
                                 Toast.makeText(
                                     context,
-                                    i18N["ui.common.copied.to.clipboard"],
+                                    i18N[I18N_R.UI_COMMON_COPIED_TO_CLIPBOARD],
                                     Toast.LENGTH_SHORT
                                 ).show()
                             }) {
@@ -170,7 +171,7 @@ fun ContextVarListScreen(back: () -> Unit) {
                                         }
                                         if (env.requireParam) {
                                             if (isNotEmpty()) append(" · ")
-                                            append(i18N["ui.system.env.require.param"])
+                                            append(i18N[I18N_R.UI_SYSTEM_ENV_REQUIRE_PARAM])
                                         }
                                     }.takeIf { it.isNotBlank() },
                                     onClick = {
@@ -179,7 +180,7 @@ fun ContextVarListScreen(back: () -> Unit) {
                                         )
                                         Toast.makeText(
                                             context,
-                                            i18N["ui.common.copied.to.clipboard"],
+                                            i18N[I18N_R.UI_COMMON_COPIED_TO_CLIPBOARD],
                                             Toast.LENGTH_SHORT
                                         ).show()
                                     }

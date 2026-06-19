@@ -39,6 +39,7 @@ import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 class WriteLocalVarDialogState(
@@ -87,7 +88,7 @@ private fun WriteLocalVarSelector(dialogState: WriteLocalVarDialogState) {
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(text = LocalI18N.current["ui.action.write.local.var"]) },
+                        title = { Text(text = LocalI18N.current[I18N_R.UI_ACTION_WRITE_LOCAL_VAR]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 dialogState.dismiss()
@@ -126,7 +127,7 @@ private fun WriteLocalVarSelector(dialogState: WriteLocalVarDialogState) {
 
                     SmallTitle(
                         modifier = Modifier.padding(vertical = 12.dp),
-                        text = LocalI18N.current["ui.action.select.global.var"]
+                        text = LocalI18N.current[I18N_R.UI_ACTION_SELECT_GLOBAL_VAR]
                     )
                     ShortXTextField(
                         modifier = Modifier.fillMaxWidth(),
@@ -139,7 +140,7 @@ private fun WriteLocalVarSelector(dialogState: WriteLocalVarDialogState) {
 
                     SmallTitle(
                         modifier = Modifier.padding(vertical = 12.dp),
-                        text = LocalI18N.current["ui.action.var.auto.create.title"]
+                        text = LocalI18N.current[I18N_R.UI_ACTION_VAR_AUTO_CREATE_TITLE]
                     )
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         ShortXSwitch(
@@ -147,14 +148,14 @@ private fun WriteLocalVarSelector(dialogState: WriteLocalVarDialogState) {
                             onCheckedChange = { dialogState.autoCreateIfMissing = it }
                         )
                         StandardSpacer()
-                        Text(text = LocalI18N.current["ui.action.var.auto.create.summary"])
+                        Text(text = LocalI18N.current[I18N_R.UI_ACTION_VAR_AUTO_CREATE_SUMMARY])
                     }
 
                     StandardSpacer()
 
                     SmallTitle(
                         modifier = Modifier.padding(vertical = 12.dp),
-                        text = LocalI18N.current["ui.global.var.value"]
+                        text = LocalI18N.current[I18N_R.UI_GLOBAL_VAR_VALUE]
                     )
                     ShortXTextField(
                         modifier = Modifier.fillMaxWidth().imePadding(),

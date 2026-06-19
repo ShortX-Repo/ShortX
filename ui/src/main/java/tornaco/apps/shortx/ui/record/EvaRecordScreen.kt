@@ -98,6 +98,7 @@ import tornaco.apps.shortx.ui.theme.FactRecordColor
 import tornaco.apps.shortx.ui.theme.NoteTextColor
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.theme.SuccessGreen
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class EvaRecordActivity : BaseActivity() {
@@ -152,7 +153,7 @@ fun EvaRecordScreen(pinSrcId: String?, back: () -> Unit) {
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
             ShortXAppBarScaffold(
-                title = i18N["ui.settings.eva.record"],
+                title = i18N[I18N_R.UI_SETTINGS_EVA_RECORD],
                 verticalScroll = false,
                 onBackPressed = { back() },
                 actions = {
@@ -191,7 +192,7 @@ fun EvaRecordScreen(pinSrcId: String?, back: () -> Unit) {
                                 Box(modifier = Modifier.padding(12.dp)) {
                                     TipRow(
 
-                                        text = LocalI18N.current["ui.settings.eva.record.enabled.count", mapOf(
+                                        text = LocalI18N.current[I18N_R.UI_SETTINGS_EVA_RECORD_ENABLED_COUNT, mapOf(
                                             "count" to state.recordEnabledCount.toString()
                                         )]
                                     )
@@ -278,7 +279,7 @@ private fun BottomSheetMenu(
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
         ) {
-            CenterAlignedTopAppBar(title = { Text(LocalI18N.current["ui.common.filter"]) })
+            CenterAlignedTopAppBar(title = { Text(LocalI18N.current[I18N_R.UI_COMMON_FILTER]) })
 
             val subscribeState by LVLStateHolder.collectAsState()
             if (subscribeState.isSubscribed) {
@@ -288,7 +289,7 @@ private fun BottomSheetMenu(
                         modifier = Modifier
                             .clip(ShortXCardRoundedCornerShape)
                             .background(color = MaterialTheme.colorScheme.primaryContainer),
-                        title = LocalI18N.current["ui.common.only.show"] + " ${state.onlyShowSrc?.srcTitle}",
+                        title = LocalI18N.current[I18N_R.UI_COMMON_ONLY_SHOW] + " ${state.onlyShowSrc?.srcTitle}",
                         action1 = {
                             IconButton(onClick = {
                                 vm.setOnlyShowSrcId(null)
@@ -299,12 +300,12 @@ private fun BottomSheetMenu(
                 }
 
                 LargeSpacer()
-                FieldTitle(text = LocalI18N.current["ui.fact.title"])
+                FieldTitle(text = LocalI18N.current[I18N_R.UI_FACT_TITLE])
                 SmallSpacer()
                 FilterChip(
                     selected = state.factSetting.show,
                     label = {
-                        Text(text = LocalI18N.current["ui.common.filter.show"])
+                        Text(text = LocalI18N.current[I18N_R.UI_COMMON_FILTER_SHOW])
                     },
 
                     onClick = {
@@ -313,8 +314,8 @@ private fun BottomSheetMenu(
 
                 LargeSpacer()
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    FieldTitle(text = LocalI18N.current["ui.conditions.title"])
-                    LinkText(text = LocalI18N.current["ui.common.select.all"], icon = {}) {
+                    FieldTitle(text = LocalI18N.current[I18N_R.UI_CONDITIONS_TITLE])
+                    LinkText(text = LocalI18N.current[I18N_R.UI_COMMON_SELECT_ALL], icon = {}) {
                         val allOn =
                             state.conditionSetting.showMatch && state.conditionSetting.showNotMatch
                                     && state.conditionSetting.showError
@@ -328,7 +329,7 @@ private fun BottomSheetMenu(
                     FilterChip(
                         selected = state.conditionSetting.showMatch,
                         label = {
-                            Text(text = LocalI18N.current["ui.common.filter.matched"])
+                            Text(text = LocalI18N.current[I18N_R.UI_COMMON_FILTER_MATCHED])
                         },
                         leadingIcon = {
                             RemixIcon(
@@ -342,7 +343,7 @@ private fun BottomSheetMenu(
                     FilterChip(
                         selected = state.conditionSetting.showNotMatch,
                         label = {
-                            Text(text = LocalI18N.current["ui.common.filter.unmatched"])
+                            Text(text = LocalI18N.current[I18N_R.UI_COMMON_FILTER_UNMATCHED])
                         },
                         leadingIcon = {
                             RemixIcon(
@@ -356,7 +357,7 @@ private fun BottomSheetMenu(
                     FilterChip(
                         selected = state.conditionSetting.showError,
                         label = {
-                            Text(text = LocalI18N.current["ui.common.filter.error"])
+                            Text(text = LocalI18N.current[I18N_R.UI_COMMON_FILTER_ERROR])
                         },
                         leadingIcon = {
                             RemixIcon(
@@ -370,8 +371,8 @@ private fun BottomSheetMenu(
 
                 LargeSpacer()
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    FieldTitle(text = LocalI18N.current["ui.actions.title"])
-                    LinkText(text = LocalI18N.current["ui.common.select.all"], icon = {}) {
+                    FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTIONS_TITLE])
+                    LinkText(text = LocalI18N.current[I18N_R.UI_COMMON_SELECT_ALL], icon = {}) {
                         val allOn =
                             state.actionSetting.showSuccess
                                     && state.actionSetting.showError
@@ -384,7 +385,7 @@ private fun BottomSheetMenu(
                     FilterChip(
                         selected = state.actionSetting.showSuccess,
                         label = {
-                            Text(text = LocalI18N.current["ui.common.filter.success"])
+                            Text(text = LocalI18N.current[I18N_R.UI_COMMON_FILTER_SUCCESS])
                         },
                         leadingIcon = {
                             RemixIcon(
@@ -398,7 +399,7 @@ private fun BottomSheetMenu(
                     FilterChip(
                         selected = state.actionSetting.showError,
                         label = {
-                            Text(text = LocalI18N.current["ui.common.filter.error"])
+                            Text(text = LocalI18N.current[I18N_R.UI_COMMON_FILTER_ERROR])
                         },
                         leadingIcon = {
                             RemixIcon(
@@ -421,7 +422,7 @@ private fun BottomSheetMenu(
                         .padding(vertical = 64.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    OutlineBadge(text = LocalI18N.current["ui.subscription.subscribed.only"])
+                    OutlineBadge(text = LocalI18N.current[I18N_R.UI_SUBSCRIPTION_SUBSCRIBED_ONLY])
                 }
             }
         }

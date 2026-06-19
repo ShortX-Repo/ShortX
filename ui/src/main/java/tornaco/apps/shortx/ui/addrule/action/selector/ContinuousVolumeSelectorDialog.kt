@@ -46,6 +46,7 @@ import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import kotlin.math.roundToInt
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class ContinuousVolumeDialogState(
     val onSelected: (Action.ContinuousAdjustVolume) -> Unit
@@ -91,7 +92,7 @@ private fun ContinuousVolumeSelector(dialogState: ContinuousVolumeDialogState) {
                         title = {
                             Text(
                                 text = LocalI18N.current.get(
-                                    key = "ui.action.continuous.adjust.volume",
+                                    key = I18N_R.UI_ACTION_CONTINUOUS_ADJUST_VOLUME,
                                     fallback = "Continuous volume"
                                 )
                             )
@@ -126,7 +127,7 @@ private fun ContinuousVolumeSelector(dialogState: ContinuousVolumeDialogState) {
                         .verticalScroll(rememberScrollState())
                 ) {
                     val typeDropdownState = rememberDropdownSelectorState()
-                    FieldTitle(text = LocalI18N.current["ui.action.audio.stream.type"])
+                    FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_AUDIO_STREAM_TYPE])
                     MediumSpacer()
                     Box(modifier = Modifier.fillMaxWidth()) {
                         ShortXFilledTonalButton(onClick = { typeDropdownState.open() }) {

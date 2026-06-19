@@ -15,6 +15,7 @@ import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.defaultNewActionId
 import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import javax.inject.Inject
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 data class StartServiceSelectorState(
@@ -78,7 +79,7 @@ class StartServiceSelectorViewModel @Inject constructor(@ApplicationContext cont
                     )
                 },
                 userLabel = if (settings.userId.isMainUser()) {
-                    i18N["ui.common.user.main"]
+                    i18N[I18N_R.UI_COMMON_USER_MAIN]
                 } else {
                     shortXManager.getAllUsers().firstOrNull { it.userId == settings.userId }?.name
                         ?: "N/A"
@@ -139,7 +140,7 @@ class StartServiceSelectorViewModel @Inject constructor(@ApplicationContext cont
                     )
                 },
                 userLabel = if (userId.isMainUser()) {
-                    i18N["ui.common.user.main"]
+                    i18N[I18N_R.UI_COMMON_USER_MAIN]
                 } else {
                     shortXManager.getAllUsers().firstOrNull { it.userId == userId }?.name ?: "N/A"
                 }

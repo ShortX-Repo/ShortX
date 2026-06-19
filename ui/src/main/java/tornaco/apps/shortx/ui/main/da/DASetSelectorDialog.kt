@@ -29,6 +29,7 @@ import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class DASetSelectorState(
     val onDASetSelected: (DirectActionSet) -> Unit
@@ -63,7 +64,7 @@ private fun DASetSelector(selectorState: DASetSelectorState) {
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(text = LocalI18N.current["ui.common.select.set"]) },
+                        title = { Text(text = LocalI18N.current[I18N_R.UI_COMMON_SELECT_SET]) },
                         actions = {},
                         navigationIcon = {
                             IconButton(onClick = {

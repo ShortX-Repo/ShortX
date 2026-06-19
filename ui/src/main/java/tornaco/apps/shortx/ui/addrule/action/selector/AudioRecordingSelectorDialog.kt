@@ -45,6 +45,7 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class AudioRecordingDialogState(
     val onSelected: (Action.AudioRecording) -> Unit
@@ -88,7 +89,7 @@ private fun AudioRecordingSelector(dialogState: AudioRecordingDialogState) {
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(LocalI18N.current["ui.action.audio.recording"]) },
+                        title = { Text(LocalI18N.current[I18N_R.UI_ACTION_AUDIO_RECORDING]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 dialogState.dismiss()
@@ -120,10 +121,10 @@ private fun AudioRecordingSelector(dialogState: AudioRecordingDialogState) {
                         .animateContentSize()
                         .verticalScroll(rememberScrollState())
                 ) {
-                    TipRow(text = LocalI18N.current["ui.action.audio.recording.summary"])
+                    TipRow(text = LocalI18N.current[I18N_R.UI_ACTION_AUDIO_RECORDING_SUMMARY])
                     StandardSpacer()
 
-                    FieldTitle(text = LocalI18N.current["ui.action.audio.src"])
+                    FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_AUDIO_SRC])
                     SmallSpacer()
                     val srcDropdownState = rememberDropdownSelectorState()
                     Box {
@@ -156,7 +157,7 @@ private fun AudioRecordingSelector(dialogState: AudioRecordingDialogState) {
                     ShortXTextField(
                         value = dialogState.namePrefix,
                         label = {
-                            Text(text = LocalI18N.current["ui.action.audio.file.prefix"])
+                            Text(text = LocalI18N.current[I18N_R.UI_ACTION_AUDIO_FILE_PREFIX])
                         },
                         showSymbolButton = false,
                         onValueChange = {

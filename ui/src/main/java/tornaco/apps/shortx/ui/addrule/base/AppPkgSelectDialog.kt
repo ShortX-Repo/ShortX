@@ -63,6 +63,7 @@ import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberSearchBarState
 import tornaco.apps.shortx.ui.pkgset.PkgSetListViewModel
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 open class BaseAppPkgSelectorDialogState {
     val logger = Logger("AppPkgSelectorDialogState")
@@ -162,7 +163,7 @@ private fun AppPkgSelector(state: AppPkgSelectorDialogState) {
             mutableIntStateOf(0)
         }
         ShortXAppBarScaffold(
-            title = LocalI18N.current["ui.dialog.title.select.app"],
+            title = LocalI18N.current[I18N_R.UI_DIALOG_TITLE_SELECT_APP],
             onBackPressed = {
                 state.dismiss()
             },
@@ -185,10 +186,10 @@ private fun AppPkgSelector(state: AppPkgSelectorDialogState) {
 
             TabRow(selectedTabIndex = selectedTabIndex) {
                 val titles = mutableListOf(
-                    LocalI18N.current["ui.dialog.title.select.app"],
+                    LocalI18N.current[I18N_R.UI_DIALOG_TITLE_SELECT_APP],
                 ).apply {
                     if (state.onPkgSetSelected != null) {
-                        add(LocalI18N.current["ui.pkg.set.title"])
+                        add(LocalI18N.current[I18N_R.UI_PKG_SET_TITLE])
                     }
                 }
                 titles.forEachIndexed { index, title ->
@@ -236,7 +237,7 @@ fun PkgSetContent(selectorState: BaseAppPkgSelectorDialogState) {
                     },
                     titleLines = listOf(
                         it.label,
-                        LocalI18N.current["ui.pkg.set.items.count", mapOf("count" to "${it.appPkgsCount}")]
+                        LocalI18N.current[I18N_R.UI_PKG_SET_ITEMS_COUNT, mapOf("count" to "${it.appPkgsCount}")]
                     ),
                     action1 = {
                         Checkbox(
@@ -395,15 +396,15 @@ private fun AppItem(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             if (app.isRunning) {
                                 SmallSpacer()
-                                OutlineBadge(text = LocalI18N.current["ui.common.running"])
+                                OutlineBadge(text = LocalI18N.current[I18N_R.UI_COMMON_RUNNING])
                             }
                             if (app.app.isDisabled) {
                                 SmallSpacer()
-                                OutlineBadge(text = LocalI18N.current["ui.common.app.disabled"])
+                                OutlineBadge(text = LocalI18N.current[I18N_R.UI_COMMON_APP_DISABLED])
                             }
                             if (app.app.isSuspend) {
                                 SmallSpacer()
-                                OutlineBadge(text = LocalI18N.current["ui.common.app.suspended"])
+                                OutlineBadge(text = LocalI18N.current[I18N_R.UI_COMMON_APP_SUSPENDED])
                             }
                         }
                     }

@@ -22,6 +22,7 @@ import tornaco.apps.shortx.core.util.shortcutManager
 import tornaco.apps.shortx.ui.base.i18NIns
 import tornaco.apps.shortx.ui.main.MainActivity
 import tornaco.apps.shortx.ui.main.model.DirectActionUM
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 private const val KEY_ACTION_ID = "key_action_id"
 
@@ -54,7 +55,7 @@ class ActionShortcutActivity : Activity() {
 
         val da = shortXManager.getDirectActionById(id)
         if (da == null) {
-            Toast.makeText(this, i18NIns["ui.action.from.da.not.found"], Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, i18NIns[I18N_R.UI_ACTION_FROM_DA_NOT_FOUND], Toast.LENGTH_SHORT).show()
             finishAffinity()
             return
         }

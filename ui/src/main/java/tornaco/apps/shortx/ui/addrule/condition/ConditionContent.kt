@@ -84,6 +84,7 @@ import tornaco.apps.shortx.ui.base.rememberTipDialogState
 import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.rememberClipboardDialogState
 import tornaco.apps.shortx.ui.theme.ErrorRed
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class ConditionHandler(
     val addCondition: (Condition) -> Unit,
@@ -104,8 +105,8 @@ fun ConditionContent(
     header: @Composable ColumnScope.() -> Unit = {
         LargeTitle(
             LocalI18N.current[isOptional.select(
-                "ui.conditions.title.optional",
-                "ui.conditions.title"
+                I18N_R.UI_CONDITIONS_TITLE_OPTIONAL,
+                I18N_R.UI_CONDITIONS_TITLE
             )]
         )
     },
@@ -214,7 +215,7 @@ fun ConditionList(
                             val context = LocalContext.current
                             val noteDialogState =
                                 rememberTextInputState(
-                                    title = LocalI18N.current["ui.common.note"],
+                                    title = LocalI18N.current[I18N_R.UI_COMMON_NOTE],
                                     message = null,
                                     inputValidator = {
                                         InputValidateResult.OK
@@ -261,12 +262,12 @@ fun ConditionList(
                                     textColor = if (conditionItem.isDisabled.not()) Color.Unspecified else ErrorRed,
                                     action1 = {
                                         val invertDialog = rememberTipDialogState(
-                                            title = LocalI18N.current["ui.condition.invert"],
-                                            tip = LocalI18N.current["ui.condition.invert.description"]
+                                            title = LocalI18N.current[I18N_R.UI_CONDITION_INVERT],
+                                            tip = LocalI18N.current[I18N_R.UI_CONDITION_INVERT_DESCRIPTION]
                                         )
                                         TipDialog(state = invertDialog)
                                         AnimatedVisibility(visible = conditionItem.isInvert) {
-                                            ClickableBadge(text = LocalI18N.current["ui.condition.invert"]) {
+                                            ClickableBadge(text = LocalI18N.current[I18N_R.UI_CONDITION_INVERT]) {
                                                 invertDialog.show()
                                             }
                                         }
@@ -311,7 +312,7 @@ fun ConditionList(
                                         ErrorCard(
                                             modifier = Modifier
                                                 .padding(16.dp),
-                                            title = LocalI18N.current["ui.condition.warning.message"],
+                                            title = LocalI18N.current[I18N_R.UI_CONDITION_WARNING_MESSAGE],
                                             warnings = it
                                         )
                                     }
@@ -326,7 +327,7 @@ fun ConditionList(
                                 state = clickDropdownState,
                                 items = listOf(
                                     DropdownItem(
-                                        labelLines = listOf(LocalI18N.current["ui.common.paste.above"]),
+                                        labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_PASTE_ABOVE]),
                                         data = currentCondition.id to "pa",
                                         icon = {
                                             RemixIcon(
@@ -336,7 +337,7 @@ fun ConditionList(
                                         }
                                     ),
                                     DropdownItem(
-                                        labelLines = listOf(LocalI18N.current["ui.common.paste.below"]),
+                                        labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_PASTE_BELOW]),
                                         data = currentCondition.id to "pb",
                                         icon = {
                                             RemixIcon(
@@ -346,7 +347,7 @@ fun ConditionList(
                                         }
                                     ),
                                     DropdownItem(
-                                        labelLines = listOf(LocalI18N.current["ui.common.copy"]),
+                                        labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_COPY]),
                                         data = currentCondition.id to "cp",
                                         icon = {
                                             RemixIcon(
@@ -356,7 +357,7 @@ fun ConditionList(
                                         }
                                     ),
                                     DropdownItem(
-                                        labelLines = listOf(LocalI18N.current["ui.common.note"]),
+                                        labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_NOTE]),
                                         data = currentCondition.id to "note",
                                         icon = {
                                             RemixIcon(
@@ -366,7 +367,7 @@ fun ConditionList(
                                         }
                                     ),
                                     DropdownItem(
-                                        labelLines = listOf(LocalI18N.current["ui.condition.invert"]),
+                                        labelLines = listOf(LocalI18N.current[I18N_R.UI_CONDITION_INVERT]),
                                         data = currentCondition.id to "invert",
                                         icon = {
                                             RemixIcon(
@@ -377,8 +378,8 @@ fun ConditionList(
                                     ),
                                     DropdownItem(
                                         labelLines = listOf(
-                                            LocalI18N.current["ui.common.toggle.enable.disable"],
-                                            LocalI18N.current["ui.common.toggle.enable.disable.summary"]
+                                            LocalI18N.current[I18N_R.UI_COMMON_TOGGLE_ENABLE_DISABLE],
+                                            LocalI18N.current[I18N_R.UI_COMMON_TOGGLE_ENABLE_DISABLE_SUMMARY]
                                         ),
                                         data = currentCondition.id to "enableDisable",
                                         icon = {
@@ -483,7 +484,7 @@ fun ConditionList(
             state = conditionCardDropdownState,
             items = listOf(
                 DropdownItem(
-                    labelLines = listOf(LocalI18N.current["ui.common.paste"]),
+                    labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_PASTE]),
                     data = "paste",
                 )
             ),
@@ -532,7 +533,7 @@ private fun ConditionSelector(
                     tint = MaterialTheme.colorScheme.onPrimary
                 )
                 TinySpacer()
-                Text(LocalI18N.current["ui.conditions.add"])
+                Text(LocalI18N.current[I18N_R.UI_CONDITIONS_ADD])
             }
         }
     }
@@ -563,7 +564,7 @@ private fun OpSelector(
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
         SmallTitle(
             modifier = Modifier.padding(vertical = 12.dp),
-            LocalI18N.current["ui.condition.op"]
+            LocalI18N.current[I18N_R.UI_CONDITION_OP]
         )
         ListItem(
             modifier = Modifier,
@@ -588,13 +589,13 @@ private fun OpSelector(
                         remixName = Remix.Design.edit_circle_line
                     )
                     TinySpacer()
-                    Text(text = LocalI18N.current["ui.condition.op.edit"])
+                    Text(text = LocalI18N.current[I18N_R.UI_CONDITION_OP_EDIT])
                 }
             }
 
             val mvelSelectorState = rememberCodeEditorState(
-                title = LocalI18N.current["ui.title.mvel"],
-                message = LocalI18N.current["ui.condition.op.mvel"],
+                title = LocalI18N.current[I18N_R.UI_TITLE_MVEL],
+                message = LocalI18N.current[I18N_R.UI_CONDITION_OP_MVEL],
                 execute = {
                     shortXManager.executeMVEL(it, CoroutineContext.CoroutineContext_Default)
                 },

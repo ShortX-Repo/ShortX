@@ -34,6 +34,7 @@ import tornaco.apps.shortx.ui.base.ShortXSwitch
 import tornaco.apps.shortx.ui.base.ShortXTextButton
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class CornerSwipeToCenterSelectorState(
     private val showCornerHint: (ScreenCorner) -> Unit,
@@ -97,7 +98,7 @@ fun CornerSwipeToCenterSelector(state: CornerSwipeToCenterSelectorState) {
 
     ShortXDialog(
         onDismissRequest = { state.dismiss() },
-        title = { DialogTitle(text = LocalI18N.current["ui.fact.corner.swipe.to.center"]) },
+        title = { DialogTitle(text = LocalI18N.current[I18N_R.UI_FACT_CORNER_SWIPE_TO_CENTER]) },
         buttons = {
             ShortXTextButton(onClick = { state.confirm() }) {
                 Text(text = stringResource(id = android.R.string.ok))
@@ -110,7 +111,7 @@ fun CornerSwipeToCenterSelector(state: CornerSwipeToCenterSelectorState) {
                 Column(modifier = Modifier.fillMaxWidth()) {
                     FieldTitle(
                         modifier = Modifier.padding(vertical = 12.dp),
-                        text = i18n["ui.fact.corner.swipe.to.center"]
+                        text = i18n[I18N_R.UI_FACT_CORNER_SWIPE_TO_CENTER]
                     )
                     ListItem(
                         icon = { RemixIcon(remixName = Remix.Arrows.corner_down_right_fill) },
@@ -128,7 +129,7 @@ fun CornerSwipeToCenterSelector(state: CornerSwipeToCenterSelectorState) {
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        FieldTitle(text = i18n["ui.fact.corner.gesture.indicator"])
+                        FieldTitle(text = i18n[I18N_R.UI_FACT_CORNER_GESTURE_INDICATOR])
                         ShortXSwitch(
                             checked = state.enableGestureHint,
                             onCheckedChange = { state.setEnableGestureHint(it) }
@@ -140,7 +141,7 @@ fun CornerSwipeToCenterSelector(state: CornerSwipeToCenterSelectorState) {
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        FieldTitle(text = i18n["ui.fact.corner.gesture.haptic"])
+                        FieldTitle(text = i18n[I18N_R.UI_FACT_CORNER_GESTURE_HAPTIC])
                         ShortXSwitch(
                             checked = state.enableGestureHaptic,
                             onCheckedChange = { state.setEnableGestureHaptic(it) }

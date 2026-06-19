@@ -29,6 +29,7 @@ import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class GenerateQRCodeSelectorState(
     val onSelected: (Action.GenerateQRCode) -> Unit
@@ -65,7 +66,7 @@ private fun GenerateQRCodeSelector(state: GenerateQRCodeSelectorState) {
     Scaffold(
         topBar = {
             ShortXTopAppBar(
-                title = { Text(text = i18N.get(key = "ui.action.generate.qrcode", fallback = "Generate QR code")) },
+                title = { Text(text = i18N.get(key = I18N_R.UI_ACTION_GENERATE_QRCODE, fallback = "Generate QR code")) },
                 navigationIcon = {
                     IconButton(onClick = { state.dismiss() }) {
                         RemixIcon(remixName = Remix.System.close_line)
@@ -99,7 +100,7 @@ private fun GenerateQRCodeSelector(state: GenerateQRCodeSelectorState) {
                 label = {
                     Text(
                         i18N.get(
-                            key = "ui.action.generate.qrcode.text",
+                            key = I18N_R.UI_ACTION_GENERATE_QRCODE_TEXT,
                             fallback = "Text to encode (supports variables)"
                         )
                     )
@@ -116,7 +117,7 @@ private fun GenerateQRCodeSelector(state: GenerateQRCodeSelectorState) {
                 label = {
                     Text(
                         i18N.get(
-                            key = "ui.action.generate.qrcode.target.dir",
+                            key = I18N_R.UI_ACTION_GENERATE_QRCODE_TARGET_DIR,
                             fallback = "Target directory (optional, supports variables)"
                         )
                     )

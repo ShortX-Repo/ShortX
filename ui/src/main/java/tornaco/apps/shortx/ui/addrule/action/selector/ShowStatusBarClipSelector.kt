@@ -42,6 +42,7 @@ import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class ShowStatusBarChipSelectorActivity : BaseSelectorActivity<Action.ShowStatusBarChip>() {
@@ -70,7 +71,7 @@ private fun ShowStatusBarChipSelectorActivity.ShowStatusBarChipSelector(currentA
             topBar = {
                 ShortXTopAppBar(
                     modifier = Modifier,
-                    title = { Text(LocalI18N.current["ui.action.show.statusbar.clip"]) },
+                    title = { Text(LocalI18N.current[I18N_R.UI_ACTION_SHOW_STATUSBAR_CLIP]) },
                     navigationIcon = {
                         IconButton(onClick = {
                             cancelAndFinish()
@@ -105,7 +106,7 @@ private fun ShowStatusBarChipSelectorActivity.ShowStatusBarChipSelector(currentA
 
                 ShortXTextField(modifier = Modifier.fillMaxWidth(),
                     label = {
-                        Text(text = LocalI18N.current["ui.action.show.statusbar.clip.text"])
+                        Text(text = LocalI18N.current[I18N_R.UI_ACTION_SHOW_STATUSBAR_CLIP_TEXT])
                     },
                     value = state.text,
                     onValueChange = {
@@ -128,7 +129,7 @@ private fun ShowStatusBarChipSelectorActivity.ShowStatusBarChipSelector(currentA
                 SmallSpacer()
                 ShortXTextField(modifier = Modifier.fillMaxWidth(),
                     label = {
-                        Text(text = LocalI18N.current["ui.action.show.statusbar.clip.icon"])
+                        Text(text = LocalI18N.current[I18N_R.UI_ACTION_SHOW_STATUSBAR_CLIP_ICON])
                     },
                     value = state.icon,
                     onValueChange = {
@@ -153,7 +154,7 @@ private fun ShowStatusBarChipSelectorActivity.ShowStatusBarChipSelector(currentA
                     header = {
                         SmallTitle(
                             modifier = Modifier.padding(vertical = 12.dp),
-                            LocalI18N.current["ui.actions.single.click.title"]
+                            LocalI18N.current[I18N_R.UI_ACTIONS_SINGLE_CLICK_TITLE]
                         )
                     },
                     actions = actionState.actions,
@@ -167,7 +168,7 @@ private fun ShowStatusBarChipSelectorActivity.ShowStatusBarChipSelector(currentA
                     header = {
                         SmallTitle(
                             modifier = Modifier.padding(vertical = 12.dp),
-                            LocalI18N.current["ui.actions.long.click.title"]
+                            LocalI18N.current[I18N_R.UI_ACTIONS_LONG_CLICK_TITLE]
                         )
                     },
                     actions = longActionState.actions,

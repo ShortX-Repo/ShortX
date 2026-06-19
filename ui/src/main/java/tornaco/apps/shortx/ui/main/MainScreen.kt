@@ -65,6 +65,7 @@ import tornaco.apps.shortx.ui.shortcut.ShortcutStubManageActivity
 import tornaco.apps.shortx.ui.theme.ExperimentalYellow
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.AssetUtils
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 enum class HomeBottomRoute {
     Rules, DirectActions, Toggles, Discover
@@ -77,18 +78,18 @@ sealed class BottomNavItem(
     val isExperimental: Boolean = false,
 ) {
     data object Rules :
-        BottomNavItem("ui.feat.label.rule", Remix.Weather.meteor_line, HomeBottomRoute.Rules)
+        BottomNavItem(I18N_R.UI_FEAT_LABEL_RULE, Remix.Weather.meteor_line, HomeBottomRoute.Rules)
 
     data object DirectActions :
         BottomNavItem(
-            "ui.feat.label.da",
+            I18N_R.UI_FEAT_LABEL_DA,
             Remix.Development.command_line,
             HomeBottomRoute.DirectActions
         )
 
     data object Toggles :
         BottomNavItem(
-            "ui.feat.label.toggles",
+            I18N_R.UI_FEAT_LABEL_TOGGLES,
             Remix.System.toggle_fill,
             HomeBottomRoute.Toggles,
             true
@@ -96,7 +97,7 @@ sealed class BottomNavItem(
 
     data object Discover :
         BottomNavItem(
-            "ui.feat.label.discover",
+            I18N_R.UI_FEAT_LABEL_DISCOVER,
             Remix.Map.compass_discover_line,
             HomeBottomRoute.Discover
         )
@@ -120,7 +121,7 @@ fun HomeScreen() {
                     val appNavController = LocalNavHostController.current
                     val context = LocalContext.current
 
-                    val statementTitle = LocalI18N.current["ui.settings.privacy.statement"]
+                    val statementTitle = LocalI18N.current[I18N_R.UI_SETTINGS_PRIVACY_STATEMENT]
 
                     SettingsScreen(
                         back = { scope.launch { drawerState.close() } },
@@ -260,7 +261,7 @@ private fun BottomNavigationContent(
                     if (item.isExperimental) {
                         BadgedBox(badge = {
                             Badge(containerColor = ExperimentalYellow) {
-                                Text(text = LocalI18N.current["ui.common.experimental"])
+                                Text(text = LocalI18N.current[I18N_R.UI_COMMON_EXPERIMENTAL])
                             }
                         }) {
                             RemixIcon(remixName = item.icon)

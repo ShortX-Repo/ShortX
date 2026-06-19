@@ -39,6 +39,7 @@ import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import java.math.BigDecimal
 import java.math.RoundingMode
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 class InjectGestureRecordDialogState(
@@ -84,7 +85,7 @@ private fun InjectGestureRecordSelector(dialogState: InjectGestureRecordDialogSt
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(LocalI18N.current["ui.action.gesture.record.inject"]) },
+                        title = { Text(LocalI18N.current[I18N_R.UI_ACTION_GESTURE_RECORD_INJECT]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 dialogState.dismiss()
@@ -123,23 +124,23 @@ private fun InjectGestureRecordSelector(dialogState: InjectGestureRecordDialogSt
                     })
                     GestureRecordSelectorDialog(state = gestureSelectorState)
 
-                    TipRow(LocalI18N.current["ui.action.gesture.record.inject.vol.to.stop"])
+                    TipRow(LocalI18N.current[I18N_R.UI_ACTION_GESTURE_RECORD_INJECT_VOL_TO_STOP])
                     StandardSpacer()
 
-                    FieldTitle(text = LocalI18N.current["ui.action.gesture.record.select"])
+                    FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_GESTURE_RECORD_SELECT])
                     MediumSpacer()
                     FilledTonalButton(onClick = {
                         gestureSelectorState.show()
                     }) {
                         Text(
                             text = dialogState.selectedGesture?.label
-                                ?: LocalI18N.current["ui.common.unselected"]
+                                ?: LocalI18N.current[I18N_R.UI_COMMON_UNSELECTED]
                         )
                     }
 
                     StandardSpacer()
 
-                    FieldTitle(text = LocalI18N.current["ui.action.gesture.record.inject.speed"])
+                    FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_GESTURE_RECORD_INJECT_SPEED])
                     MediumSpacer()
                     Text(text = "${dialogState.speed} x")
                     Slider(
@@ -153,7 +154,7 @@ private fun InjectGestureRecordSelector(dialogState: InjectGestureRecordDialogSt
 
                     StandardSpacer()
                     SwitchRow(
-                        text = LocalI18N.current["ui.action.gesture.record.inject.show.path"],
+                        text = LocalI18N.current[I18N_R.UI_ACTION_GESTURE_RECORD_INJECT_SHOW_PATH],
                         isChecked = dialogState.showGesturePathView,
                         onCheckChange = {
                             dialogState.showGesturePathView = it

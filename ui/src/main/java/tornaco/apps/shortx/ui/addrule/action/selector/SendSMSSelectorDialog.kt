@@ -41,6 +41,7 @@ import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class SendSMSSelectorState(
     val onSelected: (Action.SendSMS) -> Unit
@@ -87,7 +88,7 @@ private fun SendSMSSelector(
             Scaffold(modifier = Modifier, topBar = {
                 ShortXTopAppBar(
                     modifier = Modifier,
-                    title = { Text(text = LocalI18N.current["ui.action.send.sms"]) },
+                    title = { Text(text = LocalI18N.current[I18N_R.UI_ACTION_SEND_SMS]) },
                     navigationIcon = {
                         IconButton(onClick = {
                             state.dismiss()
@@ -126,7 +127,7 @@ private fun SendSMSSelector(
                             state.to = it
                         },
                         label = {
-                            Text(LocalI18N.current["ui.action.send.sms.to"])
+                            Text(LocalI18N.current[I18N_R.UI_ACTION_SEND_SMS_TO])
                         },
                         showSymbolButton = false,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
@@ -141,14 +142,14 @@ private fun SendSMSSelector(
                             state.message = it
                         },
                         label = {
-                            Text(LocalI18N.current["ui.action.send.sms.message"])
+                            Text(LocalI18N.current[I18N_R.UI_ACTION_SEND_SMS_MESSAGE])
                         },
                     )
                     StandardSpacer()
 
 
                     val slotIdString = (state.slotId >= 0).select(
-                        LocalI18N.current["ui.common.mobile.data.enabled.slot", mapOf(
+                        LocalI18N.current[I18N_R.UI_COMMON_MOBILE_DATA_ENABLED_SLOT, mapOf(
                             "slotId" to state.slotId.toString(),
                             "label" to (shortXManager.getSlotLabel(state.slotId) ?: "")
                         )],

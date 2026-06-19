@@ -39,6 +39,7 @@ import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.util.toComposeColor
 import javax.inject.Inject
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 private const val FALLBACK_COLOR = 0x55FF4018
 private const val DEFAULT_SCALE = "1.0"
@@ -62,7 +63,7 @@ private fun BaseSelectorActivity<Action.PanoramicLightEffect>.Selector(currentAc
     val state by vm.state.collectAsState()
 
     ShortXAppBarScaffold(
-        title = LocalI18N.current["ui.action.panoramic.light.effect"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_PANORAMIC_LIGHT_EFFECT],
         onBackPressed = { cancelAndFinish() },
         actions = {
             IconButton(onClick = {
@@ -73,7 +74,7 @@ private fun BaseSelectorActivity<Action.PanoramicLightEffect>.Selector(currentAc
         },
     ) {
         Column(Modifier.padding(horizontal = 16.dp)) {
-            FieldTitle(text = LocalI18N.current["ui.action.panoramic.light.effect.color"])
+            FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_PANORAMIC_LIGHT_EFFECT_COLOR])
             SmallSpacer()
             val colorPickerState = remember(state) {
                 ColorPickerDialogState(
@@ -100,7 +101,7 @@ private fun BaseSelectorActivity<Action.PanoramicLightEffect>.Selector(currentAc
 
             SectionSpacer()
 
-            FieldTitle(text = LocalI18N.current["ui.action.panoramic.light.effect.times"])
+            FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_PANORAMIC_LIGHT_EFFECT_TIMES])
             SmallSpacer()
             ShortXTextField(
                 value = state.times,

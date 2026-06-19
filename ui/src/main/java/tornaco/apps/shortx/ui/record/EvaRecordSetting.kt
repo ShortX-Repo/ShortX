@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import tornaco.apps.shortx.core.shortXManager
 import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.SwitchBar
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @Composable
 fun EvaRecordSetting(id: String) {
@@ -18,7 +19,7 @@ fun EvaRecordSetting(id: String) {
         mutableStateOf(shortXManager.isEvaluateRecordEnabled(id))
     }
     SwitchBar(
-        text = LocalI18N.current["ui.settings.eva.record.enabled"],
+        text = LocalI18N.current[I18N_R.UI_SETTINGS_EVA_RECORD_ENABLED],
         isChecked = currentEnabled,
         onCheckChange = {
             scope.launch {

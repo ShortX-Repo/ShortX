@@ -56,6 +56,7 @@ import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class CustomContextMenuSettingsActivity : BaseActivity() {
@@ -100,7 +101,7 @@ private fun MenuSettings(back: () -> Unit, onMenuClick: (CustomContextMenu) -> U
             topBar = {
                 ShortXTopAppBar(
                     modifier = Modifier,
-                    title = { Text(text = i18N["ui.fact.custom.menu.action.trigger"]) },
+                    title = { Text(text = i18N[I18N_R.UI_FACT_CUSTOM_MENU_ACTION_TRIGGER]) },
                     navigationIcon = {
                         IconButton(onClick = {
                             back()
@@ -150,7 +151,7 @@ private fun MenuSettings(back: () -> Unit, onMenuClick: (CustomContextMenu) -> U
                     SectionSpacer()
                     InfoCard(
                         title = null,
-                        infos = listOf(LocalI18N.current["ui.fact.custom.menu.action.trigger.tip"])
+                        infos = listOf(LocalI18N.current[I18N_R.UI_FACT_CUSTOM_MENU_ACTION_TRIGGER_TIP])
                     )
 
                 }
@@ -177,7 +178,7 @@ private fun MenuItem(
 
     val renameDialogState =
         rememberTextInputState(
-            title = LocalI18N.current["ui.common.rename"], message = null,
+            title = LocalI18N.current[I18N_R.UI_COMMON_RENAME], message = null,
             onSelected = {
                 rename(menuSetting.menu, it)
             })
@@ -208,7 +209,7 @@ private fun MenuItem(
 
                         if (usage.isEmpty()) {
                             Text(
-                                text = LocalI18N.current["ui.settings.sb.unused"],
+                                text = LocalI18N.current[I18N_R.UI_SETTINGS_SB_UNUSED],
                                 style = MaterialTheme.typography.bodySmall,
                             )
 
@@ -217,7 +218,7 @@ private fun MenuItem(
                                 when (it) {
                                     is CustomContextMenuUsageOwner.RuleOwner -> {
                                         LinkText(
-                                            text = LocalI18N.current["ui.settings.sb.used", mapOf(
+                                            text = LocalI18N.current[I18N_R.UI_SETTINGS_SB_USED, mapOf(
                                                 "title" to it.ruleUM.title
                                             )]
                                         ) {
@@ -242,7 +243,7 @@ private fun MenuItem(
         DropdownSelector(
             state = editDropdownState,
             items = listOf(
-                DropdownItem(listOf(LocalI18N.current["ui.common.rename"]), "rename"),
+                DropdownItem(listOf(LocalI18N.current[I18N_R.UI_COMMON_RENAME]), "rename"),
             ),
             onSelect = {
                 if (it.data == "rename") {

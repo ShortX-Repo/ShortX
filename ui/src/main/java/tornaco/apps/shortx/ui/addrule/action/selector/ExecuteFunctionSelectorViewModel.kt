@@ -10,6 +10,7 @@ import tornaco.apps.shortx.core.rule.asDefaultInput
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import javax.inject.Inject
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 data class ExecuteFunctionSelectorState(
     val functionId: String = "",
@@ -53,7 +54,7 @@ class ExecuteFunctionSelectorViewModel @Inject constructor(@ApplicationContext c
                     parameters = emptyList(),
                     parameterInputs = currentInputs,
                     loadErrorMessage = i18N.get(
-                        key = "ui.action.execute.function.not.found",
+                        key = I18N_R.UI_ACTION_EXECUTE_FUNCTION_NOT_FOUND,
                         fallback = "Function not found, please set again"
                     )
                 )

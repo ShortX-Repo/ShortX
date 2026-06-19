@@ -40,6 +40,7 @@ import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class GlobalVarSelectorState(
     val onGlobalVarSelected: (GlobalVar) -> Unit
@@ -90,7 +91,7 @@ private fun GlobalVarSelector(selectorState: GlobalVarSelectorState) {
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(text = LocalI18N.current["ui.global.var.title"]) },
+                        title = { Text(text = LocalI18N.current[I18N_R.UI_GLOBAL_VAR_TITLE]) },
                         actions = {},
                         navigationIcon = {
                             IconButton(onClick = {

@@ -48,6 +48,7 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 data class IntOpSelectorRes(val value: Int, val op: IntOp)
 
@@ -173,7 +174,7 @@ private fun IntOpSelector(dialogState: IntOpSelectorState) {
                 ) {
                     FieldTitle(
                         modifier = Modifier.padding(vertical = 12.dp),
-                        text = LocalI18N.current["ui.conditions.battery.percent.op"]
+                        text = LocalI18N.current[I18N_R.UI_CONDITIONS_BATTERY_PERCENT_OP]
                     )
                     TinySpacer()
                     val opSelectorState = rememberDropdownSelectorState()

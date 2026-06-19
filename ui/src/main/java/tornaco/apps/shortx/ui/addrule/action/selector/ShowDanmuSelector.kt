@@ -43,6 +43,7 @@ import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 class ShowDanmuSettingsDialogState(
@@ -96,7 +97,7 @@ private fun ShowDanmuSelector(dialogState: ShowDanmuSettingsDialogState) {
                 topBar = {
                     TopAppBar(
                         modifier = Modifier,
-                        title = { Text(text = LocalI18N.current["ui.action.show.danmu"]) },
+                        title = { Text(text = LocalI18N.current[I18N_R.UI_ACTION_SHOW_DANMU]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 dialogState.dismiss()
@@ -135,7 +136,7 @@ private fun Content(paddingValues: PaddingValues, vm: ShowDanmuSelectorViewModel
     ) {
         ShortXTextField(modifier = Modifier.fillMaxWidth(),
             label = {
-                Text(text = LocalI18N.current["ui.action.danmu.text"])
+                Text(text = LocalI18N.current[I18N_R.UI_ACTION_DANMU_TEXT])
             },
             value = state.text,
             onValueChange = {
@@ -158,7 +159,7 @@ private fun Content(paddingValues: PaddingValues, vm: ShowDanmuSelectorViewModel
         SmallSpacer()
         ShortXTextField(modifier = Modifier.fillMaxWidth(),
             label = {
-                Text(text = LocalI18N.current["ui.action.danmu.icon"])
+                Text(text = LocalI18N.current[I18N_R.UI_ACTION_DANMU_ICON])
             },
             value = state.icon ?: "",
             onValueChange = {

@@ -51,6 +51,7 @@ import tornaco.apps.shortx.ui.base.SwitchRow
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.rememberCommonSortState
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 @AndroidEntryPoint
@@ -73,7 +74,7 @@ private fun ShowMenuDialogSelectorActivity.ShowMenuDialogSelector(currentData: A
         topBar = {
             ShortXTopAppBar(
                 modifier = Modifier,
-                title = { Text(LocalI18N.current["ui.action.show.menu.dialog"]) },
+                title = { Text(LocalI18N.current[I18N_R.UI_ACTION_SHOW_MENU_DIALOG]) },
                 navigationIcon = {
                     IconButton(onClick = {
                         cancelAndFinish()
@@ -108,7 +109,7 @@ private fun ShowMenuDialogSelectorActivity.ShowMenuDialogSelector(currentData: A
                     .animateContentSize()
                     .verticalScroll(rememberScrollState())
             ) {
-                FieldTitle(text = LocalI18N.current["ui.action.dialog.title"])
+                FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_DIALOG_TITLE])
                 MediumSpacer()
                 ShortXTextField(
                     modifier = Modifier.fillMaxWidth(),
@@ -134,7 +135,7 @@ private fun ShowMenuDialogSelectorActivity.ShowMenuDialogSelector(currentData: A
                             SortItem(index, menuDialogUiItem.title)
                         })
 
-                    FieldTitle(text = LocalI18N.current["ui.action.show.menu.dialog.item"])
+                    FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_SHOW_MENU_DIALOG_ITEM])
                     // Sort
                     AnimatedVisibility(visible = dialogState.items.size > 1) {
                         IconButton(onClick = {
@@ -159,7 +160,7 @@ private fun ShowMenuDialogSelectorActivity.ShowMenuDialogSelector(currentData: A
                 Button(onClick = {
                     vm.addButton()
                 }) {
-                    Text(text = LocalI18N.current["ui.action.show.menu.dialog.item.add"])
+                    Text(text = LocalI18N.current[I18N_R.UI_ACTION_SHOW_MENU_DIALOG_ITEM_ADD])
                 }
                 SectionSpacer()
 
@@ -170,7 +171,7 @@ private fun ShowMenuDialogSelectorActivity.ShowMenuDialogSelector(currentData: A
                 SectionSpacer()
 
                 SwitchRow(
-                    text = LocalI18N.current["ui.action.dialog.cancelable"],
+                    text = LocalI18N.current[I18N_R.UI_ACTION_DIALOG_CANCELABLE],
                     isChecked = dialogState.cancelable
                 ) {
                     vm.updateCancelable(it)
@@ -194,7 +195,7 @@ private fun Items(
     state.items.forEachIndexed { index, menuDialogUiItem ->
         val actionState by menuDialogUiItem.actionHandler.state.collectAsState()
         ItemSettings(
-            headerTitle = LocalI18N.current["ui.action.show.menu.dialog.item"] + " ${index + 1}",
+            headerTitle = LocalI18N.current[I18N_R.UI_ACTION_SHOW_MENU_DIALOG_ITEM] + " ${index + 1}",
             text = menuDialogUiItem.title,
             onTextChange = {
                 updateItemTitle(it, index)
@@ -240,7 +241,7 @@ private fun ItemSettings(
     ShortXTextField(
         modifier = Modifier.fillMaxWidth(),
         label = {
-            Text(text = LocalI18N.current["ui.action.show.menu.dialog.item.text"])
+            Text(text = LocalI18N.current[I18N_R.UI_ACTION_SHOW_MENU_DIALOG_ITEM_TEXT])
         },
         value = text,
         onValueChange = {
@@ -252,7 +253,7 @@ private fun ItemSettings(
         header = {
             SmallTitle(
                 modifier = Modifier.padding(vertical = 12.dp),
-                text = LocalI18N.current["ui.actions.title"]
+                text = LocalI18N.current[I18N_R.UI_ACTIONS_TITLE]
             )
         },
         actions = actions,

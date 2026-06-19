@@ -66,6 +66,7 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberProgressDialogState
 import tornaco.apps.shortx.ui.shortcut.ShortcutStubManageViewModel.Companion.genPackageName
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class ShortcutStubManageActivity : BaseActivity() {
@@ -84,7 +85,7 @@ class ShortcutStubManageActivity : BaseActivity() {
         val vm = hiltViewModel<ShortcutStubManageViewModel>()
 
         val progressDialogState =
-            rememberProgressDialogState(title = i18N["ui.common.install"], message = "...")
+            rememberProgressDialogState(title = i18N[I18N_R.UI_COMMON_INSTALL], message = "...")
         ProgressDialog(state = progressDialogState)
 
         vm.collectSideEffect(sideEffect = {
@@ -93,14 +94,14 @@ class ShortcutStubManageActivity : BaseActivity() {
                     progressDialogState.dismiss()
                     Toast.makeText(
                         context,
-                        it.message.fallbackOnEmpty { i18N["ui.common.install.failed"] },
+                        it.message.fallbackOnEmpty { i18N[I18N_R.UI_COMMON_INSTALL_FAILED] },
                         Toast.LENGTH_LONG
                     ).show()
                 }
 
                 ApkInstallState.InstallSuccess -> {
                     progressDialogState.dismiss()
-                    Toast.makeText(context, i18N["ui.common.install.success"], Toast.LENGTH_LONG)
+                    Toast.makeText(context, i18N[I18N_R.UI_COMMON_INSTALL_SUCCESS], Toast.LENGTH_LONG)
                         .show()
                 }
 
@@ -137,7 +138,7 @@ class ShortcutStubManageActivity : BaseActivity() {
                     topBar = {
                         ShortXTopAppBar(
                             modifier = Modifier,
-                            title = { Text(text = i18N["ui.shortx.stub.apk"]) },
+                            title = { Text(text = i18N[I18N_R.UI_SHORTX_STUB_APK]) },
                             navigationIcon = {
                                 IconButton(onClick = {
                                     finish()
@@ -221,7 +222,7 @@ fun CreateShortcutStubContent(
                 topBar = {
                     TopAppBar(
                         modifier = Modifier,
-                        title = { Text(text = LocalI18N.current["ui.shortx.stub.apk.create"] + LocalI18N.current["ui.shortx.stub.apk"]) },
+                        title = { Text(text = LocalI18N.current[I18N_R.UI_SHORTX_STUB_APK_CREATE] + LocalI18N.current[I18N_R.UI_SHORTX_STUB_APK]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 state.dismiss()
@@ -234,7 +235,7 @@ fun CreateShortcutStubContent(
                                 state.dismiss()
                                 state.createShortcutApk(state.toShortcutStubInfo())
                             }) {
-                                Text(text = LocalI18N.current["ui.common.install"])
+                                Text(text = LocalI18N.current[I18N_R.UI_COMMON_INSTALL])
                             }
                         }
                     )
@@ -276,7 +277,7 @@ fun CreateShortcutStubContent(
                         ColorPickerDialog(state = appIconBgColorPickerState)
 
                         FieldTitle(
-                            text = LocalI18N.current["ui.shortx.stub.apk.label"]
+                            text = LocalI18N.current[I18N_R.UI_SHORTX_STUB_APK_LABEL]
                         )
                         MediumSpacer()
                         ShortXTextField(
@@ -287,7 +288,7 @@ fun CreateShortcutStubContent(
 
                         Column {
                             FieldTitle(
-                                text = LocalI18N.current["ui.common.pkg.name"]
+                                text = LocalI18N.current[I18N_R.UI_COMMON_PKG_NAME]
                             )
                             MediumSpacer()
                             ShortXTextField(
@@ -297,7 +298,7 @@ fun CreateShortcutStubContent(
                             StandardSpacer()
                         }
 
-                        FieldTitle(text = LocalI18N.current["ui.shortx.stub.apk.icon"])
+                        FieldTitle(text = LocalI18N.current[I18N_R.UI_SHORTX_STUB_APK_ICON])
                         MediumSpacer()
 
                         val context = LocalContext.current
@@ -310,27 +311,27 @@ fun CreateShortcutStubContent(
                                 )
                             )
                         }) {
-                            Text(text = LocalI18N.current["ui.common.picker.pick"])
+                            Text(text = LocalI18N.current[I18N_R.UI_COMMON_PICKER_PICK])
                         }
                         StandardSpacer()
 
-                        FieldTitle(text = LocalI18N.current["ui.shortx.stub.apk.icon.tint"])
+                        FieldTitle(text = LocalI18N.current[I18N_R.UI_SHORTX_STUB_APK_ICON_TINT])
                         MediumSpacer()
                         Button(onClick = { appIconColorPickerState.show() }) {
-                            Text(text = LocalI18N.current["ui.common.picker.pick"])
+                            Text(text = LocalI18N.current[I18N_R.UI_COMMON_PICKER_PICK])
                         }
                         StandardSpacer()
 
-                        FieldTitle(text = LocalI18N.current["ui.shortx.stub.apk.icon.bg"])
+                        FieldTitle(text = LocalI18N.current[I18N_R.UI_SHORTX_STUB_APK_ICON_BG])
                         MediumSpacer()
                         Button(onClick = { appIconBgColorPickerState.show() }) {
-                            Text(text = LocalI18N.current["ui.common.picker.pick"])
+                            Text(text = LocalI18N.current[I18N_R.UI_COMMON_PICKER_PICK])
                         }
                         StandardSpacer()
                         SectionSpacer()
 
                         SplitLines(modifier = Modifier.fillMaxWidth())
-                        FieldTitle(text = LocalI18N.current["ui.shortx.stub.apk.icon.preview"])
+                        FieldTitle(text = LocalI18N.current[I18N_R.UI_SHORTX_STUB_APK_ICON_PREVIEW])
                         MediumSpacer()
                         ColoredIcon(color = Color(state.appIconBgColor)) {
                             RemixIcon(

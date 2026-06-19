@@ -54,6 +54,7 @@ import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberSearchBarState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class SingleAppPkgSelectorState(
     val onAppSelected: (App) -> Unit,
@@ -91,7 +92,7 @@ private fun SingleAppPkgSelector(state: SingleAppPkgSelectorState) {
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
             ShortXAppBarScaffold(
-                title = LocalI18N.current["ui.dialog.title.select.app"],
+                title = LocalI18N.current[I18N_R.UI_DIALOG_TITLE_SELECT_APP],
                 onBackPressed = {
                     state.dismiss()
                 }
@@ -219,15 +220,15 @@ private fun AppItem(
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             if (app.isRunning) {
                                 SmallSpacer()
-                                OutlineBadge(text = LocalI18N.current["ui.common.running"])
+                                OutlineBadge(text = LocalI18N.current[I18N_R.UI_COMMON_RUNNING])
                             }
                             if (app.app.isDisabled) {
                                 SmallSpacer()
-                                OutlineBadge(text = LocalI18N.current["ui.common.app.disabled"])
+                                OutlineBadge(text = LocalI18N.current[I18N_R.UI_COMMON_APP_DISABLED])
                             }
                             if (app.app.isSuspend) {
                                 SmallSpacer()
-                                OutlineBadge(text = LocalI18N.current["ui.common.app.suspended"])
+                                OutlineBadge(text = LocalI18N.current[I18N_R.UI_COMMON_APP_SUSPENDED])
                             }
                         }
                     }

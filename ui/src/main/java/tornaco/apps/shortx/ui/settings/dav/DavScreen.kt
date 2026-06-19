@@ -15,6 +15,7 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortXAppBarScaffold
 import java.util.UUID
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @Composable
 fun DavScreen(back: () -> Unit) {
@@ -27,7 +28,7 @@ fun DavScreen(back: () -> Unit) {
     DavProfileEditDialog(addDialog)
 
     ShortXAppBarScaffold(
-        title = LocalI18N.current["ui.settings.webdav.profile"],
+        title = LocalI18N.current[I18N_R.UI_SETTINGS_WEBDAV_PROFILE],
         onBackPressed = {
             back()
         },

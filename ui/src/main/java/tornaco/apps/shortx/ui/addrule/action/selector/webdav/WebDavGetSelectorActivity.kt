@@ -34,6 +34,7 @@ import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.settings.dav.DavProfileSelectorDialog
 import tornaco.apps.shortx.ui.settings.dav.DavSettingsActivity
 import tornaco.apps.shortx.ui.settings.dav.rememberDavProfileSelectorState
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class WebDavGetSelectorActivity : BaseSelectorActivity<Action.WebDavGet>() {
@@ -54,7 +55,7 @@ private fun BaseSelectorActivity<Action.WebDavGet>.Selector(currentAction: Actio
     val dialogState by vm.state.collectAsState()
 
     ShortXAppBarScaffold(
-        title = LocalI18N.current["ui.action.web.dav.get"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_WEB_DAV_GET],
         onBackPressed = {
             cancelAndFinish()
         },
@@ -92,7 +93,7 @@ private fun BaseSelectorActivity<Action.WebDavGet>.Selector(currentAction: Actio
                 })
             LargeSpacer()
 
-            FieldTitle(text = LocalI18N.current["ui.action.web.dav.get.dest.path"])
+            FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_WEB_DAV_GET_DEST_PATH])
             SmallSpacer()
             ShortXTextField(
                 modifier = Modifier.fillMaxWidth(),
@@ -103,7 +104,7 @@ private fun BaseSelectorActivity<Action.WebDavGet>.Selector(currentAction: Actio
             LargeSpacer()
 
 
-            FieldTitle(text = LocalI18N.current["ui.settings.webdav.profile"])
+            FieldTitle(text = LocalI18N.current[I18N_R.UI_SETTINGS_WEBDAV_PROFILE])
             SmallSpacer()
             val webdavProfileSelectorState = rememberDavProfileSelectorState {
                 vm.setProfile(it)
@@ -114,7 +115,7 @@ private fun BaseSelectorActivity<Action.WebDavGet>.Selector(currentAction: Actio
                     webdavProfileSelectorState.show()
                 }) {
                     Text(text = if (dialogState.profile == null) {
-                        LocalI18N.current["ui.common.unselected"]
+                        LocalI18N.current[I18N_R.UI_COMMON_UNSELECTED]
                     } else {
                         dialogState.profile!!.let {
                             it.alias ?: it.userName

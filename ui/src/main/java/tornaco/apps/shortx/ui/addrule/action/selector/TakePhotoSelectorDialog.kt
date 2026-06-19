@@ -29,6 +29,7 @@ import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class TakePhotoSelectorState(
     val onSelected: (Action.TakePhoto) -> Unit
@@ -63,7 +64,7 @@ private fun TakePhotoSelector(state: TakePhotoSelectorState) {
     Scaffold(
         topBar = {
             ShortXTopAppBar(
-                title = { Text(text = i18N.get(key = "ui.action.take.photo", fallback = "Take photo")) },
+                title = { Text(text = i18N.get(key = I18N_R.UI_ACTION_TAKE_PHOTO, fallback = "Take photo")) },
                 navigationIcon = {
                     IconButton(onClick = { state.dismiss() }) {
                         RemixIcon(remixName = Remix.System.close_line)
@@ -96,7 +97,7 @@ private fun TakePhotoSelector(state: TakePhotoSelectorState) {
                 label = {
                     Text(
                         i18N.get(
-                            key = "ui.action.take.photo.target.path",
+                            key = I18N_R.UI_ACTION_TAKE_PHOTO_TARGET_PATH,
                             fallback = "Target file path (optional, supports variables)"
                         )
                     )

@@ -67,6 +67,7 @@ import tornaco.apps.shortx.ui.code.popupCodeLibraryItemResult
 import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.settings.log.js.JSLogActivity
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class JSEditorActivity : BaseSelectorActivity<ParcelableCode>() {
@@ -80,7 +81,7 @@ class JSEditorActivity : BaseSelectorActivity<ParcelableCode>() {
 fun JSEditorActivity.ExecuteJSEditor(
     currentAction: ParcelableCode?,
 ) {
-    val outputTitle = LocalI18N.current["ui.title.js"]
+    val outputTitle = LocalI18N.current[I18N_R.UI_TITLE_JS]
     val context = LocalContext.current
     var ceComposeBinding by remember { mutableStateOf<CEComposeBinding?>(null) }
     var moreMenuExpanded by remember { mutableStateOf(false) }
@@ -121,7 +122,7 @@ fun JSEditorActivity.ExecuteJSEditor(
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
             val contextMenuState = rememberMenuDialogState<CoroutineContext>(
-                title = LocalI18N.current["ui.common.coroutine.context"],
+                title = LocalI18N.current[I18N_R.UI_COMMON_COROUTINE_CONTEXT],
                 menuItems = CoroutineContext.entries.filterNot { it == CoroutineContext.UNRECOGNIZED }
                     .map {
                         MenuDialogItem(
@@ -173,7 +174,7 @@ fun JSEditorActivity.ExecuteJSEditor(
                             } else {
                                 Icon(
                                     imageVector = Icons.Outlined.PlayArrow,
-                                    contentDescription = LocalI18N.current["ui.common.run"]
+                                    contentDescription = LocalI18N.current[I18N_R.UI_COMMON_RUN]
                                 )
                             }
                         }
@@ -212,7 +213,7 @@ fun JSEditorActivity.ExecuteJSEditor(
                                     }
                                 )
                                 DropdownMenuItem(
-                                    text = { Text(LocalI18N.current["ui.code.editor.from.code.library"]) },
+                                    text = { Text(LocalI18N.current[I18N_R.UI_CODE_EDITOR_FROM_CODE_LIBRARY]) },
                                     onClick = {
                                         moreMenuExpanded = false
                                         codeLibSelectorLauncher.launch(
@@ -224,21 +225,21 @@ fun JSEditorActivity.ExecuteJSEditor(
                                     }
                                 )
                                 DropdownMenuItem(
-                                    text = { Text(LocalI18N.current["ui.code.editor.wordwrap"]) },
+                                    text = { Text(LocalI18N.current[I18N_R.UI_CODE_EDITOR_WORDWRAP]) },
                                     onClick = {
                                         moreMenuExpanded = false
                                         ceComposeBinding?.toggleWordwrap()
                                     }
                                 )
                                 DropdownMenuItem(
-                                    text = { Text(LocalI18N.current["ui.code.editor.whitespace"]) },
+                                    text = { Text(LocalI18N.current[I18N_R.UI_CODE_EDITOR_WHITESPACE]) },
                                     onClick = {
                                         moreMenuExpanded = false
                                         ceComposeBinding?.toggleNonPrintable()
                                     }
                                 )
                                 DropdownMenuItem(
-                                    text = { Text(LocalI18N.current["ui.code.editor.log"]) },
+                                    text = { Text(LocalI18N.current[I18N_R.UI_CODE_EDITOR_LOG]) },
                                     onClick = {
                                         moreMenuExpanded = false
                                         JSLogActivity.Starter.start(context)

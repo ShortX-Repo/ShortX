@@ -45,18 +45,19 @@ import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.settings.danmu.DanmuUISettingsActivity
 import tornaco.apps.shortx.ui.settings.danmu.DanmuUISettingsScreenDialog
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 enum class SuggestedNav(val labelKey: String) {
-    GlobalVar("ui.global.var.title"),
-    SystemEnv("ui.system.env"),
-    Functions("ui.action.functions"),
-    PkgSet("ui.pkg.set.title"),
-    DanmuSettings("ui.settings.danmu"),
-    ShowPointerLocation("ui.common.show.pointer.location"),
-    FactRecord("ui.settings.fact.record"),
-    ConditionRecord("ui.settings.condition.record"),
-    ActionRecord("ui.settings.action.record"),
-    RegexTest("ui.tools.regex.test.title"),
+    GlobalVar(I18N_R.UI_GLOBAL_VAR_TITLE),
+    SystemEnv(I18N_R.UI_SYSTEM_ENV),
+    Functions(I18N_R.UI_ACTION_FUNCTIONS),
+    PkgSet(I18N_R.UI_PKG_SET_TITLE),
+    DanmuSettings(I18N_R.UI_SETTINGS_DANMU),
+    ShowPointerLocation(I18N_R.UI_COMMON_SHOW_POINTER_LOCATION),
+    FactRecord(I18N_R.UI_SETTINGS_FACT_RECORD),
+    ConditionRecord(I18N_R.UI_SETTINGS_CONDITION_RECORD),
+    ActionRecord(I18N_R.UI_SETTINGS_ACTION_RECORD),
+    RegexTest(I18N_R.UI_TOOLS_REGEX_TEST_TITLE),
 }
 
 @Composable
@@ -74,7 +75,7 @@ fun SuggestedNavEntry() {
             SmallSpacer()
             SmallTitle(
                 modifier = Modifier.padding(vertical = 12.dp),
-                text = LocalI18N.current["ui.suggest.nav.entry.title"],
+                text = LocalI18N.current[I18N_R.UI_SUGGEST_NAV_ENTRY_TITLE],
             )
         }
         StandardSpacer()

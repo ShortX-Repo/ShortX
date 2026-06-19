@@ -19,6 +19,7 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.afterNavDelay
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import java.time.Duration
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class GestureRecordeViewerActivity : BaseActivity() {
@@ -39,7 +40,7 @@ class GestureRecordeViewerActivity : BaseActivity() {
 
     @Composable
     override fun Content() {
-        val doneI18N = "\uD83C\uDF89 " + LocalI18N.current["ui.common.done"]
+        val doneI18N = "\uD83C\uDF89 " + LocalI18N.current[I18N_R.UI_COMMON_DONE]
         ShortXTheme {
             Box(modifier = Modifier.fillMaxSize())
             LaunchedEffect(Unit) {

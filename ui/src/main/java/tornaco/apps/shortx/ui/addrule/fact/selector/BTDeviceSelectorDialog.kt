@@ -37,6 +37,7 @@ import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.base.TipCard
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class BTDeviceSelectorState(
     val title: String,
@@ -132,10 +133,10 @@ fun BTDeviceSelectorDialog(state: BTDeviceSelectorState) {
                             }
 
                             FieldTitle(
-                                text = LocalI18N.current["ui.fact.bt.device.alias"],
+                                text = LocalI18N.current[I18N_R.UI_FACT_BT_DEVICE_ALIAS],
                             )
                             TinySpacer()
-                            TipBody(LocalI18N.current["ui.fact.bt.device.alias.summary"])
+                            TipBody(LocalI18N.current[I18N_R.UI_FACT_BT_DEVICE_ALIAS_SUMMARY])
                             TinySpacer()
                             ShortXTextField(
                                 value = state.deviceName,
@@ -146,10 +147,10 @@ fun BTDeviceSelectorDialog(state: BTDeviceSelectorState) {
                             StandardSpacer()
 
                             FieldTitle(
-                                text = LocalI18N.current["ui.fact.bt.device.address"],
+                                text = LocalI18N.current[I18N_R.UI_FACT_BT_DEVICE_ADDRESS],
                             )
                             TinySpacer()
-                            TipBody(text = LocalI18N.current["ui.fact.bt.device.address.tip"])
+                            TipBody(text = LocalI18N.current[I18N_R.UI_FACT_BT_DEVICE_ADDRESS_TIP])
                             TinySpacer()
                             ShortXTextField(
                                 value = state.deviceAddress,
@@ -162,7 +163,7 @@ fun BTDeviceSelectorDialog(state: BTDeviceSelectorState) {
 
                             if (state.showTimeoutSelector) {
                                 FieldTitle(
-                                    text = LocalI18N.current["ui.conditions.bt.device.found.timeout"],
+                                    text = LocalI18N.current[I18N_R.UI_CONDITIONS_BT_DEVICE_FOUND_TIMEOUT],
                                 )
                                 TinySpacer()
                                 ShortXTextField(
@@ -175,7 +176,7 @@ fun BTDeviceSelectorDialog(state: BTDeviceSelectorState) {
 
                             SectionSpacer()
 
-                            FieldTitle(text = LocalI18N.current["ui.fact.bt.choose.ssid"])
+                            FieldTitle(text = LocalI18N.current[I18N_R.UI_FACT_BT_CHOOSE_SSID])
                             val deviceList = remember {
                                 shortXManager.getBTBondedDevices()
                             }

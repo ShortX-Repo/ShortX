@@ -31,6 +31,7 @@ import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.function.FunctionItemUiModel
 import tornaco.apps.shortx.ui.function.FunctionListViewModel
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class FunctionDialogState(
     val onSelected: (FunctionItemUiModel) -> Unit
@@ -71,7 +72,7 @@ private fun FunctionSelector(dialogState: FunctionDialogState) {
             Scaffold(
                 topBar = {
                     ShortXTopAppBar(
-                        title = { Text(i18n["ui.title.select.function"]) },
+                        title = { Text(i18n[I18N_R.UI_TITLE_SELECT_FUNCTION]) },
                         navigationIcon = {
                             IconButton(onClick = { dialogState.dismiss() }) {
                                 RemixIcon(remixName = Remix.System.close_line)
@@ -87,7 +88,7 @@ private fun FunctionSelector(dialogState: FunctionDialogState) {
                 ) {
                     if (state.functions.isEmpty()) {
                         Text(
-                            text = i18n["ui.function.empty"],
+                            text = i18n[I18N_R.UI_FUNCTION_EMPTY],
                             modifier = Modifier.padding(16.dp)
                         )
                     } else {
@@ -97,7 +98,7 @@ private fun FunctionSelector(dialogState: FunctionDialogState) {
                                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                                     titleLines = listOf(
                                         function.name,
-                                        i18n["ui.function.summary", mapOf(
+                                        i18n[I18N_R.UI_FUNCTION_SUMMARY, mapOf(
                                             "type" to function.returnType,
                                             "params" to function.parametersCount.toString(),
                                             "actions" to function.actionsCount.toString(),

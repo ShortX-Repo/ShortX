@@ -68,6 +68,7 @@ import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.record.EvaRecordSetting
 import tornaco.apps.shortx.ui.settings.TileSettingsActivity
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class AddToggleActivity : BaseActivity() {
@@ -98,9 +99,9 @@ class AddToggleActivity : BaseActivity() {
             toggleId = toggleId,
             toggleSetId = toggleSetId,
             screenTitle = if (toggleId != null) {
-                LocalI18N.current["ui.title.edit.toggle"]
+                LocalI18N.current[I18N_R.UI_TITLE_EDIT_TOGGLE]
             } else {
-                LocalI18N.current["ui.title.add.toggle"]
+                LocalI18N.current[I18N_R.UI_TITLE_ADD_TOGGLE]
             }
         ) {
             finish()
@@ -127,7 +128,7 @@ fun AddToggleScreen(
 
     val context = LocalContext.current
     val i18n = LocalI18N.current
-    val savedMessage = i18n["ui.toast.toggle.saved"]
+    val savedMessage = i18n[I18N_R.UI_TOAST_TOGGLE_SAVED]
     val showToast = {
         Toast.makeText(context, savedMessage, Toast.LENGTH_SHORT).show()
     }
@@ -157,12 +158,12 @@ fun AddToggleScreen(
 
     val backConfirmDialogState = rememberConfirmDialogState()
     ConfirmDialog(
-        title = i18n["ui.edit.discard.dialog.title"],
+        title = i18n[I18N_R.UI_EDIT_DISCARD_DIALOG_TITLE],
         messageHint = {
-            i18n["ui.edit.discard.dialog.message"]
+            i18n[I18N_R.UI_EDIT_DISCARD_DIALOG_MESSAGE]
         },
-        confirmButton = i18n["ui.edit.discard.dialog.discard"],
-        dismissButton = i18n["ui.edit.discard.dialog.stay"],
+        confirmButton = i18n[I18N_R.UI_EDIT_DISCARD_DIALOG_DISCARD],
+        dismissButton = i18n[I18N_R.UI_EDIT_DISCARD_DIALOG_STAY],
         state = backConfirmDialogState,
         data = "",
         onConfirm = {
@@ -254,8 +255,8 @@ private fun ToggleContent(
     SectionSpacer()
 
     FieldTitleWithTip(
-        text = LocalI18N.current["ui.title.toggle.state.handle"],
-        tipText = LocalI18N.current["ui.title.toggle.state.handle.summary"]
+        text = LocalI18N.current[I18N_R.UI_TITLE_TOGGLE_STATE_HANDLE],
+        tipText = LocalI18N.current[I18N_R.UI_TITLE_TOGGLE_STATE_HANDLE_SUMMARY]
     )
     val stateHandleDropdownState = rememberDropdownSelectorState()
     val stateHandleLabel = getStateHandleLabel(stateHandle = addToggleState.stateHandle)
@@ -301,8 +302,8 @@ private fun ToggleContent(
             ConditionContent(
                 header = {
                     FieldTitleWithTip(
-                        text = LocalI18N.current["ui.title.toggle.state.handle.by.condition"],
-                        tipText = LocalI18N.current["ui.title.toggle.state.handle.by.condition.summary"]
+                        text = LocalI18N.current[I18N_R.UI_TITLE_TOGGLE_STATE_HANDLE_BY_CONDITION],
+                        tipText = LocalI18N.current[I18N_R.UI_TITLE_TOGGLE_STATE_HANDLE_BY_CONDITION_SUMMARY]
                     )
                 },
                 state = conditionContentState,
@@ -350,7 +351,7 @@ private fun ToggleContent(
     )
 
     val context = LocalContext.current
-    FieldTitle(text = LocalI18N.current["ui.settings.sb.bond.to.toggle"])
+    FieldTitle(text = LocalI18N.current[I18N_R.UI_SETTINGS_SB_BOND_TO_TOGGLE])
     SmallSpacer()
     Row(verticalAlignment = Alignment.CenterVertically) {
         FilledTonalButton(onClick = {
@@ -363,7 +364,7 @@ private fun ToggleContent(
         }) {
             Text(
                 text = if (addToggleState.bondToTile == null) {
-                    LocalI18N.current["ui.settings.sb.bond.to.toggle.pick"]
+                    LocalI18N.current[I18N_R.UI_SETTINGS_SB_BOND_TO_TOGGLE_PICK]
                 } else {
                     addToggleState.bondToTile.label
                 }
@@ -371,7 +372,7 @@ private fun ToggleContent(
         }
         if (addToggleState.bondToTile != null) {
             TextButton(onClick = { vm.unbindQSTile() }) {
-                Text(LocalI18N.current["ui.settings.sb.bond.to.toggle.unbind"])
+                Text(LocalI18N.current[I18N_R.UI_SETTINGS_SB_BOND_TO_TOGGLE_UNBIND])
             }
         }
     }
@@ -384,8 +385,8 @@ private fun ToggleContent(
         ActionContent(
             header = {
                 FieldTitleWithTip(
-                    LocalI18N.current["ui.title.on.toggle.deleted"],
-                    LocalI18N.current["ui.actions.hook.on.deleted.description"]
+                    LocalI18N.current[I18N_R.UI_TITLE_ON_TOGGLE_DELETED],
+                    LocalI18N.current[I18N_R.UI_ACTIONS_HOOK_ON_DELETED_DESCRIPTION]
                 )
             },
             srcId = addToggleState.id,
@@ -417,7 +418,7 @@ private fun TitleAndDescription(
     ShortXTextField(
         modifier = Modifier.fillMaxWidth(),
         label = {
-            Text(text = LocalI18N.current["ui.rule.title"])
+            Text(text = LocalI18N.current[I18N_R.UI_RULE_TITLE])
         },
         value = state.title,
         readOnly = readOnly,
@@ -438,7 +439,7 @@ private fun TitleAndDescription(
             .fillMaxWidth()
             .padding(top = 16.dp),
             label = {
-                Text(text = LocalI18N.current["ui.rule.description"])
+                Text(text = LocalI18N.current[I18N_R.UI_RULE_DESCRIPTION])
             },
             value = state.description,
             readOnly = readOnly,
@@ -453,11 +454,11 @@ private fun TitleAndDescription(
 private fun getStateHandleLabel(stateHandle: ToggleStateHandle): String {
     return when (stateHandle) {
         ToggleStateHandle.ByCondition -> {
-            LocalI18N.current["ui.title.toggle.state.handle.by.condition"]
+            LocalI18N.current[I18N_R.UI_TITLE_TOGGLE_STATE_HANDLE_BY_CONDITION]
         }
 
         ToggleStateHandle.ByStore -> {
-            LocalI18N.current["ui.title.toggle.state.handle.by.store"]
+            LocalI18N.current[I18N_R.UI_TITLE_TOGGLE_STATE_HANDLE_BY_STORE]
         }
     }
 }
@@ -467,11 +468,11 @@ private fun getStateHandleLabel(stateHandle: ToggleStateHandle): String {
 private fun getStateHandleSummary(stateHandle: ToggleStateHandle): String {
     return when (stateHandle) {
         ToggleStateHandle.ByCondition -> {
-            LocalI18N.current["ui.title.toggle.state.handle.by.condition.summary"]
+            LocalI18N.current[I18N_R.UI_TITLE_TOGGLE_STATE_HANDLE_BY_CONDITION_SUMMARY]
         }
 
         ToggleStateHandle.ByStore -> {
-            LocalI18N.current["ui.title.toggle.state.handle.by.store.summary"]
+            LocalI18N.current[I18N_R.UI_TITLE_TOGGLE_STATE_HANDLE_BY_STORE_SUMMARY]
         }
     }
 }
@@ -481,11 +482,11 @@ private fun getStateHandleSummary(stateHandle: ToggleStateHandle): String {
 private fun getToggleOnActionFieldTitle(stateHandle: ToggleStateHandle): String {
     return when (stateHandle) {
         ToggleStateHandle.ByCondition -> {
-            LocalI18N.current["ui.title.on.toggle.on.cond"]
+            LocalI18N.current[I18N_R.UI_TITLE_ON_TOGGLE_ON_COND]
         }
 
         ToggleStateHandle.ByStore -> {
-            LocalI18N.current["ui.title.on.toggle.on.store"]
+            LocalI18N.current[I18N_R.UI_TITLE_ON_TOGGLE_ON_STORE]
         }
     }
 }
@@ -495,11 +496,11 @@ private fun getToggleOnActionFieldTitle(stateHandle: ToggleStateHandle): String 
 private fun getToggleOffActionFieldTitle(stateHandle: ToggleStateHandle): String {
     return when (stateHandle) {
         ToggleStateHandle.ByCondition -> {
-            LocalI18N.current["ui.title.on.toggle.off.cond"]
+            LocalI18N.current[I18N_R.UI_TITLE_ON_TOGGLE_OFF_COND]
         }
 
         ToggleStateHandle.ByStore -> {
-            LocalI18N.current["ui.title.on.toggle.off.store"]
+            LocalI18N.current[I18N_R.UI_TITLE_ON_TOGGLE_OFF_STORE]
         }
     }
 }

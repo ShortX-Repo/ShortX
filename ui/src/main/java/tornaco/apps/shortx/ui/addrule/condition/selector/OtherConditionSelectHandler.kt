@@ -32,6 +32,7 @@ import tornaco.apps.shortx.ui.base.code.js.JSEditorActivity
 import tornaco.apps.shortx.ui.base.code.mvel.MVELEditorActivity
 import tornaco.apps.shortx.ui.base.code.toParcelableCodeOrNull
 import tornaco.apps.shortx.ui.base.rememberTextInputState
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @Composable
 fun otherConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSelectSource) -> Boolean {
@@ -71,7 +72,7 @@ fun otherConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSe
     EvaluateLocalVarSelectorDialog(state = evaluateLocalVarSelectorDialogState)
 
     val setRuleEnabledState = rememberSetRuleEnabledDialogState(
-        LocalI18N.current["ui.condition.is.rule.enabled"],
+        LocalI18N.current[I18N_R.UI_CONDITION_IS_RULE_ENABLED],
         onSelected = {
             addCondition(
                 Condition.IsRuleEnabled(
@@ -97,7 +98,7 @@ fun otherConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionSe
     DelaySelectorDialog(state = delaySelectionState)
 
     val factTagSelectorState = rememberTextInputState(
-        title = LocalI18N.current["ui.condition.fact.tag"],
+        title = LocalI18N.current[I18N_R.UI_CONDITION_FACT_TAG],
         message = null,
         onSelected = {
             addCondition(Condition.RequireFactTag(tag = it))

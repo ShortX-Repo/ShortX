@@ -46,6 +46,7 @@ import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import kotlin.math.roundToInt
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class SetVolumeDialogState(
     val onSelected: (Action.SetVolume) -> Unit
@@ -89,7 +90,7 @@ private fun SetVolumeSelector(dialogState: SetVolumeDialogState) {
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(text = LocalI18N.current["ui.action.set.volume"]) },
+                        title = { Text(text = LocalI18N.current[I18N_R.UI_ACTION_SET_VOLUME]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 dialogState.dismiss()
@@ -122,7 +123,7 @@ private fun SetVolumeSelector(dialogState: SetVolumeDialogState) {
                         .verticalScroll(rememberScrollState())
                 ) {
                     val typeDropdownState = rememberDropdownSelectorState()
-                    FieldTitle(text = LocalI18N.current["ui.action.audio.stream.type"])
+                    FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_AUDIO_STREAM_TYPE])
                     MediumSpacer()
                     Box(modifier = Modifier.fillMaxWidth()) {
                         ShortXFilledTonalButton(onClick = {
@@ -158,7 +159,7 @@ private fun SetVolumeSelector(dialogState: SetVolumeDialogState) {
                     }
                     StandardSpacer()
 
-                    FieldTitle(text = LocalI18N.current["ui.action.set.volume"] + " ${dialogState.index}")
+                    FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_SET_VOLUME] + " ${dialogState.index}")
                     MediumSpacer()
                     val min =
                         remember(dialogState.type) {

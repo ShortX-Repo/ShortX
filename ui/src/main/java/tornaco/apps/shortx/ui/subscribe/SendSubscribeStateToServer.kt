@@ -16,6 +16,7 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.LocalShortXProps
 import tornaco.apps.shortx.ui.base.requireActivity
 import tornaco.apps.shortx.ui.subscribe.util.getLVLTokenForServer
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @Composable
 inline fun ShortXProps(crossinline content: @Composable () -> Unit) {
@@ -38,7 +39,7 @@ inline fun ShortXProps(crossinline content: @Composable () -> Unit) {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
                         context,
-                        i18N["ui.subscription.intro.message"],
+                        i18N[I18N_R.UI_SUBSCRIPTION_INTRO_MESSAGE],
                         Toast.LENGTH_LONG
                     ).show()
                 }

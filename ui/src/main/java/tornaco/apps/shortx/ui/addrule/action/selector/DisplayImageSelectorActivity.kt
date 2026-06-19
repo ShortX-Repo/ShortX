@@ -38,6 +38,7 @@ import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import javax.inject.Inject
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class DisplayImageSelectorActivity : BaseSelectorActivity<Action.DisplayImage>() {
@@ -59,7 +60,7 @@ private fun BaseSelectorActivity<Action.DisplayImage>.Selector(currentAction: Ac
     val i18N = LocalI18N.current
 
     ShortXAppBarScaffold(
-        title = LocalI18N.current["ui.action.display.image"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_DISPLAY_IMAGE],
         onBackPressed = { cancelAndFinish() },
         actions = {
             IconButton(onClick = {
@@ -73,7 +74,7 @@ private fun BaseSelectorActivity<Action.DisplayImage>.Selector(currentAction: Ac
         Column(Modifier.padding(horizontal = 16.dp)) {
             FieldTitle(
                 modifier = Modifier.fillMaxWidth(),
-                text = LocalI18N.current["ui.action.display.image.url"]
+                text = LocalI18N.current[I18N_R.UI_ACTION_DISPLAY_IMAGE_URL]
             )
             TinySpacer()
             ShortXTextField(value = state.url,
@@ -84,7 +85,7 @@ private fun BaseSelectorActivity<Action.DisplayImage>.Selector(currentAction: Ac
             SectionSpacer()
 
             val srcMenuState = rememberMenuDialogState<ImageScaleType>(
-                title = i18N["ui.action.display.image.scale.type"],
+                title = i18N[I18N_R.UI_ACTION_DISPLAY_IMAGE_SCALE_TYPE],
                 menuItems = ImageScaleType.entries.filterNot { it == ImageScaleType.UNRECOGNIZED }
                     .map {
                         MenuDialogItem(
@@ -101,7 +102,7 @@ private fun BaseSelectorActivity<Action.DisplayImage>.Selector(currentAction: Ac
 
             FieldTitle(
                 modifier = Modifier.fillMaxWidth(),
-                text = LocalI18N.current["ui.action.display.image.scale.type"]
+                text = LocalI18N.current[I18N_R.UI_ACTION_DISPLAY_IMAGE_SCALE_TYPE]
             )
             TinySpacer()
             FilledTonalButton(onClick = {

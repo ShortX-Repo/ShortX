@@ -14,6 +14,7 @@ import tornaco.apps.shortx.ui.main.model.daToDirectActionUM
 import tornaco.apps.shortx.ui.main.model.ruleToRuleUM
 import javax.inject.Inject
 import tornaco.apps.shortx.core.proto.func.`Function` as ShortXFunction
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 data class FunctionReferenceScanResult(
     val ruleTitles: List<String> = emptyList(),
@@ -72,7 +73,7 @@ class FunctionListViewModel @Inject constructor(@ApplicationContext context: Con
                 updateState {
                     copy(
                         pendingDelete = null,
-                        promptMessage = i18N["ui.function.delete.not.found"]
+                        promptMessage = i18N[I18N_R.UI_FUNCTION_DELETE_NOT_FOUND]
                     )
                 }
                 loadState()

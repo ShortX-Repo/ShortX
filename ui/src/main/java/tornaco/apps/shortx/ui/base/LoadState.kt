@@ -20,6 +20,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 sealed interface LoadState<out T> {
     data class Success<T>(val data: T) : LoadState<T>
@@ -76,7 +77,7 @@ fun LoadError(
                 TextDisplayActivity.start(context, "ERROR", it)
             }) {
                 Text(
-                    text = LocalI18N.current["ui.common.error.view.message"],
+                    text = LocalI18N.current[I18N_R.UI_COMMON_ERROR_VIEW_MESSAGE],
                     style = MaterialTheme.typography.bodySmall.copy(
                         textDecoration = TextDecoration.Underline
                     )
@@ -87,7 +88,7 @@ fun LoadError(
         refresh?.let {
             ShortXTextButton(onClick = { refresh() }) {
                 Text(
-                    text = LocalI18N.current["ui.common.error.click.retry"],
+                    text = LocalI18N.current[I18N_R.UI_COMMON_ERROR_CLICK_RETRY],
                     style = MaterialTheme.typography.bodySmall.copy(
                         textDecoration = TextDecoration.Underline
                     )
@@ -119,7 +120,7 @@ fun EmptyList(modifier: Modifier = Modifier, refresh: (() -> Unit)? = null) {
         refresh?.let {
             ShortXTextButton(onClick = { refresh() }) {
                 Text(
-                    text = LocalI18N.current["ui.common.empty.click.retry"],
+                    text = LocalI18N.current[I18N_R.UI_COMMON_EMPTY_CLICK_RETRY],
                     style = MaterialTheme.typography.bodySmall.copy(
                         textDecoration = TextDecoration.Underline
                     )

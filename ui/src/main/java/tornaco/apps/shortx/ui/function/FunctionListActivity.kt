@@ -36,6 +36,7 @@ import tornaco.apps.shortx.ui.base.rememberShortXBottomSheetState
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class FunctionListActivity : BaseActivity() {
@@ -99,41 +100,41 @@ fun FunctionListScreen(back: () -> Unit) {
         }
     }
     ConfirmDialog(
-        title = "ui.common.delete",
+        title = I18N_R.UI_COMMON_DELETE,
         state = deleteDialogState,
         data = pendingDelete,
         messageHint = {
             buildString {
-                append(i18n["ui.delete.dialog.confirm", mapOf("wht" to (it?.function?.name ?: ""))])
+                append(i18n[I18N_R.UI_DELETE_DIALOG_CONFIRM, mapOf("wht" to (it?.function?.name ?: ""))])
 
                 val refs = it?.references
                 if (refs?.hasReferences == true) {
                     append("\n\n")
-                    append(i18n["ui.function.delete.referenced"])
+                    append(i18n[I18N_R.UI_FUNCTION_DELETE_REFERENCED])
 
                     if (refs.ruleTitles.isNotEmpty()) {
                         append("\n")
-                        append(i18n["ui.function.delete.references.rules"])
+                        append(i18n[I18N_R.UI_FUNCTION_DELETE_REFERENCES_RULES])
                         append(": ")
                         append(refs.ruleTitles.joinToString())
                     }
 
                     if (refs.directActionTitles.isNotEmpty()) {
                         append("\n")
-                        append(i18n["ui.function.delete.references.direct.actions"])
+                        append(i18n[I18N_R.UI_FUNCTION_DELETE_REFERENCES_DIRECT_ACTIONS])
                         append(": ")
                         append(refs.directActionTitles.joinToString())
                     }
 
                     if (refs.functionNames.isNotEmpty()) {
                         append("\n")
-                        append(i18n["ui.function.delete.references.functions"])
+                        append(i18n[I18N_R.UI_FUNCTION_DELETE_REFERENCES_FUNCTIONS])
                         append(": ")
                         append(refs.functionNames.joinToString())
                     }
 
                     append("\n\n")
-                    append(i18n["ui.function.delete.references.continue"])
+                    append(i18n[I18N_R.UI_FUNCTION_DELETE_REFERENCES_CONTINUE])
                 }
             }
         },
@@ -143,7 +144,7 @@ fun FunctionListScreen(back: () -> Unit) {
     )
 
     ShortXAppBarScaffold(
-        title = i18n["ui.action.functions"],
+        title = i18n[I18N_R.UI_ACTION_FUNCTIONS],
         onBackPressed = back,
         actions = {
             IconButton(onClick = {
@@ -164,7 +165,7 @@ fun FunctionListScreen(back: () -> Unit) {
                     .fillMaxSize()
                     .padding(16.dp)
             ) {
-                Text(i18n["ui.function.empty"])
+                Text(i18n[I18N_R.UI_FUNCTION_EMPTY])
             }
         } else {
             LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -173,7 +174,7 @@ fun FunctionListScreen(back: () -> Unit) {
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                         titleLines = listOf(
                             function.name,
-                            i18n["ui.function.summary", mapOf(
+                            i18n[I18N_R.UI_FUNCTION_SUMMARY, mapOf(
                                 "type" to function.returnType,
                                 "params" to function.parametersCount.toString(),
                                 "actions" to function.actionsCount.toString(),

@@ -52,6 +52,7 @@ import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.ClipboardUtils
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class SettingsAccessRecordActivity : BaseActivity() {
@@ -93,7 +94,7 @@ fun SettingsAccessRecordScreen(back: () -> Unit) {
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(text = i18N["ui.settings.settings.catcher.record.summary"]) },
+                        title = { Text(text = i18N[I18N_R.UI_SETTINGS_SETTINGS_CATCHER_RECORD_SUMMARY]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 back()
@@ -133,7 +134,7 @@ fun SettingsAccessRecordScreen(back: () -> Unit) {
                                         Toast
                                             .makeText(
                                                 context,
-                                                i18N["ui.common.copied.to.clipboard"],
+                                                i18N[I18N_R.UI_COMMON_COPIED_TO_CLIPBOARD],
                                                 Toast.LENGTH_LONG
                                             )
                                             .show()

@@ -40,6 +40,7 @@ import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class SetStatusBarIconSelectorActivity : BaseSelectorActivity<Action.SetStatusBarIcon>() {
@@ -62,7 +63,7 @@ private fun SetStatusBarIconSelectorActivity.SetStatusBarIconSelector(currentAct
             topBar = {
                 ShortXTopAppBar(
                     modifier = Modifier,
-                    title = { Text(LocalI18N.current["ui.action.set.statusbar.icon"]) },
+                    title = { Text(LocalI18N.current[I18N_R.UI_ACTION_SET_STATUSBAR_ICON]) },
                     navigationIcon = {
                         IconButton(onClick = {
                             cancelAndFinish()
@@ -92,11 +93,11 @@ private fun SetStatusBarIconSelectorActivity.SetStatusBarIconSelector(currentAct
                     .animateContentSize()
                     .verticalScroll(rememberScrollState())
             ) {
-                TipRow(text = LocalI18N.current["ui.action.set.statusbar.icon.slot.summary"])
+                TipRow(text = LocalI18N.current[I18N_R.UI_ACTION_SET_STATUSBAR_ICON_SLOT_SUMMARY])
                 SmallSpacer()
                 ShortXTextField(modifier = Modifier.fillMaxWidth(),
                     label = {
-                        Text(text = LocalI18N.current["ui.action.set.statusbar.icon.slot"])
+                        Text(text = LocalI18N.current[I18N_R.UI_ACTION_SET_STATUSBAR_ICON_SLOT])
                     },
                     value = state.slot,
                     onValueChange = {

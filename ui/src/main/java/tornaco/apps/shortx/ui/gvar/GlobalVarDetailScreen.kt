@@ -56,6 +56,7 @@ import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.copy
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class GlobalVarDetailActivity : BaseActivity() {
@@ -91,7 +92,7 @@ fun GlobalVarDetailScreen(name: String, back: () -> Unit) {
 
 
     val valueInputState = rememberTextInputState(
-        title = LocalI18N.current["ui.global.var.input.value"],
+        title = LocalI18N.current[I18N_R.UI_GLOBAL_VAR_INPUT_VALUE],
         message = null,
         onSelected = {
             vm.addOrUpdateValue(listOf(it))
@@ -100,7 +101,7 @@ fun GlobalVarDetailScreen(name: String, back: () -> Unit) {
     TextInputDialog(state = valueInputState)
 
     val nameInputState = rememberTextInputState(
-        title = LocalI18N.current["ui.global.var.name"],
+        title = LocalI18N.current[I18N_R.UI_GLOBAL_VAR_NAME],
         message = null,
         onSelected = {
             vm.updateName(it)
@@ -109,7 +110,7 @@ fun GlobalVarDetailScreen(name: String, back: () -> Unit) {
     TextInputDialog(state = nameInputState)
 
     val noteInputState = rememberTextInputState(
-        title = LocalI18N.current["ui.common.note"],
+        title = LocalI18N.current[I18N_R.UI_COMMON_NOTE],
         message = null,
         onSelected = {
             vm.updateNote(it)
@@ -137,15 +138,15 @@ fun GlobalVarDetailScreen(name: String, back: () -> Unit) {
     SingleAppSelectorDialog(state = singleAppSelectorState)
 
     val addMenuState = rememberMenuDialogState<String>(
-        title = LocalI18N.current["ui.common.add"],
+        title = LocalI18N.current[I18N_R.UI_COMMON_ADD],
         menuItems = listOf(
             MenuDialogItem(
                 id = "input",
-                title = LocalI18N.current["ui.common.manually.input"],
+                title = LocalI18N.current[I18N_R.UI_COMMON_MANUALLY_INPUT],
             ),
             MenuDialogItem(
                 id = "select",
-                title = LocalI18N.current["ui.title.select.component"],
+                title = LocalI18N.current[I18N_R.UI_TITLE_SELECT_COMPONENT],
             )
         ),
         onItemSelected = { _, id ->
@@ -204,7 +205,7 @@ fun GlobalVarDetailScreen(name: String, back: () -> Unit) {
 
                 stickyHeader {
                     StandardSpacer()
-                    CategoryTitle(title = LocalI18N.current["ui.global.var.name"])
+                    CategoryTitle(title = LocalI18N.current[I18N_R.UI_GLOBAL_VAR_NAME])
                 }
 
                 stickyHeader {
@@ -215,7 +216,7 @@ fun GlobalVarDetailScreen(name: String, back: () -> Unit) {
 
                 stickyHeader {
                     StandardSpacer()
-                    CategoryTitle(title = LocalI18N.current["ui.common.note"])
+                    CategoryTitle(title = LocalI18N.current[I18N_R.UI_COMMON_NOTE])
                 }
 
                 stickyHeader {
@@ -226,7 +227,7 @@ fun GlobalVarDetailScreen(name: String, back: () -> Unit) {
 
                 stickyHeader {
                     StandardSpacer()
-                    CategoryTitle(title = LocalI18N.current["ui.global.var.value"])
+                    CategoryTitle(title = LocalI18N.current[I18N_R.UI_GLOBAL_VAR_VALUE])
                     StandardSpacer()
                 }
 

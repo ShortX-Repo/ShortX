@@ -21,6 +21,7 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.subscribe.LottieNFCFlashView
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class NFCTagSelectorState(val onSelected: (ByteString) -> Unit) : CommonDialogState()
 
@@ -37,7 +38,7 @@ fun rememberNFCTagSelectorState(
 fun NFCTagSelectorDialog(state: NFCTagSelectorState) {
     if (state.isShowing) {
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
-            DialogTitle(text = LocalI18N.current["ui.fact.nfc.tag"])
+            DialogTitle(text = LocalI18N.current[I18N_R.UI_FACT_NFC_TAG])
         }, buttons = {
             ShortXTextButton(onClick = {
                 state.dismiss()
@@ -46,11 +47,11 @@ fun NFCTagSelectorDialog(state: NFCTagSelectorState) {
             }
         }, content = {
             Column(modifier = Modifier.fillMaxWidth()) {
-                Text(text = LocalI18N.current["ui.fact.nfc.tag.record.tip"])
+                Text(text = LocalI18N.current[I18N_R.UI_FACT_NFC_TAG_RECORD_TIP])
                 StandardSpacer()
                 LottieNFCFlashView()
                 StandardSpacer()
-                TipRow(text = LocalI18N.current["ui.fact.nfc.tag.scope.tip"])
+                TipRow(text = LocalI18N.current[I18N_R.UI_FACT_NFC_TAG_SCOPE_TIP])
             }
 
             val listener = remember {

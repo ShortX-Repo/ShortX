@@ -37,6 +37,7 @@ import tornaco.apps.shortx.ui.gvar.GlobalVarSelectorDialog
 import tornaco.apps.shortx.ui.gvar.rememberGlobalVarSelectorState
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 class DeleteGVDialogState(
@@ -79,7 +80,7 @@ private fun DeleteGVSelector(dialogState: DeleteGVDialogState) {
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(text = LocalI18N.current["ui.action.delete.global.var"]) },
+                        title = { Text(text = LocalI18N.current[I18N_R.UI_ACTION_DELETE_GLOBAL_VAR]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 dialogState.dismiss()
@@ -129,7 +130,7 @@ private fun Content(paddingValues: PaddingValues, dialogState: DeleteGVDialogSta
 
         SmallTitle(
             modifier = Modifier.padding(vertical = 12.dp),
-            text = LocalI18N.current["ui.action.select.global.var"]
+            text = LocalI18N.current[I18N_R.UI_ACTION_SELECT_GLOBAL_VAR]
         )
         ShortXTextField(
             modifier = Modifier.fillMaxWidth(),

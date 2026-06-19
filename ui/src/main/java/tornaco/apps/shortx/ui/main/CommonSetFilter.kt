@@ -1,6 +1,7 @@
 package tornaco.apps.shortx.ui.main
 
 import tornaco.apps.shortx.ui.base.i18NIns
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 sealed interface CommonSetFilter {
     val title: String
@@ -9,7 +10,7 @@ sealed interface CommonSetFilter {
 
     data object PinnedAllFlat : CommonSetFilter {
         override val title: String
-            get() = i18NIns["ui.common.flat"]
+            get() = i18NIns[I18N_R.UI_COMMON_FLAT]
         override val isStock: Boolean = true
         override val filterId: String
             get() = "PinnedAllFlat"
@@ -17,7 +18,7 @@ sealed interface CommonSetFilter {
 
     data object PinnedAll : CommonSetFilter {
         override val title: String
-            get() = i18NIns["ui.common.all"]
+            get() = i18NIns[I18N_R.UI_COMMON_ALL]
         override val isStock: Boolean = true
         override val filterId: String
             get() = "PinnedAll"
@@ -25,7 +26,7 @@ sealed interface CommonSetFilter {
 
     data object PinnedItems : CommonSetFilter {
         override val title: String
-            get() = i18NIns["ui.common.pinned"]
+            get() = i18NIns[I18N_R.UI_COMMON_PINNED]
         override val isStock: Boolean = true
         override val filterId: String
             get() = "PinnedItems"

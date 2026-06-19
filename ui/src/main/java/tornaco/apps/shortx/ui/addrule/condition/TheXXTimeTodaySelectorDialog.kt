@@ -49,6 +49,7 @@ import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class TheXXTimeTodaySelectorState(
     val onSelected: (Condition.TheXXTimeToday) -> Unit
@@ -139,7 +140,7 @@ private fun TheXXTimeTodaySelector(dialogState: TheXXTimeTodaySelectorState) {
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(text = LocalI18N.current["ui.conditions.the.xx.time.within"]) },
+                        title = { Text(text = LocalI18N.current[I18N_R.UI_CONDITIONS_THE_XX_TIME_WITHIN]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 dialogState.dismiss()
@@ -163,11 +164,11 @@ private fun TheXXTimeTodaySelector(dialogState: TheXXTimeTodaySelectorState) {
                         .padding(paddingValues)
                         .padding(16.dp)
                 ) {
-                    TipBody(text = LocalI18N.current["ui.conditions.the.xx.time.within.message"])
+                    TipBody(text = LocalI18N.current[I18N_R.UI_CONDITIONS_THE_XX_TIME_WITHIN_MESSAGE])
                     StandardSpacer()
 
 
-                    FieldTitle(text = LocalI18N.current["ui.conditions.the.xx.time.within.what"])
+                    FieldTitle(text = LocalI18N.current[I18N_R.UI_CONDITIONS_THE_XX_TIME_WITHIN_WHAT])
                     TinySpacer()
                     ShortXTextField(value = dialogState.currentValue.what, onValueChange = {
                         dialogState.setWhat(it)
@@ -177,7 +178,7 @@ private fun TheXXTimeTodaySelector(dialogState: TheXXTimeTodaySelectorState) {
 
                     FieldTitle(
                         modifier = Modifier.padding(vertical = 12.dp),
-                        text = LocalI18N.current["ui.conditions.the.xx.time.within.scope"]
+                        text = LocalI18N.current[I18N_R.UI_CONDITIONS_THE_XX_TIME_WITHIN_SCOPE]
                     )
                     TinySpacer()
                     val scopeSelectorState = rememberDropdownSelectorState()
@@ -211,7 +212,7 @@ private fun TheXXTimeTodaySelector(dialogState: TheXXTimeTodaySelectorState) {
 
                     FieldTitle(
                         modifier = Modifier.padding(vertical = 12.dp),
-                        text = LocalI18N.current["ui.conditions.the.xx.time.within.time.op"]
+                        text = LocalI18N.current[I18N_R.UI_CONDITIONS_THE_XX_TIME_WITHIN_TIME_OP]
                     )
                     TinySpacer()
                     val opSelectorState = rememberDropdownSelectorState()
@@ -243,7 +244,7 @@ private fun TheXXTimeTodaySelector(dialogState: TheXXTimeTodaySelectorState) {
 
                     FieldTitle(
                         modifier = Modifier.padding(vertical = 12.dp),
-                        text = LocalI18N.current["ui.conditions.the.xx.time.within.time"]
+                        text = LocalI18N.current[I18N_R.UI_CONDITIONS_THE_XX_TIME_WITHIN_TIME]
                     )
                     TinySpacer()
                     ShortXTextField(

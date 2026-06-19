@@ -73,6 +73,7 @@ import tornaco.apps.shortx.ui.ringtone.rememberRingtonePickerState
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
 import kotlin.reflect.full.createInstance
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 @Composable
@@ -81,7 +82,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     val context = LocalContext.current
 
     val ringerModeSelectDialogState = rememberSelectionDialogState(
-        title = i18N["ui.action.set.ringer.mode"],
+        title = i18N[I18N_R.UI_ACTION_SET_RINGER_MODE],
         message = null,
         selectionLabel2Ids = listOf(RingerMode.normal, RingerMode.vibrate, RingerMode.silent, RingerMode.switchMode).map {
             i18N[it.labelKey()] to it.name
@@ -116,7 +117,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     TextInputDialog(state = writeClipboardFilePathDialogState)
 
     val writeClipboardSelectorDialogState = rememberTextInputState(
-        title = LocalI18N.current["ui.action.write.clipboard"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_WRITE_CLIPBOARD],
         message = null,
         inputValidator = { InputValidateResult.OK },
         onSelected = {
@@ -148,7 +149,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     )
 
     val adjustVolumeSelectorState = rememberMenuDialogState<String>(
-        title = i18N["ui.action.adjust.volume"],
+        title = i18N[I18N_R.UI_ACTION_ADJUST_VOLUME],
         menuItems = listOf(
             VolumeDirection.ADJUST_LOWER,
             VolumeDirection.ADJUST_RAISE,
@@ -168,15 +169,15 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     MenuDialog(state = adjustVolumeSelectorState)
 
     val requestAudioFocusSelectorState = rememberMenuDialogState<String>(
-        title = i18N["ui.action.request.audio.focus"],
+        title = i18N[I18N_R.UI_ACTION_REQUEST_AUDIO_FOCUS],
         menuItems = listOf(
             MenuDialogItem(
                 id = true.toString(),
-                title = i18N["ui.action.request.audio.focus.request"]
+                title = i18N[I18N_R.UI_ACTION_REQUEST_AUDIO_FOCUS_REQUEST]
             ),
             MenuDialogItem(
                 id = false.toString(),
-                title = i18N["ui.action.request.audio.focus.abandon"]
+                title = i18N[I18N_R.UI_ACTION_REQUEST_AUDIO_FOCUS_ABANDON]
             ),
         ),
         onItemSelected = { _, id ->
@@ -189,7 +190,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     MenuDialog(state = requestAudioFocusSelectorState)
 
     val screenTimeDialogState = rememberMenuDialogState<String>(
-        title = i18N["ui.common.get"] + i18N["ui.fact.screen.on.time"],
+        title = i18N[I18N_R.UI_COMMON_GET] + i18N[I18N_R.UI_FACT_SCREEN_ON_TIME],
         menuItems = listOf(
             ScreenOnTimeStartFrom.ScreenOnTimeStartFrom_LastScreenOff,
             ScreenOnTimeStartFrom.ScreenOnTimeStartFrom_SystemReady,
@@ -214,8 +215,8 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     var getAppInfoUserId by remember { mutableStateOf(0) }
 
     val getAppInfoUserIdDialogState = rememberTextInputState(
-        title = i18N["ui.common.user.id"],
-        message = i18N["ui.action.get.app.info.userid.message"],
+        title = i18N[I18N_R.UI_COMMON_USER_ID],
+        message = i18N[I18N_R.UI_ACTION_GET_APP_INFO_USERID_MESSAGE],
         onSelected = {
             getAppInfoUserId = it.toIntOrNull() ?: getAppInfoUserId
             addAction(
@@ -229,8 +230,8 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     TextInputDialog(state = getAppInfoUserIdDialogState)
 
     val getAppInfoPkgNameDialogState = rememberTextInputState(
-        title = i18N["ui.action.get.app.info.pkg.name"],
-        message = i18N["ui.action.get.app.info.pkg.name.message"],
+        title = i18N[I18N_R.UI_ACTION_GET_APP_INFO_PKG_NAME],
+        message = i18N[I18N_R.UI_ACTION_GET_APP_INFO_PKG_NAME_MESSAGE],
         inputValidator = {
             if (it.isBlank()) InputValidateResult.Error("*required")
             else InputValidateResult.OK
@@ -243,8 +244,8 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     TextInputDialog(state = getAppInfoPkgNameDialogState)
 
     val currentLocationTimeoutDialogState = rememberTextInputState(
-        title = i18N["ui.action.get.current.location.info.timeout"],
-        message = i18N["ui.action.get.current.location.info.timeout.message"],
+        title = i18N[I18N_R.UI_ACTION_GET_CURRENT_LOCATION_INFO_TIMEOUT],
+        message = i18N[I18N_R.UI_ACTION_GET_CURRENT_LOCATION_INFO_TIMEOUT_MESSAGE],
         onSelected = {
             currentLocationTimeoutMillis = it.toLongOrDefault(currentLocationTimeoutMillis)
             addAction(
@@ -258,7 +259,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     TextInputDialog(state = currentLocationTimeoutDialogState)
 
     val currentLocationProviderDialogState = rememberMenuDialogState<String>(
-        title = i18N["ui.action.get.current.location.info.provider"],
+        title = i18N[I18N_R.UI_ACTION_GET_CURRENT_LOCATION_INFO_PROVIDER],
         menuItems = CurrentLocationProviderPreference.entries
             .filterNot { it == CurrentLocationProviderPreference.UNRECOGNIZED }
             .map {
@@ -273,10 +274,10 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
 
     val currentLocationInfoNoticeDialogState = rememberConfirmDialogState()
     ConfirmDialog(
-        title = "ui.action.get.current.location.info",
+        title = I18N_R.UI_ACTION_GET_CURRENT_LOCATION_INFO,
         state = currentLocationInfoNoticeDialogState,
         data = Unit,
-        messageHint = { i18N["ui.action.current.location.notice"] },
+        messageHint = { i18N[I18N_R.UI_ACTION_CURRENT_LOCATION_NOTICE] },
         onConfirm = {
             currentLocationProviderDialogState.show()
         }
@@ -288,8 +289,8 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     var currentLocationAddressTimeoutMillis by remember { mutableStateOf(3000L) }
 
     val currentLocationAddressTimeoutDialogState = rememberTextInputState(
-        title = i18N["ui.action.get.current.location.address.timeout"],
-        message = i18N["ui.action.get.current.location.address.timeout.message"],
+        title = i18N[I18N_R.UI_ACTION_GET_CURRENT_LOCATION_ADDRESS_TIMEOUT],
+        message = i18N[I18N_R.UI_ACTION_GET_CURRENT_LOCATION_ADDRESS_TIMEOUT_MESSAGE],
         onSelected = {
             currentLocationAddressTimeoutMillis = it.toLongOrDefault(currentLocationAddressTimeoutMillis)
             addAction(
@@ -303,7 +304,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     TextInputDialog(state = currentLocationAddressTimeoutDialogState)
 
     val currentLocationAddressProviderDialogState = rememberMenuDialogState<String>(
-        title = i18N["ui.action.get.current.location.address.provider"],
+        title = i18N[I18N_R.UI_ACTION_GET_CURRENT_LOCATION_ADDRESS_PROVIDER],
         menuItems = CurrentLocationProviderPreference.entries
             .filterNot { it == CurrentLocationProviderPreference.UNRECOGNIZED }
             .map {
@@ -318,10 +319,10 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
 
     val currentLocationAddressNoticeDialogState = rememberConfirmDialogState()
     ConfirmDialog(
-        title = "ui.action.get.current.location.address",
+        title = I18N_R.UI_ACTION_GET_CURRENT_LOCATION_ADDRESS,
         state = currentLocationAddressNoticeDialogState,
         data = Unit,
-        messageHint = { i18N["ui.action.current.location.notice"] },
+        messageHint = { i18N[I18N_R.UI_ACTION_CURRENT_LOCATION_NOTICE] },
         onConfirm = {
             currentLocationAddressProviderDialogState.show()
         }
@@ -338,8 +339,8 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     AudioRecordingDialog(state = audioRecordingState)
 
     val comingSoonDialogState = rememberTipDialogState(
-        title = LocalI18N.current["ui.common.coming.soon"],
-        tip = LocalI18N.current["ui.common.coming.soon"]
+        title = LocalI18N.current[I18N_R.UI_COMMON_COMING_SOON],
+        tip = LocalI18N.current[I18N_R.UI_COMMON_COMING_SOON]
     )
     TipDialog(state = comingSoonDialogState)
 
@@ -381,7 +382,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     SetWallpaperSelectorDialog(state = wallpaperFileSelectorState)
 
     val clickTileSelectorState = rememberQSTileSelectorState(
-        title = LocalI18N.current["ui.action.click.tile"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_CLICK_TILE],
         onSelected = {
             addAction(Action.ClickTile(tile = it, isLongClick = false))
         }
@@ -389,7 +390,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     QSTileSelectorDialog(state = clickTileSelectorState)
 
     val mediaPlayMenuDialogState = rememberMenuDialogState<String>(
-        title = LocalI18N.current["ui.action.media.play.back"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_MEDIA_PLAY_BACK],
         menuItems = MediaPlaybackAction.entries
             .filter { it != MediaPlaybackAction.UNRECOGNIZED }
             .map {
@@ -438,7 +439,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     )
 
     val apmModeSelectorState = rememberOnOffAnyStateSelectorState(
-        title = LocalI18N.current["ui.action.set.apm.mode"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_SET_APM_MODE],
         options = listOf(OnOffAny.On, OnOffAny.Off),
         selected = {
             addAction(Action.SetAPMModeEnabled(isEnableAPM = (it == OnOffAny.On)))
@@ -446,7 +447,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     OnOffAnyStateSelectorDialog(state = apmModeSelectorState)
 
     val showRecentAppsState = rememberMenuDialogState<String>(
-        title = LocalI18N.current["ui.action.recent.apps"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_RECENT_APPS],
         menuItems = OnOffToggle.entries.filterNot { it == OnOffToggle.OnOffToggle_Toggle || it == OnOffToggle.UNRECOGNIZED }
             .map {
                 MenuDialogItem(id = it.name, title = LocalI18N.current[it.labelKey()])
@@ -459,8 +460,8 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     MenuDialog(state = showRecentAppsState)
 
     val screenTimeoutInputDialogState = rememberTextInputState(
-        title = LocalI18N.current["ui.action.set.screen.timeout"],
-        message = LocalI18N.current["ui.action.set.screen.timeout.message"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_SET_SCREEN_TIMEOUT],
+        message = LocalI18N.current[I18N_R.UI_ACTION_SET_SCREEN_TIMEOUT_MESSAGE],
         onSelected = {
             val timeoutLong = it.toLongOrDefault(15 * 1000)
             addAction(Action.SetScreenTimeout(timeout = timeoutLong))
@@ -469,7 +470,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     TextInputDialog(state = screenTimeoutInputDialogState)
 
     val screenRotateSelectorState = rememberMenuDialogState<String>(
-        title = LocalI18N.current["ui.action.set.screen.rotate"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_SET_SCREEN_ROTATE],
         menuItems = ScreenRotateDegree.entries.filterNot { it == ScreenRotateDegree.UNRECOGNIZED }
             .map {
                 MenuDialogItem(id = it.name, title = LocalI18N.current[it.actionLabelKey()])
@@ -482,7 +483,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     MenuDialog(state = screenRotateSelectorState)
 
     val stayAwakeSelectorState = rememberMenuDialogState<String>(
-        title = LocalI18N.current["ui.action.stay.awake"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_STAY_AWAKE],
         menuItems = OnOffToggle.entries.filterNot { it == OnOffToggle.UNRECOGNIZED }
             .map {
                 MenuDialogItem(id = it.name, title = LocalI18N.current[it.labelKey()])
@@ -495,7 +496,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     MenuDialog(state = stayAwakeSelectorState)
 
     val setMasterSyncSelectorState = rememberMenuDialogState<String>(
-        title = LocalI18N.current["ui.action.sync"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_SYNC],
         menuItems = OnOffToggle.entries.filterNot { it == OnOffToggle.UNRECOGNIZED }
             .map {
                 MenuDialogItem(id = it.name, title = LocalI18N.current[it.labelKey()])
@@ -508,8 +509,8 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     MenuDialog(state = setMasterSyncSelectorState)
 
     val wifiConnectedSelectorState = rememberWifiSSIDSelectorState(
-        title = LocalI18N.current["ui.action.connect.wifi"],
-        message = LocalI18N.current["ui.fact.wifi.connect.to.input.ssid"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_CONNECT_WIFI],
+        message = LocalI18N.current[I18N_R.UI_FACT_WIFI_CONNECT_TO_INPUT_SSID],
         loadSSID = {
             shortXManager.getPrivilegedConfiguredNetworks().filterNot { it.isBlank() }
         },
@@ -521,7 +522,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     WifiSSIDSelectorDialog(state = wifiConnectedSelectorState)
 
     val ringtonePickerState =
-        rememberRingtonePickerState(title = LocalI18N.current["ui.action.ringtone"]) {
+        rememberRingtonePickerState(title = LocalI18N.current[I18N_R.UI_ACTION_RINGTONE]) {
             addAction(Action.PlayRingtone(ringtone = it))
         }
     RingtonePickerDialog(state = ringtonePickerState)

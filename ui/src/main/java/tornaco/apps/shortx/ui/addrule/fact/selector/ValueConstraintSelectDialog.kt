@@ -32,6 +32,7 @@ import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class ValueConstraintSelectorState(
     // Before after.
@@ -78,7 +79,7 @@ fun rememberValueConstraintSelectorState(
 fun ValueConstraintSelector(state: ValueConstraintSelectorState) {
     if (state.isShowing) {
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
-            DialogTitle(text = LocalI18N.current["ui.fact.sensor.constraint"])
+            DialogTitle(text = LocalI18N.current[I18N_R.UI_FACT_SENSOR_CONSTRAINT])
         }, buttons = {
             ShortXTextButton(onClick = {
                 state.selected(
@@ -126,7 +127,7 @@ fun ValueConstraintSelector(state: ValueConstraintSelectorState) {
                     Column {
                         SmallTitle(
                             modifier = Modifier.padding(vertical = 12.dp),
-                            text = LocalI18N.current["ui.fact.sensor.value"]
+                            text = LocalI18N.current[I18N_R.UI_FACT_SENSOR_VALUE]
                         )
                         TinySpacer()
                         ShortXTextField(value = state._payload.value, onValueChange = {

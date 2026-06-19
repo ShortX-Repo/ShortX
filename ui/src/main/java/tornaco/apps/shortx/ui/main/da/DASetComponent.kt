@@ -38,6 +38,7 @@ import tornaco.apps.shortx.ui.main.model.DirectActionUM
 import tornaco.apps.shortx.ui.main.rememberDeleteSetConfirmDialogState
 import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
 import tornaco.apps.shortx.ui.theme.Dimens
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 @Composable
@@ -145,18 +146,18 @@ private fun daSetListItemOverflowMenu(
 
     val badge = if (isSubscribed) {
         null
-    } else i18N["ui.subscription.subscribed.only"]
+    } else i18N[I18N_R.UI_SUBSCRIPTION_SUBSCRIBED_ONLY]
 
     val subscribeDialogState = rememberShortXBottomSheetState()
     FeatureAccessDialog(subscribeDialogState)
 
     val dismissDialogState = rememberConfirmDialogState()
     ConfirmDialog(
-        title = i18N["ui.common.dismiss"],
+        title = i18N[I18N_R.UI_COMMON_DISMISS],
         state = dismissDialogState,
         data = da,
         messageHint = {
-            i18N["ui.dismiss.dialog.confirm", mapOf("wht" to da.title)]
+            i18N[I18N_R.UI_DISMISS_DIALOG_CONFIRM, mapOf("wht" to da.title)]
         },
         onConfirm = { handler.dismiss(da) }
     )
@@ -171,7 +172,7 @@ private fun daSetListItemOverflowMenu(
     )
 
     val renameDialogState =
-        rememberTextInputState(title = i18N["ui.common.rename"], message = null, onSelected = {
+        rememberTextInputState(title = i18N[I18N_R.UI_COMMON_RENAME], message = null, onSelected = {
             handler.rename(da, it)
         })
     TextInputDialog(state = renameDialogState)
@@ -180,23 +181,23 @@ private fun daSetListItemOverflowMenu(
     val menuState = rememberDropdownSelectorState()
 
     DropdownSelector(widthFraction = 0.33f, state = menuState, items = listOf(
-        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.rename"]),
+        DropdownItem(labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_RENAME]),
             data = RuleSetItemMenuOptions.Rename,
             icon = {
                 RemixIcon(Remix.Design.edit_line)
             }),
-        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.share"]),
+        DropdownItem(labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_SHARE]),
             data = RuleSetItemMenuOptions.Share,
             badge = badge,
             icon = {
                 RemixIcon(Remix.System.share_line)
             }),
-        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.dismiss"]),
+        DropdownItem(labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_DISMISS]),
             data = RuleSetItemMenuOptions.Dismiss,
             icon = {
                 RemixIcon(Remix.System.close_circle_line)
             }),
-        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.delete"]),
+        DropdownItem(labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_DELETE]),
             data = RuleSetItemMenuOptions.Delete,
             icon = {
                 RemixIcon(Remix.System.delete_bin_4_line)

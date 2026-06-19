@@ -43,6 +43,7 @@ import tornaco.apps.shortx.ui.base.StateViewModel
 import tornaco.apps.shortx.ui.base.SwitchItem
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 @AndroidEntryPoint
@@ -158,7 +159,7 @@ private fun BaseSelectorActivity<Action.SwitchCase.Case>.SwitchCaseCaseSelectorD
                 title = {
                     Text(
                         LocalI18N.current.get(
-                            key = "ui.action.switch.case.case",
+                            key = I18N_R.UI_ACTION_SWITCH_CASE_CASE,
                             fallback = "Case"
                         )
                     )
@@ -200,8 +201,8 @@ private fun BaseSelectorActivity<Action.SwitchCase.Case>.SwitchCaseCaseSelectorD
         ) {
             StandardSpacer()
             SwitchItem(
-                title = LocalI18N.current["ui.action.switch.case.break"],
-                summary = LocalI18N.current["ui.action.switch.case.break.summary"],
+                title = LocalI18N.current[I18N_R.UI_ACTION_SWITCH_CASE_BREAK],
+                summary = LocalI18N.current[I18N_R.UI_ACTION_SWITCH_CASE_BREAK_SUMMARY],
                 isChecked = dialogState.isBreak,
                 onCheckChange = {
                     vm.setIsBreak(it)
@@ -214,7 +215,7 @@ private fun BaseSelectorActivity<Action.SwitchCase.Case>.SwitchCaseCaseSelectorD
                     .fillMaxSize()
                     .padding(horizontal = 16.dp)
             ) {
-                SmallTitle(text = LocalI18N.current["ui.action.switch.case.description"])
+                SmallTitle(text = LocalI18N.current[I18N_R.UI_ACTION_SWITCH_CASE_DESCRIPTION])
                 TinySpacer()
                 ShortXTextField(
                     value = dialogState.description,

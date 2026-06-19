@@ -31,6 +31,7 @@ import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TinySpacer
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @Composable
 fun InstructionAppearanceEditor(
@@ -67,7 +68,7 @@ fun InstructionAppearanceEditor(
     }
     ColorPickerDialog(colorPickerState)
 
-    FieldTitle(text = LocalI18N.current["ui.common.icon"])
+    FieldTitle(text = LocalI18N.current[I18N_R.UI_COMMON_ICON])
     SmallSpacer()
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -100,7 +101,7 @@ fun InstructionAppearanceEditor(
         ) {
             RemixIcon(remixName = Remix.Design.edit_circle_line)
             TinySpacer()
-            Text(LocalI18N.current["ui.common.icon"])
+            Text(LocalI18N.current[I18N_R.UI_COMMON_ICON])
         }
         TinySpacer()
         Button(
@@ -109,7 +110,7 @@ fun InstructionAppearanceEditor(
         ) {
             RemixIcon(remixName = Remix.Design.palette_line)
             TinySpacer()
-            Text(LocalI18N.current["ui.common.icon.bg"])
+            Text(LocalI18N.current[I18N_R.UI_COMMON_ICON_BG])
         }
     }
 }

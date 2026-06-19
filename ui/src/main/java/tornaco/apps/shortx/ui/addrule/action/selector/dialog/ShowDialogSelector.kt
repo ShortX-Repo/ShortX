@@ -46,6 +46,7 @@ import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.TipRow
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 @AndroidEntryPoint
@@ -76,7 +77,7 @@ class ShowDialogSelectorActivity : BaseSelectorActivity<Action.ShowAlertDialog>(
                     topBar = {
                         ShortXTopAppBar(
                             modifier = Modifier,
-                            title = { Text(LocalI18N.current["ui.action.show.dialog"]) },
+                            title = { Text(LocalI18N.current[I18N_R.UI_ACTION_SHOW_DIALOG]) },
                             navigationIcon = {
                                 IconButton(onClick = {
                                     setResult(Activity.RESULT_CANCELED)
@@ -129,7 +130,7 @@ class ShowDialogSelectorActivity : BaseSelectorActivity<Action.ShowAlertDialog>(
             ShortXTextField(
                 modifier = Modifier.fillMaxWidth(),
                 label = {
-                    Text(text = LocalI18N.current["ui.action.dialog.title"])
+                    Text(text = LocalI18N.current[I18N_R.UI_ACTION_DIALOG_TITLE])
                 },
                 value = state.title,
                 onValueChange = {
@@ -143,7 +144,7 @@ class ShowDialogSelectorActivity : BaseSelectorActivity<Action.ShowAlertDialog>(
 
 
                 label = {
-                    Text(text = LocalI18N.current["ui.action.dialog.message"])
+                    Text(text = LocalI18N.current[I18N_R.UI_ACTION_DIALOG_MESSAGE])
                 },
                 value = state.message,
                 onValueChange = {
@@ -169,7 +170,7 @@ class ShowDialogSelectorActivity : BaseSelectorActivity<Action.ShowAlertDialog>(
 
 
             SwitchRow(
-                text = LocalI18N.current["ui.action.dialog.cancelable"],
+                text = LocalI18N.current[I18N_R.UI_ACTION_DIALOG_CANCELABLE],
                 isChecked = state.cancelable
             ) {
                 vm.updateCancelable(it)
@@ -190,7 +191,7 @@ class ShowDialogSelectorActivity : BaseSelectorActivity<Action.ShowAlertDialog>(
             vm.positiveActionContent
         }.state.collectAsState()
         ButtonSettings(
-            headerTitle = LocalI18N.current["ui.actions.dialog.positive.button"],
+            headerTitle = LocalI18N.current[I18N_R.UI_ACTIONS_DIALOG_POSITIVE_BUTTON],
             text = state.positiveText ?: "",
             onTextChange = {
                 vm.updateButtonText(it, DialogAction.Positive)
@@ -211,7 +212,7 @@ class ShowDialogSelectorActivity : BaseSelectorActivity<Action.ShowAlertDialog>(
             vm.negativeActionContent
         }.state.collectAsState()
         ButtonSettings(
-            headerTitle = LocalI18N.current["ui.actions.dialog.negative.button"],
+            headerTitle = LocalI18N.current[I18N_R.UI_ACTIONS_DIALOG_NEGATIVE_BUTTON],
             text = state.negativeText ?: "",
             onTextChange = {
                 vm.updateButtonText(it, DialogAction.Negative)
@@ -233,7 +234,7 @@ class ShowDialogSelectorActivity : BaseSelectorActivity<Action.ShowAlertDialog>(
             vm.neutralActionContent
         }.state.collectAsState()
         ButtonSettings(
-            headerTitle = LocalI18N.current["ui.actions.dialog.neutral.button"],
+            headerTitle = LocalI18N.current[I18N_R.UI_ACTIONS_DIALOG_NEUTRAL_BUTTON],
             text = state.neutralText ?: "",
             onTextChange = {
                 vm.updateButtonText(it, DialogAction.Neutral)
@@ -259,21 +260,21 @@ class ShowDialogSelectorActivity : BaseSelectorActivity<Action.ShowAlertDialog>(
         ShortXTextField(
             modifier = Modifier.fillMaxWidth(),
             label = {
-                Text(text = LocalI18N.current["ui.action.dialog.button.text"])
+                Text(text = LocalI18N.current[I18N_R.UI_ACTION_DIALOG_BUTTON_TEXT])
             },
             value = text,
             onValueChange = {
                 onTextChange(it)
             })
         TinySpacer()
-        TipRow(text = LocalI18N.current["ui.actions.dialog.button.optional"])
+        TipRow(text = LocalI18N.current[I18N_R.UI_ACTIONS_DIALOG_BUTTON_OPTIONAL])
         TinySpacer()
 
         ActionContent(
             header = {
                 SmallTitle(
                     modifier = Modifier.padding(vertical = 12.dp),
-                    text = LocalI18N.current["ui.actions.title"]
+                    text = LocalI18N.current[I18N_R.UI_ACTIONS_TITLE]
                 )
             },
             actions = actions,

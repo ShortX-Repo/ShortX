@@ -51,6 +51,7 @@ import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.util.ClipboardUtils
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 private const val LIST_JSON_EXAMPLE = """
  [
@@ -109,7 +110,7 @@ private fun ShowListDialogSelectorActivity.ShowListDialogSelector(currentData: A
         topBar = {
             ShortXTopAppBar(
                 modifier = Modifier,
-                title = { Text(LocalI18N.current["ui.action.show.list.dialog"]) },
+                title = { Text(LocalI18N.current[I18N_R.UI_ACTION_SHOW_LIST_DIALOG]) },
                 navigationIcon = {
                     IconButton(onClick = {
                         cancelAndFinish()
@@ -147,7 +148,7 @@ private fun ShowListDialogSelectorActivity.ShowListDialogSelector(currentData: A
                     .animateContentSize()
                     .verticalScroll(rememberScrollState())
             ) {
-                FieldTitle(text = LocalI18N.current["ui.action.dialog.title"])
+                FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_DIALOG_TITLE])
                 MediumSpacer()
                 ShortXTextField(
                     modifier = Modifier.fillMaxWidth(),
@@ -158,7 +159,7 @@ private fun ShowListDialogSelectorActivity.ShowListDialogSelector(currentData: A
                 LargeSpacer()
 
                 // Type
-                FieldTitle(text = LocalI18N.current["ui.action.show.list.dialog.data.type"])
+                FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_SHOW_LIST_DIALOG_DATA_TYPE])
                 MediumSpacer()
                 val dataTypeState = rememberDropdownSelectorState()
                 Box {
@@ -192,18 +193,18 @@ private fun ShowListDialogSelectorActivity.ShowListDialogSelector(currentData: A
                 LargeSpacer()
 
                 // Data
-                FieldTitle(text = LocalI18N.current["ui.action.show.list.dialog.data"])
+                FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_SHOW_LIST_DIALOG_DATA])
                 MediumSpacer()
                 if (dialogState.dataType == ShowListDialogDataType.ShowListDialogDataType_String) {
                     // Summary for String type, tip for string split.
-                    TipBody(LocalI18N.current["ui.action.show.list.dialog.data.summary"])
+                    TipBody(LocalI18N.current[I18N_R.UI_ACTION_SHOW_LIST_DIALOG_DATA_SUMMARY])
                 } else {
                     val context = LocalContext.current
-                    TipBody(LocalI18N.current["ui.action.show.list.dialog.data.summary.json"])
+                    TipBody(LocalI18N.current[I18N_R.UI_ACTION_SHOW_LIST_DIALOG_DATA_SUMMARY_JSON])
                     TextButton(onClick = {
                         ClipboardUtils.copyToClipboard(context, "example", LIST_JSON_EXAMPLE)
                     }) {
-                        Text(LocalI18N.current["ui.action.show.list.dialog.data.summary.json.copy.example"])
+                        Text(LocalI18N.current[I18N_R.UI_ACTION_SHOW_LIST_DIALOG_DATA_SUMMARY_JSON_COPY_EXAMPLE])
                     }
                 }
 
@@ -216,9 +217,9 @@ private fun ShowListDialogSelectorActivity.ShowListDialogSelector(currentData: A
 
                 if (dialogState.dataType == ShowListDialogDataType.ShowListDialogDataType_String) {
                     // Delimiters
-                    FieldTitle(text = LocalI18N.current["ui.action.show.list.dialog.delimiters"])
+                    FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_SHOW_LIST_DIALOG_DELIMITERS])
                     MediumSpacer()
-                    TipBody(LocalI18N.current["ui.action.show.list.dialog.delimiters.summary"])
+                    TipBody(LocalI18N.current[I18N_R.UI_ACTION_SHOW_LIST_DIALOG_DELIMITERS_SUMMARY])
                     dialogState.delimiters.forEach {
                         ListItem(titleLines = listOf(it), action1 = {
                             IconButton(onClick = { vm.removeDelimiters(it) }) {
@@ -227,7 +228,7 @@ private fun ShowListDialogSelectorActivity.ShowListDialogSelector(currentData: A
                         })
                     }
                     val addDelDialogState = rememberTextInputState(
-                        title = LocalI18N.current["ui.common.add"],
+                        title = LocalI18N.current[I18N_R.UI_COMMON_ADD],
                         message = null
                     ) {
                         vm.addDelimiters(it)
@@ -237,7 +238,7 @@ private fun ShowListDialogSelectorActivity.ShowListDialogSelector(currentData: A
                     androidx.compose.material3.Button(onClick = {
                         addDelDialogState.show()
                     }) {
-                        Text(LocalI18N.current["ui.common.add"])
+                        Text(LocalI18N.current[I18N_R.UI_COMMON_ADD])
                     }
                 }
                 LargeSpacer()
@@ -249,7 +250,7 @@ private fun ShowListDialogSelectorActivity.ShowListDialogSelector(currentData: A
                 SectionSpacer()
 
                 SwitchRow(
-                    text = LocalI18N.current["ui.action.dialog.cancelable"],
+                    text = LocalI18N.current[I18N_R.UI_ACTION_DIALOG_CANCELABLE],
                     isChecked = dialogState.cancelable
                 ) {
                     vm.updateCancelable(it)
@@ -258,7 +259,7 @@ private fun ShowListDialogSelectorActivity.ShowListDialogSelector(currentData: A
                 LargeSpacer()
 
                 SwitchRow(
-                    text = LocalI18N.current["ui.action.dialog.need.confirm.action"],
+                    text = LocalI18N.current[I18N_R.UI_ACTION_DIALOG_NEED_CONFIRM_ACTION],
                     isChecked = dialogState.needConfirmAction
                 ) {
                     vm.updateNeedConfirmAction(it)
@@ -267,7 +268,7 @@ private fun ShowListDialogSelectorActivity.ShowListDialogSelector(currentData: A
                 LargeSpacer()
 
                 SwitchRow(
-                    text = LocalI18N.current["ui.action.show.list.dialog.is.multiple"],
+                    text = LocalI18N.current[I18N_R.UI_ACTION_SHOW_LIST_DIALOG_IS_MULTIPLE],
                     isChecked = dialogState.isMultipleChoice
                 ) {
                     vm.updateIsMultipleChoice(it)

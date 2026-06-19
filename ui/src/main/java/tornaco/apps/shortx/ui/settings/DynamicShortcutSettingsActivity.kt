@@ -55,6 +55,7 @@ import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.main.model.RuleUM
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class DynamicShortcutSettingsActivity : BaseActivity() {
@@ -151,7 +152,7 @@ private fun ShortcutSettings(back: () -> Unit, onShortcutClick: (DynamicShortcut
                 SectionSpacer()
                 InfoCard(
                     title = null,
-                    infos = listOf(LocalI18N.current["ui.settings.dynamic.shortcut.tip"])
+                    infos = listOf(LocalI18N.current[I18N_R.UI_SETTINGS_DYNAMIC_SHORTCUT_TIP])
                 )
 
             }
@@ -178,7 +179,7 @@ private fun ShortcutItem(
 
     val renameDialogState =
         rememberTextInputState(
-            title = LocalI18N.current["ui.common.rename"], message = null,
+            title = LocalI18N.current[I18N_R.UI_COMMON_RENAME], message = null,
             onSelected = {
                 rename(shortcut.shortcut, it)
             })
@@ -208,14 +209,14 @@ private fun ShortcutItem(
                         Text(text = shortcut.label, style = MaterialTheme.typography.titleMedium)
                         if (usage.isEmpty()) {
                             Text(
-                                text = LocalI18N.current["ui.settings.dynamic.shortcut.unused"],
+                                text = LocalI18N.current[I18N_R.UI_SETTINGS_DYNAMIC_SHORTCUT_UNUSED],
                                 style = MaterialTheme.typography.bodySmall,
                             )
 
                         } else {
                             usage.forEach {
                                 LinkText(
-                                    text = LocalI18N.current["ui.settings.dynamic.shortcut.used", mapOf(
+                                    text = LocalI18N.current[I18N_R.UI_SETTINGS_DYNAMIC_SHORTCUT_USED, mapOf(
                                         "title" to it.title
                                     )]
                                 ) {
@@ -236,7 +237,7 @@ private fun ShortcutItem(
         DropdownSelector(
             state = editDropdownState,
             items = listOf(
-                DropdownItem(listOf(LocalI18N.current["ui.common.rename"]), "rename"),
+                DropdownItem(listOf(LocalI18N.current[I18N_R.UI_COMMON_RENAME]), "rename"),
             ),
             onSelect = {
                 if (it.data == "rename") {

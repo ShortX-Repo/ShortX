@@ -29,6 +29,7 @@ import tornaco.apps.shortx.ui.base.ShortXTextButton
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TipBody
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 class SinglePkgAndUserDialogState(
@@ -82,7 +83,7 @@ fun SinglePkgAndUserSelectorDialog(state: SinglePkgAndUserDialogState) {
             LargeSpacer()
             FieldTitle(
                 modifier = Modifier.padding(vertical = 12.dp),
-                text = LocalI18N.current["ui.action.select.pkg.and.user.package"]
+                text = LocalI18N.current[I18N_R.UI_ACTION_SELECT_PKG_AND_USER_PACKAGE]
             )
             ShortXTextField(
                 modifier = Modifier.fillMaxWidth(),
@@ -98,9 +99,9 @@ fun SinglePkgAndUserSelectorDialog(state: SinglePkgAndUserDialogState) {
             UserSelectorDialog(state = userSelectDialogState)
             FieldTitle(
                 modifier = Modifier.padding(vertical = 12.dp),
-                text = LocalI18N.current["ui.action.select.pkg.and.user.user"]
+                text = LocalI18N.current[I18N_R.UI_ACTION_SELECT_PKG_AND_USER_USER]
             )
-            TipBody(text = LocalI18N.current["ui.action.select.pkg.and.user.user.summary"])
+            TipBody(text = LocalI18N.current[I18N_R.UI_ACTION_SELECT_PKG_AND_USER_USER_SUMMARY])
             ShortXTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = state.inputUser,

@@ -30,6 +30,7 @@ import tornaco.apps.shortx.ui.base.ShortXBottomSheet
 import tornaco.apps.shortx.ui.base.ShortXBottomSheetState
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.TinySpacer
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @Composable
 fun ChangeLogBottomSheet(state: ShortXBottomSheetState) {
@@ -47,7 +48,7 @@ fun ChangeLogBottomSheet(state: ShortXBottomSheetState) {
                 RemixIcon(remixName = Remix.Document.article_fill)
                 MediumSpacer()
                 Text(
-                    text = LocalI18N.current["ui.changelog.title"],
+                    text = LocalI18N.current[I18N_R.UI_CHANGELOG_TITLE],
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold,
                 )
@@ -55,7 +56,7 @@ fun ChangeLogBottomSheet(state: ShortXBottomSheetState) {
             SmallSpacer()
             Text(
                 text = LocalI18N.current[
-                    "ui.changelog.current.version",
+                    I18N_R.UI_CHANGELOG_CURRENT_VERSION,
                     mapOf(
                         "version" to BuildPropInternal.APP_VERSION_NAME,
                         "code" to BuildPropInternal.APP_VERSION_CODE.toString()
@@ -101,7 +102,7 @@ private fun ChangeLogItemCard(item: ChangeLogItem) {
             TinySpacer()
             Text(
                 text = LocalI18N.current[
-                    "ui.changelog.version.code",
+                    I18N_R.UI_CHANGELOG_VERSION_CODE,
                     mapOf("code" to item.versionCode.toString())
                 ],
                 style = MaterialTheme.typography.labelMedium,

@@ -133,6 +133,7 @@ import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.watchdog.postSafety
 import java.io.File
 import tornaco.apps.shortx.core.proto.func.Function as ShortXFunction
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @SuppressLint("StaticFieldLeak")
 object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
@@ -172,7 +173,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
         AppGlobals.setAppResources(appRes)
         val localeName = AppGlobals.appResources.getString("ui_i18n_name")
         I18NCache.init(AppGlobals.appContext, localeName)
-        val testRes = i18NIns["ui.common.delete"]
+        val testRes = i18NIns[I18N_R.UI_COMMON_DELETE]
         logger.d("testRes: $testRes")
         shortXContext.serviceLifecycle.systemReady()
         ABTesting.dump()
@@ -194,8 +195,8 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                         shortXContext.notification.postByFallback(
                             PostNotification.newBuilder()
                                 .setTag(tag)
-                                .setTitle(i18NIns["ui.n.wait.for.systemui.title"])
-                                .setMessage(i18NIns["ui.n.wait.for.systemui.message"])
+                                .setTitle(i18NIns[I18N_R.UI_N_WAIT_FOR_SYSTEMUI_TITLE])
+                                .setMessage(i18NIns[I18N_R.UI_N_WAIT_FOR_SYSTEMUI_MESSAGE])
                                 .setId(tag)
                                 .setSmallIcon(Remix.System.error_warning_line)
                                 .setIsImportant(true)

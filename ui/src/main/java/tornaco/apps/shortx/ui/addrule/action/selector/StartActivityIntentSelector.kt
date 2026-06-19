@@ -61,6 +61,7 @@ import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class StartActivityIntentSelectorActivity : BaseSelectorActivity<Action.StartActivityIntent>() {
@@ -88,7 +89,7 @@ private fun BaseSelectorActivity<Action.StartActivityIntent>.StartActivityIntent
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(LocalI18N.current["ui.action.start.activity.intent"]) },
+                        title = { Text(LocalI18N.current[I18N_R.UI_ACTION_START_ACTIVITY_INTENT]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 cancelAndFinish()
@@ -138,7 +139,7 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
     ) {
         SmallTitle(
             modifier = Modifier.padding(vertical = 12.dp),
-            text = LocalI18N.current["ui.common.component.type"]
+            text = LocalI18N.current[I18N_R.UI_COMMON_COMPONENT_TYPE]
         )
         Box {
             val typeDropdownState = rememberDropdownSelectorState()
@@ -170,7 +171,7 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
 
         SmallTitle(
             modifier = Modifier.padding(vertical = 12.dp),
-            text = LocalI18N.current["ui.common.action"]
+            text = LocalI18N.current[I18N_R.UI_COMMON_ACTION]
         )
         ShortXTextField(
             modifier = Modifier.fillMaxWidth(),
@@ -187,7 +188,7 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
         SingleAppSelectorDialog(state = singleAppSelectorState)
         SmallTitle(
             modifier = Modifier.padding(vertical = 12.dp),
-            text = LocalI18N.current["ui.common.pkg.name"] + " - " + LocalI18N.current["ui.common.optional"]
+            text = LocalI18N.current[I18N_R.UI_COMMON_PKG_NAME] + " - " + LocalI18N.current[I18N_R.UI_COMMON_OPTIONAL]
         )
         ShortXTextField(
             modifier = Modifier.fillMaxWidth(),
@@ -219,7 +220,7 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
         AppComponentSelectorDialog(componentSelectorState)
         SmallTitle(
             modifier = Modifier.padding(vertical = 12.dp),
-            text = LocalI18N.current["ui.common.class.name"] + " - " + LocalI18N.current["ui.common.optional"]
+            text = LocalI18N.current[I18N_R.UI_COMMON_CLASS_NAME] + " - " + LocalI18N.current[I18N_R.UI_COMMON_OPTIONAL]
         )
         ShortXTextField(
             modifier = Modifier.fillMaxWidth(),
@@ -248,7 +249,7 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
 
         SmallTitle(
             modifier = Modifier.padding(vertical = 12.dp),
-            text = LocalI18N.current["ui.common.user.id"]
+            text = LocalI18N.current[I18N_R.UI_COMMON_USER_ID]
         )
         val userSelectorState = rememberUserSelectorDialogState(onSelected = {
             vm.updateUserId(it.userId)
@@ -267,7 +268,7 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
 
         SmallTitle(
             modifier = Modifier.padding(vertical = 12.dp),
-            text = LocalI18N.current["ui.common.data"] + " - " + LocalI18N.current["ui.common.optional"]
+            text = LocalI18N.current[I18N_R.UI_COMMON_DATA] + " - " + LocalI18N.current[I18N_R.UI_COMMON_OPTIONAL]
         )
         ShortXTextField(
             modifier = Modifier.fillMaxWidth(),
@@ -281,7 +282,7 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
 
         SmallTitle(
             modifier = Modifier.padding(vertical = 12.dp),
-            text = LocalI18N.current["ui.common.extras"]
+            text = LocalI18N.current[I18N_R.UI_COMMON_EXTRAS]
         )
         state.extras.forEachIndexed { index, extra ->
             val editExtraState = rememberIntentExtraEditDialogState(extra.key) {
@@ -300,7 +301,7 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
         }
         StandardSpacer()
 
-        val addExtraState = rememberIntentExtraEditDialogState(LocalI18N.current["ui.common.add"]) {
+        val addExtraState = rememberIntentExtraEditDialogState(LocalI18N.current[I18N_R.UI_COMMON_ADD]) {
             vm.addExtra(it)
         }
         IntentExtraEditDialog(addExtraState)
@@ -310,7 +311,7 @@ private fun Content(paddingValues: PaddingValues, vm: StartActivityIntentSelecto
                 AndroidIntentExtra.newBuilder().setType(AndroidIntentExtraType.String).build()
             )
         }) {
-            Text(text = LocalI18N.current["ui.common.add"])
+            Text(text = LocalI18N.current[I18N_R.UI_COMMON_ADD])
         }
 
         StandardSpacer()

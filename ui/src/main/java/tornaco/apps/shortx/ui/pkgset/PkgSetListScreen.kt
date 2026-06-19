@@ -62,6 +62,7 @@ import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
 import tornaco.apps.shortx.ui.base.dynamicStaggeredGridCells
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class PkgSetListActivity : BaseActivity() {
@@ -120,7 +121,7 @@ fun PkgSetListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
                 topBar = {
                     ShortXMediumTopAppBar(
                         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                        title = { Text(text = i18N["ui.pkg.set.title"]) },
+                        title = { Text(text = i18N[I18N_R.UI_PKG_SET_TITLE]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 back()
@@ -168,10 +169,10 @@ fun PkgSetListScreen(back: () -> Unit, goToDetail: (String) -> Unit) {
 
                                         PkgSetListItem(modifier = Modifier,
                                             title = LocalI18N.current["ui.common.app.${it.label.lowercase()}", emptyMap(), it.label],
-                                            text1 = i18N["ui.pkg.set.items.count", mapOf("count" to "${it.appPkgsCount}")],
+                                            text1 = i18N[I18N_R.UI_PKG_SET_ITEMS_COUNT, mapOf("count" to "${it.appPkgsCount}")],
                                             note = it.description.takeIf { desc -> desc.isNotBlank() },
                                             badge = if (it.isPrebuilt) {
-                                                i18N["ui.pkg.set.prebuilt"]
+                                                i18N[I18N_R.UI_PKG_SET_PREBUILT]
                                             } else null,
                                             onClick = {
                                                 goToDetail(it.label)
@@ -258,7 +259,7 @@ private fun listItemOverflowMenu(
     val menuState = rememberDropdownSelectorState()
 
     DropdownSelector(widthFraction = 0.33f, state = menuState, items = listOf(
-        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.delete"]),
+        DropdownItem(labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_DELETE]),
             data = "delete",
             icon = {
                 RemixIcon(remixName = Remix.System.delete_bin_fill)

@@ -50,6 +50,7 @@ import tornaco.apps.shortx.ui.pkgset.PkgSetListViewModel
 import tornaco.apps.shortx.ui.pkgset.rememberNewPkgSetState
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.subscribe.isForSubscribedOnly
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @Composable
 fun extActionSelectHandler(
@@ -122,7 +123,7 @@ fun extActionSelectHandler(
         onSelected = {
             addAction(it)
         },
-        title = LocalI18N.current["ui.action.set.rule.enabled"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_SET_RULE_ENABLED],
     )
     SetRuleEnabledSelectorDialog(state = setRuleEnabledState)
 
@@ -294,7 +295,7 @@ fun extActionSelectHandler(
     )
 
     val brkScopeSelectorState = rememberMenuDialogState<String>(
-        title = LocalI18N.current["ui.action.brk.scope"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_BRK_SCOPE],
         menuItems = BreakActionExecuteScope.entries
             .filterNot { it == BreakActionExecuteScope.UNRECOGNIZED }.map {
                 MenuDialogItem(id = it.name, title = LocalI18N.current[it.labelKey()])

@@ -28,6 +28,7 @@ import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.dynamicStaggeredGridCells
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 class RuleSelectDialogState(
@@ -63,7 +64,7 @@ private fun RuleSelectSelector(dialogState: RuleSelectDialogState) {
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(LocalI18N.current["ui.action.set.rule.enabled.select.rule"]) },
+                        title = { Text(LocalI18N.current[I18N_R.UI_ACTION_SET_RULE_ENABLED_SELECT_RULE]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 dialogState.dismiss()

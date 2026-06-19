@@ -85,6 +85,7 @@ import tornaco.apps.shortx.ui.composeLogger
 import tornaco.apps.shortx.ui.settings.log.http.HttpLogActivity
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.util.ClipboardUtils
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class HttpRequestSelectorActivity : BaseSelectorActivity<Action.HttpRequest>() {
@@ -108,12 +109,12 @@ private fun BaseSelectorActivity<Action.HttpRequest>.HttpRequestSelector(current
     val selectorState by vm.state.collectAsState()
 
     val context = LocalContext.current
-    val errorTitle = LocalI18N.current["ui.common.error.view.message"]
+    val errorTitle = LocalI18N.current[I18N_R.UI_COMMON_ERROR_VIEW_MESSAGE]
 
     val curlInputDialogState =
         rememberTextInputState(
-            title = LocalI18N.current["ui.action.http.request.from.curl"],
-            message = LocalI18N.current["ui.action.http.request.from.curl.message"],
+            title = LocalI18N.current[I18N_R.UI_ACTION_HTTP_REQUEST_FROM_CURL],
+            message = LocalI18N.current[I18N_R.UI_ACTION_HTTP_REQUEST_FROM_CURL_MESSAGE],
             onSelected = {
                 runCatching {
                     val request = it.curlCommandToHttpRequest()
@@ -132,8 +133,8 @@ private fun BaseSelectorActivity<Action.HttpRequest>.HttpRequestSelector(current
 
     val httpCanaryJsonInputDialogState =
         rememberTextInputState(
-            title = LocalI18N.current["ui.action.http.request.from.http.canary"],
-            message = LocalI18N.current["ui.action.http.request.from.http.canary.message"],
+            title = LocalI18N.current[I18N_R.UI_ACTION_HTTP_REQUEST_FROM_HTTP_CANARY],
+            message = LocalI18N.current[I18N_R.UI_ACTION_HTTP_REQUEST_FROM_HTTP_CANARY_MESSAGE],
             onSelected = {
                 runCatching {
                     val request = it.toHttpCanaryExportJson().toHttpRequest()
@@ -151,8 +152,8 @@ private fun BaseSelectorActivity<Action.HttpRequest>.HttpRequestSelector(current
 
     val httpCanaryHcyInputDialogState =
         rememberTextInputState(
-            title = LocalI18N.current["ui.action.http.request.from.http.canary.hcy"],
-            message = LocalI18N.current["ui.action.http.request.from.http.canary.hcy.message"],
+            title = LocalI18N.current[I18N_R.UI_ACTION_HTTP_REQUEST_FROM_HTTP_CANARY_HCY],
+            message = LocalI18N.current[I18N_R.UI_ACTION_HTTP_REQUEST_FROM_HTTP_CANARY_HCY_MESSAGE],
             onSelected = {
                 runCatching {
                     val request = it.toHttpCanaryExportHcy().toHttpRequest()
@@ -169,7 +170,7 @@ private fun BaseSelectorActivity<Action.HttpRequest>.HttpRequestSelector(current
     TextInputDialog(state = httpCanaryHcyInputDialogState)
 
     ShortXAppBarScaffold(
-        title = LocalI18N.current["ui.action.http.request"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_HTTP_REQUEST],
         onBackPressed = {
             cancelAndFinish()
         },
@@ -181,15 +182,15 @@ private fun BaseSelectorActivity<Action.HttpRequest>.HttpRequestSelector(current
                     state = moreActionsDropdown,
                     items = listOf(
                         DropdownItem(
-                            labelLines = listOf(LocalI18N.current["ui.action.http.request.from.curl"]),
+                            labelLines = listOf(LocalI18N.current[I18N_R.UI_ACTION_HTTP_REQUEST_FROM_CURL]),
                             data = MoreMenuOptions.FromCurl
                         ),
                         DropdownItem(
-                            labelLines = listOf(LocalI18N.current["ui.action.http.request.from.http.canary"]),
+                            labelLines = listOf(LocalI18N.current[I18N_R.UI_ACTION_HTTP_REQUEST_FROM_HTTP_CANARY]),
                             data = MoreMenuOptions.FromHttpCanaryJson
                         ),
                         DropdownItem(
-                            labelLines = listOf(LocalI18N.current["ui.action.http.request.from.http.canary.hcy"]),
+                            labelLines = listOf(LocalI18N.current[I18N_R.UI_ACTION_HTTP_REQUEST_FROM_HTTP_CANARY_HCY]),
                             data = MoreMenuOptions.FromHttpCanaryHcy
                         ),
                     ),
@@ -222,7 +223,7 @@ private fun BaseSelectorActivity<Action.HttpRequest>.HttpRequestSelector(current
             }
 
             val scope = rememberCoroutineScope()
-            val outputTitle = LocalI18N.current["ui.action.http.request"]
+            val outputTitle = LocalI18N.current[I18N_R.UI_ACTION_HTTP_REQUEST]
 
             IconButton(
                 enabled = !selectorState.isTesting,
@@ -330,7 +331,7 @@ private fun BaseSelectorActivity<Action.HttpRequest>.HttpRequestSelector(current
                 )
                 SectionSpacer()
 
-                FieldTitle(text = LocalI18N.current["ui.action.misc"])
+                FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_MISC])
                 SmallSpacer()
                 CookieJar(selectorState.withCookieJar) { vm.withCookieJar(it) }
                 LargeSpacer()
@@ -351,37 +352,37 @@ private fun BaseSelectorActivity<Action.HttpRequest>.HttpRequestSelector(current
 @Composable
 fun CookieJar(withCookieJar: Boolean, update: (Boolean) -> Unit) {
     SwitchRow(
-        text = LocalI18N.current["ui.action.http.request.with.cookie.jar"],
+        text = LocalI18N.current[I18N_R.UI_ACTION_HTTP_REQUEST_WITH_COOKIE_JAR],
         isChecked = withCookieJar,
         onCheckChange = {
             update(it)
         })
     SmallSpacer()
-    TipBody(text = LocalI18N.current["ui.action.http.request.with.cookie.jar.message"])
+    TipBody(text = LocalI18N.current[I18N_R.UI_ACTION_HTTP_REQUEST_WITH_COOKIE_JAR_MESSAGE])
 }
 
 @Composable
 fun TrustAllCerts(trustAllCerts: Boolean, update: (Boolean) -> Unit) {
     SwitchRow(
-        text = LocalI18N.current["ui.action.http.request.trust.all.certs"],
+        text = LocalI18N.current[I18N_R.UI_ACTION_HTTP_REQUEST_TRUST_ALL_CERTS],
         isChecked = trustAllCerts,
         onCheckChange = {
             update(it)
         })
     SmallSpacer()
-    TipBody(text = LocalI18N.current["ui.action.http.request.trust.all.certs.message"])
+    TipBody(text = LocalI18N.current[I18N_R.UI_ACTION_HTTP_REQUEST_TRUST_ALL_CERTS_MESSAGE])
 }
 
 @Composable
 fun ExecuteInAppProcess(executeInAppProcess: Boolean, update: (Boolean) -> Unit) {
     SwitchRow(
-        text = LocalI18N.current["ui.action.http.request.execute.in.app.process"],
+        text = LocalI18N.current[I18N_R.UI_ACTION_HTTP_REQUEST_EXECUTE_IN_APP_PROCESS],
         isChecked = executeInAppProcess,
         onCheckChange = {
             update(it)
         })
     SmallSpacer()
-    TipBody(text = LocalI18N.current["ui.action.http.request.execute.in.app.process.message"])
+    TipBody(text = LocalI18N.current[I18N_R.UI_ACTION_HTTP_REQUEST_EXECUTE_IN_APP_PROCESS_MESSAGE])
 }
 
 @Composable
@@ -452,7 +453,7 @@ private fun ColumnScope.ResponseAdapter(
             StringSortDialog(state = sortDialogState, strings = expressions)
 
             FieldTitle(
-                text = LocalI18N.current["ui.action.http.request.adapter"]
+                text = LocalI18N.current[I18N_R.UI_ACTION_HTTP_REQUEST_ADAPTER]
             )
             // Sort
             AnimatedVisibility(visible = expressions.size > 1) {
@@ -465,23 +466,23 @@ private fun ColumnScope.ResponseAdapter(
         }
         MediumSpacer()
         val adapterSelectorState: MenuDialogState<String> =
-            rememberMenuDialogState(title = LocalI18N.current["ui.action.http.request.adapter"],
+            rememberMenuDialogState(title = LocalI18N.current[I18N_R.UI_ACTION_HTTP_REQUEST_ADAPTER],
                 message = null,
                 menuItems = listOf(
                     MenuDialogItem(
                         id = AdapterType.Raw.name,
-                        title = LocalI18N.current["ui.action.http.request.raw"],
-                        summary = LocalI18N.current["ui.action.http.request.raw.summary"]
+                        title = LocalI18N.current[I18N_R.UI_ACTION_HTTP_REQUEST_RAW],
+                        summary = LocalI18N.current[I18N_R.UI_ACTION_HTTP_REQUEST_RAW_SUMMARY]
                     ),
                     MenuDialogItem(
                         id = AdapterType.BodyJson.name,
-                        title = LocalI18N.current["ui.action.http.request.json"],
-                        summary = LocalI18N.current["ui.action.http.request.json.summary"],
+                        title = LocalI18N.current[I18N_R.UI_ACTION_HTTP_REQUEST_JSON],
+                        summary = LocalI18N.current[I18N_R.UI_ACTION_HTTP_REQUEST_JSON_SUMMARY],
                     ),
                     MenuDialogItem(
                         id = AdapterType.HeaderBodyJson.name,
-                        title = LocalI18N.current["ui.action.http.request.json.header.body"],
-                        summary = LocalI18N.current["ui.action.http.request.json.summary.header.body"],
+                        title = LocalI18N.current[I18N_R.UI_ACTION_HTTP_REQUEST_JSON_HEADER_BODY],
+                        summary = LocalI18N.current[I18N_R.UI_ACTION_HTTP_REQUEST_JSON_SUMMARY_HEADER_BODY],
                     ),
                 ),
                 onItemSelected = { data, id ->
@@ -496,15 +497,15 @@ private fun ColumnScope.ResponseAdapter(
                 Text(text = responseAdapter.let {
                     when (it) {
                         AdapterType.Raw -> {
-                            LocalI18N.current["ui.action.http.request.raw"]
+                            LocalI18N.current[I18N_R.UI_ACTION_HTTP_REQUEST_RAW]
                         }
 
                         AdapterType.HeaderBodyJson -> {
-                            LocalI18N.current["ui.action.http.request.json.header.body"]
+                            LocalI18N.current[I18N_R.UI_ACTION_HTTP_REQUEST_JSON_HEADER_BODY]
                         }
 
                         AdapterType.BodyJson -> {
-                            LocalI18N.current["ui.action.http.request.json"]
+                            LocalI18N.current[I18N_R.UI_ACTION_HTTP_REQUEST_JSON]
                         }
                     }
                 })
@@ -520,7 +521,7 @@ private fun ColumnScope.ResponseAdapter(
     AnimatedVisibility(visible = responseAdapter == AdapterType.Raw) {
         val contextDataKey = ContextDataMapping.HttpRequest.httpRequestRet.name.asContextDataKey()
         ListItem(
-            title = LocalI18N.current["ui.action.http.request.json.expression.key", mapOf(
+            title = LocalI18N.current[I18N_R.UI_ACTION_HTTP_REQUEST_JSON_EXPRESSION_KEY, mapOf(
                 "key" to contextDataKey
             )],
             onClick = {
@@ -531,7 +532,7 @@ private fun ColumnScope.ResponseAdapter(
                 )
                 Toast.makeText(
                     context,
-                    i18N["ui.common.copied.to.clipboard"],
+                    i18N[I18N_R.UI_COMMON_COPIED_TO_CLIPBOARD],
                     Toast.LENGTH_LONG
                 ).show()
             }
@@ -542,7 +543,7 @@ private fun ColumnScope.ResponseAdapter(
         visible = responseAdapter == AdapterType.BodyJson || responseAdapter == AdapterType.HeaderBodyJson
     ) {
         Column {
-            TipRow(text = LocalI18N.current["ui.action.http.request.json.expression.description"])
+            TipRow(text = LocalI18N.current[I18N_R.UI_ACTION_HTTP_REQUEST_JSON_EXPRESSION_DESCRIPTION])
             StandardSpacer()
             expressions.forEachIndexed { index, s ->
                 ExpressionItem(expression = s, index = index) {
@@ -552,7 +553,7 @@ private fun ColumnScope.ResponseAdapter(
             StandardSpacer()
 
             val mvelInputState = rememberTextInputState(
-                title = LocalI18N.current["ui.action.http.request.json.expression"],
+                title = LocalI18N.current[I18N_R.UI_ACTION_HTTP_REQUEST_JSON_EXPRESSION],
                 message = null,
                 onSelected = {
                     if (it.isNotBlank()) {
@@ -664,7 +665,7 @@ private fun ExpressionItem(
             )
             Toast.makeText(
                 context,
-                i18N["ui.common.copied.to.clipboard"],
+                i18N[I18N_R.UI_COMMON_COPIED_TO_CLIPBOARD],
                 Toast.LENGTH_LONG
             ).show()
         }
@@ -687,7 +688,7 @@ private fun ExpressionItem(
                 )
                 SmallSpacer()
                 Text(
-                    text = LocalI18N.current["ui.action.http.request.json.expression.key", mapOf("key" to contextDataKey)],
+                    text = LocalI18N.current[I18N_R.UI_ACTION_HTTP_REQUEST_JSON_EXPRESSION_KEY, mapOf("key" to contextDataKey)],
                     fontSize = 12.sp
                 )
             }

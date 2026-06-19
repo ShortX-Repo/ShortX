@@ -104,6 +104,7 @@ import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.theme.UiThemeMode
 import tornaco.apps.shortx.ui.util.BrowserUtils
 import tornaco.apps.shortx.ui.util.ClipboardUtils
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -145,7 +146,7 @@ fun SettingsScreen(
             val scope = rememberCoroutineScope()
 
             val guideSelectorDialogState = rememberMenuDialogState<String>(
-                title = LocalI18N.current["ui.user.guide"],
+                title = LocalI18N.current[I18N_R.UI_USER_GUIDE],
                 menuItems = listOf(
                     MenuDialogItem(
                         id = "Bili",
@@ -168,21 +169,21 @@ fun SettingsScreen(
             MenuDialog(state = guideSelectorDialogState)
 
             val themeModeDialogState = rememberMenuDialogState<String>(
-                title = LocalI18N.current["ui.settings.theme.mode"],
+                title = LocalI18N.current[I18N_R.UI_SETTINGS_THEME_MODE],
                 menuItems = listOf(
                     MenuDialogItem(
                         id = UiThemeMode.System.name,
-                        title = LocalI18N.current["ui.settings.theme.mode.system"],
+                        title = LocalI18N.current[I18N_R.UI_SETTINGS_THEME_MODE_SYSTEM],
                         iconName = Remix.Design.contrast_2_fill
                     ),
                     MenuDialogItem(
                         id = UiThemeMode.Light.name,
-                        title = LocalI18N.current["ui.settings.theme.mode.light"],
+                        title = LocalI18N.current[I18N_R.UI_SETTINGS_THEME_MODE_LIGHT],
                         iconName = Remix.Weather.sun_fill
                     ),
                     MenuDialogItem(
                         id = UiThemeMode.Dark.name,
-                        title = LocalI18N.current["ui.settings.theme.mode.dark"],
+                        title = LocalI18N.current[I18N_R.UI_SETTINGS_THEME_MODE_DARK],
                         iconName = Remix.Weather.moon_fill
                     ),
                 )
@@ -202,11 +203,11 @@ fun SettingsScreen(
 
             val deleteDialogState = rememberConfirmDialogState()
             val resetDataMessageHint = LocalI18N.current[
-                "ui.delete.dialog.confirm",
-                mapOf("wht" to LocalI18N.current["ui.settings.data.reset.dialog.hint"])
+                I18N_R.UI_DELETE_DIALOG_CONFIRM,
+                mapOf("wht" to LocalI18N.current[I18N_R.UI_SETTINGS_DATA_RESET_DIALOG_HINT])
             ]
             ConfirmDialog(
-                title = LocalI18N.current["ui.settings.data.reset.title"],
+                title = LocalI18N.current[I18N_R.UI_SETTINGS_DATA_RESET_TITLE],
                 state = deleteDialogState,
                 data = "",
                 messageHint = { resetDataMessageHint },
@@ -357,7 +358,7 @@ fun SettingsScreen(
                                         }
                                 }
 
-                                LinkText(text = LocalI18N.current["ui.user.guide"]) {
+                                LinkText(text = LocalI18N.current[I18N_R.UI_USER_GUIDE]) {
                                     guideSelectorDialogState.show()
                                 }
                             }
@@ -395,9 +396,9 @@ fun SettingsScreen(
                         ErrorCard(
                             modifier = Modifier
                                 .padding(vertical = 16.dp, horizontal = 8.dp),
-                            title = LocalI18N.current["ui.settings.fatal.error.title"],
+                            title = LocalI18N.current[I18N_R.UI_SETTINGS_FATAL_ERROR_TITLE],
                             warnings = listOf(
-                                LocalI18N.current["ui.settings.fatal.error.message", mapOf("dir" to state.logDir)]
+                                LocalI18N.current[I18N_R.UI_SETTINGS_FATAL_ERROR_MESSAGE, mapOf("dir" to state.logDir)]
                             )
                         ) {
 
@@ -416,22 +417,22 @@ fun SettingsScreen(
                     SwitchBar(
                         modifier = Modifier.padding(horizontal = 16.dp),
                         isChecked = state.ruleFeatureEnabled,
-                        text = LocalI18N.current["ui.settings.enable.rule.feature"],
-                        tip = LocalI18N.current["ui.settings.enable.rule.feature.description"]
+                        text = LocalI18N.current[I18N_R.UI_SETTINGS_ENABLE_RULE_FEATURE],
+                        tip = LocalI18N.current[I18N_R.UI_SETTINGS_ENABLE_RULE_FEATURE_DESCRIPTION]
                     ) {
                         vm.toggleRuleFeatureEnable(it)
                     }
 
                     val i18N = LocalI18N.current
-                    val backupErrorTitle = i18N["ui.settings.backup.error.title"]
-                    val backupErrorAction = i18N["ui.settings.backup.error.action"]
+                    val backupErrorTitle = i18N[I18N_R.UI_SETTINGS_BACKUP_ERROR_TITLE]
+                    val backupErrorAction = i18N[I18N_R.UI_SETTINGS_BACKUP_ERROR_ACTION]
                     LaunchedEffect(vm) {
                         vm.backupPerformed.collectLatest {
                             when (it) {
                                 is BackupResult.Success -> {
                                     scope.launch {
                                         snackbarHostState.showSnackbar(
-                                            i18N["ui.settings.toast.backup.complete", mapOf("path" to it.path)]
+                                            i18N[I18N_R.UI_SETTINGS_TOAST_BACKUP_COMPLETE, mapOf("path" to it.path)]
                                         )
                                     }
                                 }
@@ -463,7 +464,7 @@ fun SettingsScreen(
                                 is RestoreResult.Success -> {
                                     scope.launch {
                                         snackbarHostState.showSnackbar(
-                                            i18N["ui.settings.toast.restore.complete"]
+                                            i18N[I18N_R.UI_SETTINGS_TOAST_RESTORE_COMPLETE]
                                         )
                                     }
                                 }
@@ -471,7 +472,7 @@ fun SettingsScreen(
                                 is RestoreResult.Failed -> {
                                     scope.launch {
                                         snackbarHostState.showSnackbar(
-                                            i18N["ui.settings.toast.backup.error", mapOf("err" to it.error)],
+                                            i18N[I18N_R.UI_SETTINGS_TOAST_BACKUP_ERROR, mapOf("err" to it.error)],
                                         )
                                     }
                                 }
@@ -479,9 +480,9 @@ fun SettingsScreen(
                         }
                     }
                     val exportLogErrorTitle =
-                        i18N["ui.settings.export.log.error.title"]
+                        i18N[I18N_R.UI_SETTINGS_EXPORT_LOG_ERROR_TITLE]
                     val exportLogErrorAction =
-                        i18N["ui.settings.export.log.error.action"]
+                        i18N[I18N_R.UI_SETTINGS_EXPORT_LOG_ERROR_ACTION]
 
                     LaunchedEffect(vm) {
                         vm.logExportPerformed.collectLatest {
@@ -523,7 +524,7 @@ fun SettingsScreen(
                                     scope.launch {
                                         val message = if (it.missingYears.isEmpty()) {
                                             i18N[
-                                                "ui.settings.data.workday.updated",
+                                                I18N_R.UI_SETTINGS_DATA_WORKDAY_UPDATED,
                                                 mapOf(
                                                     "years" to it.refreshedYears.sorted()
                                                         .joinToString()
@@ -531,7 +532,7 @@ fun SettingsScreen(
                                             ]
                                         } else {
                                             i18N[
-                                                "ui.settings.data.workday.updated.missing",
+                                                I18N_R.UI_SETTINGS_DATA_WORKDAY_UPDATED_MISSING,
                                                 mapOf(
                                                     "years" to it.refreshedYears.sorted()
                                                         .joinToString(),
@@ -548,7 +549,7 @@ fun SettingsScreen(
                                     scope.launch {
                                         snackbarHostState.showSnackbar(
                                             i18N[
-                                                "ui.settings.data.workday.refresh.failed",
+                                                I18N_R.UI_SETTINGS_DATA_WORKDAY_REFRESH_FAILED,
                                                 mapOf("err" to it.error)
                                             ]
                                         )
@@ -574,14 +575,14 @@ fun SettingsScreen(
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
                                 ShortXTextButton(onClick = { vm.expandAllSettingsCategories() }) {
-                                    Text(text = i18N["ui.common.expand.all"])
+                                    Text(text = i18N[I18N_R.UI_COMMON_EXPAND_ALL])
                                 }
                                 ShortXTextButton(onClick = {
                                     vm.collapseAllSettingsCategories(
                                         categoryTitles
                                     )
                                 }) {
-                                    Text(text = i18N["ui.common.collapse.all"])
+                                    Text(text = i18N[I18N_R.UI_COMMON_COLLAPSE_ALL])
                                 }
                             }
                         }
@@ -596,7 +597,7 @@ fun SettingsScreen(
                     } else {
                         Text(
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 24.dp),
-                            text = i18N["ui.settings.search.empty"],
+                            text = i18N[I18N_R.UI_SETTINGS_SEARCH_EMPTY],
                             style = MaterialTheme.typography.bodyMedium,
                         )
                     }
@@ -641,7 +642,7 @@ private fun SubscriptionStatus(mainState: LVLStateHolder.State) {
                     modifier = Modifier.size(30.dp),
                 )
                 SmallSpacer()
-                Text(text = LocalI18N.current["ui.subscription.subscribed"], fontSize = 12.5.sp)
+                Text(text = LocalI18N.current[I18N_R.UI_SUBSCRIPTION_SUBSCRIBED], fontSize = 12.5.sp)
             }
         }
     }
@@ -715,18 +716,18 @@ private fun generalSettings(
 
     val badge = if (mainState.isSubscribed) {
         null
-    } else LocalI18N.current["ui.subscription.subscribed.only"]
+    } else LocalI18N.current[I18N_R.UI_SUBSCRIPTION_SUBSCRIBED_ONLY]
 
     val subscribeDialogState = rememberShortXBottomSheetState()
     FeatureAccessDialog(subscribeDialogState)
 
     return listOfNotNull(
-        Preference.Category(LocalI18N.current["ui.settings.general"]),
+        Preference.Category(LocalI18N.current[I18N_R.UI_SETTINGS_GENERAL]),
 
         Preference.TextPreference(
             icon = Remix.System.apps_fill,
-            title = LocalI18N.current["ui.pkg.set.title"],
-            summary = LocalI18N.current["ui.pkg.set.desc"],
+            title = LocalI18N.current[I18N_R.UI_PKG_SET_TITLE],
+            summary = LocalI18N.current[I18N_R.UI_PKG_SET_DESC],
             onClick = {
                 goToPkgSetList()
             }
@@ -734,8 +735,8 @@ private fun generalSettings(
 
         Preference.TextPreference(
             icon = Remix.Document.file_list_fill,
-            title = LocalI18N.current["ui.global.var.title"],
-            summary = LocalI18N.current["ui.global.var.desc"],
+            title = LocalI18N.current[I18N_R.UI_GLOBAL_VAR_TITLE],
+            summary = LocalI18N.current[I18N_R.UI_GLOBAL_VAR_DESC],
             onClick = {
                 goToGV()
             }
@@ -743,8 +744,8 @@ private fun generalSettings(
 
         Preference.TextPreference(
             icon = Remix.Device.cpu_fill,
-            title = LocalI18N.current["ui.system.env"],
-            summary = LocalI18N.current["ui.system.env"],
+            title = LocalI18N.current[I18N_R.UI_SYSTEM_ENV],
+            summary = LocalI18N.current[I18N_R.UI_SYSTEM_ENV],
             onClick = {
                 goToSystemEnv()
             }
@@ -752,8 +753,8 @@ private fun generalSettings(
 
         Preference.TextPreference(
             icon = Remix.System.function_fill,
-            title = LocalI18N.current["ui.action.functions"],
-            summary = LocalI18N.current["ui.function.desc"],
+            title = LocalI18N.current[I18N_R.UI_ACTION_FUNCTIONS],
+            summary = LocalI18N.current[I18N_R.UI_FUNCTION_DESC],
             badge = badge,
             onClick = {
                 mainState.isSubscribed.select(
@@ -765,8 +766,8 @@ private fun generalSettings(
 
         Preference.TextPreference(
             icon = Remix.Development.code_fill,
-            title = LocalI18N.current["ui.code.library.title"],
-            summary = LocalI18N.current["ui.code.library.summary"],
+            title = LocalI18N.current[I18N_R.UI_CODE_LIBRARY_TITLE],
+            summary = LocalI18N.current[I18N_R.UI_CODE_LIBRARY_SUMMARY],
             onClick = {
                 CodeLibraryListActivity.start(context)
             }
@@ -774,8 +775,8 @@ private fun generalSettings(
 
         Preference.TextPreference(
             icon = Remix.Communication.message_fill,
-            title = LocalI18N.current["ui.settings.danmu"],
-            summary = LocalI18N.current["ui.settings.danmu.summary"],
+            title = LocalI18N.current[I18N_R.UI_SETTINGS_DANMU],
+            summary = LocalI18N.current[I18N_R.UI_SETTINGS_DANMU_SUMMARY],
             badge = badge,
             onClick = {
                 mainState.isSubscribed.select(
@@ -786,8 +787,8 @@ private fun generalSettings(
 
         Preference.TextPreference(
             icon = Remix.Communication.message_fill,
-            title = LocalI18N.current["ui.settings.statusbar.chip"],
-            summary = LocalI18N.current["ui.settings.statusbar.chip.summary"],
+            title = LocalI18N.current[I18N_R.UI_SETTINGS_STATUSBAR_CHIP],
+            summary = LocalI18N.current[I18N_R.UI_SETTINGS_STATUSBAR_CHIP_SUMMARY],
             badge = badge,
             onClick = {
                 mainState.isSubscribed.select(
@@ -798,8 +799,8 @@ private fun generalSettings(
 
         Preference.TextPreference(
             icon = Remix.Editor.sketching,
-            title = LocalI18N.current["ui.settings.key.and.gesture"],
-            summary = LocalI18N.current["ui.settings.key.and.gesture.summary"],
+            title = LocalI18N.current[I18N_R.UI_SETTINGS_KEY_AND_GESTURE],
+            summary = LocalI18N.current[I18N_R.UI_SETTINGS_KEY_AND_GESTURE_SUMMARY],
             onClick = {
                 KeyAndGestureSettingsActivity.start(context)
             }
@@ -807,8 +808,8 @@ private fun generalSettings(
 
         Preference.SwitchPreference(
             icon = Remix.System.forbid_fill,
-            title = LocalI18N.current["ui.settings.force.disable.by.key.press.title"],
-            summary = LocalI18N.current["ui.settings.force.disable.by.key.press.description"],
+            title = LocalI18N.current[I18N_R.UI_SETTINGS_FORCE_DISABLE_BY_KEY_PRESS_TITLE],
+            summary = LocalI18N.current[I18N_R.UI_SETTINGS_FORCE_DISABLE_BY_KEY_PRESS_DESCRIPTION],
             hasLongSummary = false,
             value = state.isForceDisableShortXByKeyPress,
             onCheckChanged = { enable ->
@@ -828,31 +829,31 @@ private fun miscSettings(
 ): List<Preference> {
     val badge = if (mainState.isSubscribed) {
         null
-    } else LocalI18N.current["ui.subscription.subscribed.only"]
+    } else LocalI18N.current[I18N_R.UI_SUBSCRIPTION_SUBSCRIBED_ONLY]
 
     val subscribeDialogState = rememberShortXBottomSheetState()
     FeatureAccessDialog(subscribeDialogState)
 
     return listOf(
-        Preference.Category(LocalI18N.current["ui.action.misc"]),
+        Preference.Category(LocalI18N.current[I18N_R.UI_ACTION_MISC]),
         Preference.TextPreference(
             icon = Remix.Design.magic_fill,
-            title = LocalI18N.current["ui.settings.feat.toggle"],
-            summary = LocalI18N.current["ui.settings.feat.toggle.summary"],
+            title = LocalI18N.current[I18N_R.UI_SETTINGS_FEAT_TOGGLE],
+            summary = LocalI18N.current[I18N_R.UI_SETTINGS_FEAT_TOGGLE_SUMMARY],
             onClick = {
                 goToFeatToggle()
             }
         ),
         Preference.TextPreference(
             icon = Remix.Design.contrast_2_fill,
-            title = LocalI18N.current["ui.settings.theme.mode"],
+            title = LocalI18N.current[I18N_R.UI_SETTINGS_THEME_MODE],
             summary = LocalI18N.current[themeModeLabelKey(state.themeMode)],
             onClick = showThemeModeSelector
         ),
         Preference.SwitchPreference(
             icon = Remix.Design.palette_fill,
-            title = LocalI18N.current["ui.settings.theme.dynamic.color"],
-            summary = LocalI18N.current["ui.settings.theme.dynamic.color.summary"],
+            title = LocalI18N.current[I18N_R.UI_SETTINGS_THEME_DYNAMIC_COLOR],
+            summary = LocalI18N.current[I18N_R.UI_SETTINGS_THEME_DYNAMIC_COLOR_SUMMARY],
             value = state.dynamicColor,
             onCheckChanged = {
                 vm.setDynamicColor(!state.dynamicColor)
@@ -860,8 +861,8 @@ private fun miscSettings(
         ),
         Preference.SwitchPreference(
             icon = Remix.Design.pantone_fill,
-            title = LocalI18N.current["ui.settings.colorful.card"],
-            summary = LocalI18N.current["ui.settings.colorful.card.summary"],
+            title = LocalI18N.current[I18N_R.UI_SETTINGS_COLORFUL_CARD],
+            summary = LocalI18N.current[I18N_R.UI_SETTINGS_COLORFUL_CARD_SUMMARY],
             value = LocalUiSettings.current.uiColorfulCard,
             badge = badge,
             onCheckChanged = {
@@ -886,9 +887,9 @@ private fun miscSettings(
 
 private fun themeModeLabelKey(mode: UiThemeMode): String {
     return when (mode) {
-        UiThemeMode.System -> "ui.settings.theme.mode.system"
-        UiThemeMode.Light -> "ui.settings.theme.mode.light"
-        UiThemeMode.Dark -> "ui.settings.theme.mode.dark"
+        UiThemeMode.System -> I18N_R.UI_SETTINGS_THEME_MODE_SYSTEM
+        UiThemeMode.Light -> I18N_R.UI_SETTINGS_THEME_MODE_LIGHT
+        UiThemeMode.Dark -> I18N_R.UI_SETTINGS_THEME_MODE_DARK
     }
 }
 
@@ -904,18 +905,18 @@ private fun recordSettings(
 ): List<Preference> {
     val badge = if (mainState.isSubscribed) {
         null
-    } else LocalI18N.current["ui.subscription.subscribed.only"]
+    } else LocalI18N.current[I18N_R.UI_SUBSCRIPTION_SUBSCRIBED_ONLY]
 
     val subscribeDialogState = rememberShortXBottomSheetState()
     FeatureAccessDialog(subscribeDialogState)
 
     return listOfNotNull(
-        Preference.Category(LocalI18N.current["ui.settings.record"]),
+        Preference.Category(LocalI18N.current[I18N_R.UI_SETTINGS_RECORD]),
 
         Preference.TextPreference(
             icon = Remix.System.history_fill,
-            title = LocalI18N.current["ui.settings.eva.record"],
-            summary = LocalI18N.current["ui.settings.eva.record.summary"],
+            title = LocalI18N.current[I18N_R.UI_SETTINGS_EVA_RECORD],
+            summary = LocalI18N.current[I18N_R.UI_SETTINGS_EVA_RECORD_SUMMARY],
             onClick = {
                 goToEvaRecord()
             }
@@ -923,8 +924,8 @@ private fun recordSettings(
 
         Preference.TextPreference(
             icon = Remix.Media.mic_2_fill,
-            title = LocalI18N.current["ui.settings.audio.record"],
-            summary = LocalI18N.current["ui.settings.audio.record.summary"],
+            title = LocalI18N.current[I18N_R.UI_SETTINGS_AUDIO_RECORD],
+            summary = LocalI18N.current[I18N_R.UI_SETTINGS_AUDIO_RECORD_SUMMARY],
             badge = badge,
             onClick = {
                 mainState.isSubscribed.select(
@@ -934,8 +935,8 @@ private fun recordSettings(
         ),
         Preference.TextPreference(
             icon = Remix.Editor.sketching,
-            title = LocalI18N.current["ui.settings.gesture.record"],
-            summary = LocalI18N.current["ui.settings.gesture.record.summary"],
+            title = LocalI18N.current[I18N_R.UI_SETTINGS_GESTURE_RECORD],
+            summary = LocalI18N.current[I18N_R.UI_SETTINGS_GESTURE_RECORD_SUMMARY],
             badge = badge,
             onClick = {
                 mainState.isSubscribed.select(
@@ -955,8 +956,8 @@ private fun dataSettings(
     resetData: () -> Unit,
 ): List<Preference> {
     val backUpFileNameDialogState = rememberTextInputState(
-        title = LocalI18N.current["ui.settings.data.backup.title"],
-        message = LocalI18N.current["ui.settings.data.backup.input.file.name"],
+        title = LocalI18N.current[I18N_R.UI_SETTINGS_DATA_BACKUP_TITLE],
+        message = LocalI18N.current[I18N_R.UI_SETTINGS_DATA_BACKUP_INPUT_FILE_NAME],
         showSymbolButton = false,
         onSelected = {
             vm.backup(it)
@@ -965,7 +966,7 @@ private fun dataSettings(
 
     val badge = if (mainState.isSubscribed) {
         null
-    } else LocalI18N.current["ui.subscription.subscribed.only"]
+    } else LocalI18N.current[I18N_R.UI_SUBSCRIPTION_SUBSCRIBED_ONLY]
 
     val subscribeDialogState = rememberShortXBottomSheetState()
     FeatureAccessDialog(subscribeDialogState)
@@ -973,44 +974,44 @@ private fun dataSettings(
     val i18N = LocalI18N.current
     val workdaySummary = buildString {
         if (state.isWorkdayRefreshing) {
-            append(i18N["ui.settings.data.workday.refreshing"])
+            append(i18N[I18N_R.UI_SETTINGS_DATA_WORKDAY_REFRESHING])
         } else if (state.workdayRefreshStatus == "failed" && state.workdayRefreshError.isNotBlank()) {
             append(
                 i18N[
-                    "ui.settings.data.workday.refresh.failed",
+                    I18N_R.UI_SETTINGS_DATA_WORKDAY_REFRESH_FAILED,
                     mapOf("err" to state.workdayRefreshError)
                 ]
             )
         } else if (state.workdayRefreshStatus == "success") {
-            append(i18N["ui.settings.data.workday.summary.updated"])
+            append(i18N[I18N_R.UI_SETTINGS_DATA_WORKDAY_SUMMARY_UPDATED])
         } else {
-            append(i18N["ui.settings.data.workday.summary"])
+            append(i18N[I18N_R.UI_SETTINGS_DATA_WORKDAY_SUMMARY])
         }
         if (state.workdayRefreshYears.isNotEmpty()) {
             append('\n')
-            append(i18N["ui.settings.data.workday.cached.years"])
+            append(i18N[I18N_R.UI_SETTINGS_DATA_WORKDAY_CACHED_YEARS])
             append(' ')
             append(state.workdayRefreshYears.sorted().joinToString())
         }
         state.workdayRefreshAt.ifBlank { null }?.let {
             append('\n')
-            append(i18N["ui.settings.data.workday.last.success"])
+            append(i18N[I18N_R.UI_SETTINGS_DATA_WORKDAY_LAST_SUCCESS])
             append(' ')
             append(formatWorkdayRefreshTime(it))
         }
         state.workdayRefreshSource.ifBlank { null }?.let {
             append('\n')
-            append(i18N["ui.settings.data.workday.source"])
+            append(i18N[I18N_R.UI_SETTINGS_DATA_WORKDAY_SOURCE])
             append(' ')
             append(it)
         }
     }
 
     return listOf(
-        Preference.Category(LocalI18N.current["ui.settings.data"]),
+        Preference.Category(LocalI18N.current[I18N_R.UI_SETTINGS_DATA]),
         Preference.TextPreference(
             icon = Remix.System.refresh_fill,
-            title = LocalI18N.current["ui.settings.data.workday.title"],
+            title = LocalI18N.current[I18N_R.UI_SETTINGS_DATA_WORKDAY_TITLE],
             summary = workdaySummary,
             hasLongSummary = true,
             onClick = {
@@ -1019,8 +1020,8 @@ private fun dataSettings(
         ),
         Preference.TextPreference(
             icon = Remix.Device.save_3_fill,
-            title = LocalI18N.current["ui.settings.data.backup.title"],
-            summary = LocalI18N.current["ui.settings.data.backup.summary"],
+            title = LocalI18N.current[I18N_R.UI_SETTINGS_DATA_BACKUP_TITLE],
+            summary = LocalI18N.current[I18N_R.UI_SETTINGS_DATA_BACKUP_SUMMARY],
             badge = badge,
             onClick = {
                 mainState.isSubscribed.select(
@@ -1031,8 +1032,8 @@ private fun dataSettings(
 
         Preference.ExpandablePreference(
             icon = Remix.System.download_2_fill,
-            title = LocalI18N.current["ui.settings.data.restore.title"],
-            summary = LocalI18N.current["ui.settings.data.restore.summary"],
+            title = LocalI18N.current[I18N_R.UI_SETTINGS_DATA_RESTORE_TITLE],
+            summary = LocalI18N.current[I18N_R.UI_SETTINGS_DATA_RESTORE_SUMMARY],
             badge = badge,
             onClick = {
                 mainState.isSubscribed.select(
@@ -1042,8 +1043,8 @@ private fun dataSettings(
             preferences = listOf(
                 Preference.TextPreference(
                     icon = Remix.System.history_fill,
-                    title = LocalI18N.current["ui.settings.data.reset.title"],
-                    summary = LocalI18N.current["ui.settings.data.reset.summary"],
+                    title = LocalI18N.current[I18N_R.UI_SETTINGS_DATA_RESET_TITLE],
+                    summary = LocalI18N.current[I18N_R.UI_SETTINGS_DATA_RESET_SUMMARY],
                     onClick = {
                         resetData()
                     }
@@ -1064,7 +1065,7 @@ private fun shareSettings(
     vm: SettingsViewModel
 ): List<Preference> {
     val authorNameDialogState = rememberTextInputState(
-        title = LocalI18N.current["ui.settings.share.author.info"],
+        title = LocalI18N.current[I18N_R.UI_SETTINGS_SHARE_AUTHOR_INFO],
         message = null,
         onSelected = {
             vm.setShareAuthor(Author.newBuilder().setName(it).build())
@@ -1073,12 +1074,12 @@ private fun shareSettings(
     TextInputDialog(state = authorNameDialogState)
 
     return mutableListOf(
-        Preference.Category(LocalI18N.current["ui.settings.share"]),
+        Preference.Category(LocalI18N.current[I18N_R.UI_SETTINGS_SHARE]),
 
         Preference.TextPreference(
             icon = Remix.System.share_box_fill,
-            title = LocalI18N.current["ui.settings.share.author.info"],
-            summary = LocalI18N.current["ui.settings.share.author.info.description"],
+            title = LocalI18N.current[I18N_R.UI_SETTINGS_SHARE_AUTHOR_INFO],
+            summary = LocalI18N.current[I18N_R.UI_SETTINGS_SHARE_AUTHOR_INFO_DESCRIPTION],
             onClick = {
                 authorNameDialogState.show(state.shareAuthor?.name)
             }
@@ -1129,12 +1130,12 @@ private fun devSettings(
     }
     val props = LocalShortXProps.current
     return mutableListOf(
-        Preference.Category(LocalI18N.current["ui.settings.dev"]),
+        Preference.Category(LocalI18N.current[I18N_R.UI_SETTINGS_DEV]),
 
         Preference.SwitchPreference(
             icon = Remix.Document.article_fill,
-            title = LocalI18N.current["ui.settings.enable.debug.log"],
-            summary = LocalI18N.current["ui.settings.enable.debug.log.description", mapOf("dir" to state.logDir)],
+            title = LocalI18N.current[I18N_R.UI_SETTINGS_ENABLE_DEBUG_LOG],
+            summary = LocalI18N.current[I18N_R.UI_SETTINGS_ENABLE_DEBUG_LOG_DESCRIPTION, mapOf("dir" to state.logDir)],
             value = state.isDebugLogEnabled,
             onCheckChanged = { enable ->
                 vm.setLogDebugEnable(enable)
@@ -1142,8 +1143,8 @@ private fun devSettings(
 
         Preference.TextPreference(
             icon = Remix.Device.save_3_fill,
-            title = LocalI18N.current["ui.settings.debug.log.export"],
-            summary = LocalI18N.current["ui.settings.debug.log.export.description", mapOf("dir" to Environment.DIRECTORY_DOWNLOADS)],
+            title = LocalI18N.current[I18N_R.UI_SETTINGS_DEBUG_LOG_EXPORT],
+            summary = LocalI18N.current[I18N_R.UI_SETTINGS_DEBUG_LOG_EXPORT_DESCRIPTION, mapOf("dir" to Environment.DIRECTORY_DOWNLOADS)],
             onClick = {
                 vm.exportLogs()
             }
@@ -1151,8 +1152,8 @@ private fun devSettings(
 
         Preference.SwitchPreference(
             icon = Remix.Device.keyboard_box_fill,
-            title = LocalI18N.current["ui.settings.key.event.prompt"],
-            summary = LocalI18N.current["ui.settings.key.event.prompt.description"],
+            title = LocalI18N.current[I18N_R.UI_SETTINGS_KEY_EVENT_PROMPT],
+            summary = LocalI18N.current[I18N_R.UI_SETTINGS_KEY_EVENT_PROMPT_DESCRIPTION],
             value = state.isKeyEventPromptEnabled,
             onCheckChanged = { enable ->
                 vm.toggleKeyEventPromptEnabled()
@@ -1161,8 +1162,8 @@ private fun devSettings(
 
         Preference.SwitchPreference(
             icon = Remix.Development.cursor_fill,
-            title = LocalI18N.current["ui.common.show.pointer.location"],
-            summary = LocalI18N.current["ui.common.show.pointer.location.description"],
+            title = LocalI18N.current[I18N_R.UI_COMMON_SHOW_POINTER_LOCATION],
+            summary = LocalI18N.current[I18N_R.UI_COMMON_SHOW_POINTER_LOCATION_DESCRIPTION],
             value = state.isPointerLocationEnabled,
             onCheckChanged = { enable ->
                 vm.togglePointerLocation()
@@ -1179,8 +1180,8 @@ private fun devSettings(
                         add(
                             Preference.SwitchPreference(
                                 icon = Remix.Business.global_fill,
-                                title = LocalI18N.current["ui.settings.http:chucker"],
-                                summary = LocalI18N.current["ui.settings.http:chucker.description"],
+                                title = LocalI18N.current[I18N_R.UI_SETTINGS_HTTP_CHUCKER],
+                                summary = LocalI18N.current[I18N_R.UI_SETTINGS_HTTP_CHUCKER_DESCRIPTION],
                                 value = state.enableHttpChucker,
                                 onCheckChanged = { enable ->
                                     vm.setEnableHttpChucker(enable)
@@ -1277,15 +1278,15 @@ private fun systemSettings(
     val i18N = LocalI18N.current
     val badge = if (mainState.isSubscribed) {
         null
-    } else i18N["ui.subscription.subscribed.only"]
+    } else i18N[I18N_R.UI_SUBSCRIPTION_SUBSCRIBED_ONLY]
     val subscribeDialogState = rememberShortXBottomSheetState()
     FeatureAccessDialog(subscribeDialogState)
     return mutableListOf(
-        Preference.Category(i18N["ui.settings.system"]),
+        Preference.Category(i18N[I18N_R.UI_SETTINGS_SYSTEM]),
         Preference.SwitchPreference(
             icon = Remix.Media.equalizer_fill,
-            title = i18N["ui.settings.sb.tile.opt"],
-            summary = i18N["ui.settings.sb.tile.opt.summary"],
+            title = i18N[I18N_R.UI_SETTINGS_SB_TILE_OPT],
+            summary = i18N[I18N_R.UI_SETTINGS_SB_TILE_OPT_SUMMARY],
             hasLongSummary = true,
             badge = badge,
             value = state.isQSTileOptEnabled,
@@ -1313,16 +1314,16 @@ private fun engineSettings(
     val i18N = LocalI18N.current
     val badge = if (mainState.isSubscribed) {
         null
-    } else i18N["ui.subscription.subscribed.only"]
+    } else i18N[I18N_R.UI_SUBSCRIPTION_SUBSCRIBED_ONLY]
 
     val subscribeDialogState = rememberShortXBottomSheetState()
     FeatureAccessDialog(subscribeDialogState)
 
     val shellConfirmDialogState = rememberConfirmDialogState()
     ConfirmDialog(
-        title = i18N["ui.settings.rule.engine.shell.confirm.title"],
+        title = i18N[I18N_R.UI_SETTINGS_RULE_ENGINE_SHELL_CONFIRM_TITLE],
         messageHint = {
-            i18N["ui.settings.rule.engine.shell.confirm.message"]
+            i18N[I18N_R.UI_SETTINGS_RULE_ENGINE_SHELL_CONFIRM_MESSAGE]
         },
         state = shellConfirmDialogState,
         data = Unit,
@@ -1333,9 +1334,9 @@ private fun engineSettings(
 
     val mvelConfirmDialogState = rememberConfirmDialogState()
     ConfirmDialog(
-        title = i18N["ui.settings.rule.engine.mvel.confirm.title"],
+        title = i18N[I18N_R.UI_SETTINGS_RULE_ENGINE_MVEL_CONFIRM_TITLE],
         messageHint = {
-            i18N["ui.settings.rule.engine.mvel.confirm.message"]
+            i18N[I18N_R.UI_SETTINGS_RULE_ENGINE_MVEL_CONFIRM_MESSAGE]
         },
         state = mvelConfirmDialogState,
         data = Unit,
@@ -1346,9 +1347,9 @@ private fun engineSettings(
 
     val smsConfirmDialogState = rememberConfirmDialogState()
     ConfirmDialog(
-        title = i18N["ui.engine.send.sms"],
+        title = i18N[I18N_R.UI_ENGINE_SEND_SMS],
         messageHint = {
-            i18N["ui.engine.send.sms.enable.message"]
+            i18N[I18N_R.UI_ENGINE_SEND_SMS_ENABLE_MESSAGE]
         },
         state = smsConfirmDialogState,
         data = Unit,
@@ -1363,7 +1364,7 @@ private fun engineSettings(
     }
 
     val customSUDialogState =
-        rememberTextInputState(title = i18N["ui.settings.custom.su.path"], message = null) {
+        rememberTextInputState(title = i18N[I18N_R.UI_SETTINGS_CUSTOM_SU_PATH], message = null) {
             vm.setCustomSUPath(it)
         }
     TextInputDialog(customSUDialogState)
@@ -1387,12 +1388,12 @@ private fun engineSettings(
     MenuDialog(state = ocrEngineMenuState)
 
     return mutableListOf(
-        Preference.Category(i18N["ui.settings.engine"]),
+        Preference.Category(i18N[I18N_R.UI_SETTINGS_ENGINE]),
 
         Preference.SwitchPreference(
             icon = Remix.Editor.hashtag,
-            title = i18N["ui.settings.rule.engine.shell"],
-            summary = i18N["ui.settings.rule.engine.shell.summary"],
+            title = i18N[I18N_R.UI_SETTINGS_RULE_ENGINE_SHELL],
+            summary = i18N[I18N_R.UI_SETTINGS_RULE_ENGINE_SHELL_SUMMARY],
             hasLongSummary = false,
             value = state.shellEngineEnabled,
             onCheckChanged = { enable ->
@@ -1406,8 +1407,8 @@ private fun engineSettings(
         state.shellEngineEnabled.select(
             Preference.SwitchPreference(
                 icon = Remix.Editor.hashtag,
-                title = i18N["ui.settings.injected.shell"],
-                summary = i18N["ui.settings.injected.shell.description"],
+                title = i18N[I18N_R.UI_SETTINGS_INJECTED_SHELL],
+                summary = i18N[I18N_R.UI_SETTINGS_INJECTED_SHELL_DESCRIPTION],
                 hasLongSummary = true,
                 badge = badge,
                 value = state.isInjectedShellEnabled,
@@ -1424,8 +1425,8 @@ private fun engineSettings(
         state.shellEngineEnabled.select(
             Preference.TextPreference(
                 icon = Remix.Editor.hashtag,
-                title = i18N["ui.settings.custom.su.path"],
-                summary = i18N["ui.settings.custom.su.path.description", mapOf("path" to state.customSUPath.orEmpty())],
+                title = i18N[I18N_R.UI_SETTINGS_CUSTOM_SU_PATH],
+                summary = i18N[I18N_R.UI_SETTINGS_CUSTOM_SU_PATH_DESCRIPTION, mapOf("path" to state.customSUPath.orEmpty())],
                 hasLongSummary = false,
                 badge = badge,
                 onClick = {
@@ -1436,16 +1437,16 @@ private fun engineSettings(
         ),
         Preference.TextPreference(
             icon = Remix.Development.command_line,
-            title = i18N["ui.settings.shell.commands"],
-            summary = i18N["ui.settings.shell.commands.description"],
+            title = i18N[I18N_R.UI_SETTINGS_SHELL_COMMANDS],
+            summary = i18N[I18N_R.UI_SETTINGS_SHELL_COMMANDS_DESCRIPTION],
             hasLongSummary = false,
             onClick = goToShellCommandHelp,
         ),
 
         Preference.SwitchPreference(
             icon = Remix.Development.code_fill,
-            title = i18N["ui.settings.rule.engine.mvel"],
-            summary = i18N["ui.settings.rule.engine.mvel.summary"],
+            title = i18N[I18N_R.UI_SETTINGS_RULE_ENGINE_MVEL],
+            summary = i18N[I18N_R.UI_SETTINGS_RULE_ENGINE_MVEL_SUMMARY],
             hasLongSummary = false,
             value = state.mvelEngineEnabled,
             onCheckChanged = { enable ->
@@ -1459,8 +1460,8 @@ private fun engineSettings(
 
         Preference.SwitchPreference(
             icon = Remix.Communication.chat_smile_fill,
-            title = i18N["ui.engine.send.sms"],
-            summary = i18N["ui.engine.send.sms.description"],
+            title = i18N[I18N_R.UI_ENGINE_SEND_SMS],
+            summary = i18N[I18N_R.UI_ENGINE_SEND_SMS_DESCRIPTION],
             hasLongSummary = false,
             value = state.smsEngineEnabled,
             onCheckChanged = { enable ->
@@ -1484,8 +1485,8 @@ private fun engineSettings(
 
         Preference.SwitchPreference(
             icon = Remix.Communication.chat_smile_2_line,
-            title = i18N["ui.settings.rule.post.n.app"],
-            summary = i18N["ui.settings.rule.post.n.app.summary"],
+            title = i18N[I18N_R.UI_SETTINGS_RULE_POST_N_APP],
+            summary = i18N[I18N_R.UI_SETTINGS_RULE_POST_N_APP_SUMMARY],
             hasLongSummary = false,
             value = state.isPostNByApp,
             onCheckChanged = { enable ->
@@ -1498,8 +1499,8 @@ private fun engineSettings(
         BuildPropInternal.APP_IS_DEBUG.select(
             Preference.TextPreference(
                 icon = Remix.System.apps_fill,
-                title = i18N["ui.shortx.stub.apk"],
-                summary = i18N["ui.shortx.stub.apk.description"] + " DEBUG VISIBLE",
+                title = i18N[I18N_R.UI_SHORTX_STUB_APK],
+                summary = i18N[I18N_R.UI_SHORTX_STUB_APK_DESCRIPTION] + " DEBUG VISIBLE",
                 hasLongSummary = false,
                 onClick = manageShortcutApps
             ),
@@ -1508,16 +1509,16 @@ private fun engineSettings(
 
         Preference.TextPreference(
             icon = Remix.Document.file_cloud_fill,
-            title = i18N["ui.settings.webdav.profile"],
-            summary = i18N["ui.settings.webdav.profile.description"],
+            title = i18N[I18N_R.UI_SETTINGS_WEBDAV_PROFILE],
+            summary = i18N[I18N_R.UI_SETTINGS_WEBDAV_PROFILE_DESCRIPTION],
             hasLongSummary = false,
             onClick = goToWebdavProfile
         ),
 
         Preference.TextPreference(
             icon = Remix.Edit.extend,
-            title = i18N["ui.shortx.ext"],
-            summary = if (state.extApp == null) i18N["ui.shortx.ext.description"] else i18N["ui.shortx.ext.app.info"],
+            title = i18N[I18N_R.UI_SHORTX_EXT],
+            summary = if (state.extApp == null) i18N[I18N_R.UI_SHORTX_EXT_DESCRIPTION] else i18N[I18N_R.UI_SHORTX_EXT_APP_INFO],
             onClick = {
                 if (state.extApp != null) {
                     PkgUtils.launchPkgSettings(context, state.extApp.pkg.pkgName)
@@ -1528,7 +1529,7 @@ private fun engineSettings(
                             Intent.ACTION_VIEW,
                             Uri.parse("market://details?id=$packageName")
                         )
-                        val chooser = Intent.createChooser(intent, i18N["ui.shortx.ext"])
+                        val chooser = Intent.createChooser(intent, i18N[I18N_R.UI_SHORTX_EXT])
                         try {
                             context.startActivity(chooser)
                         } catch (e: ActivityNotFoundException) {
@@ -1537,7 +1538,7 @@ private fun engineSettings(
                                 Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
                             )
                             val chooserGoogle =
-                                Intent.createChooser(intentGoogle, i18N["ui.shortx.ext"])
+                                Intent.createChooser(intentGoogle, i18N[I18N_R.UI_SHORTX_EXT])
                             context.startActivity(chooserGoogle)
                         }
                     }
@@ -1559,20 +1560,20 @@ private fun aboutSettings(
     val i18N = LocalI18N.current
     val qqGroups = listOf(BuildProp.QQ_GROUP_2, BuildProp.QQ_GROUP_1)
     return listOf(
-        Preference.Category(i18N["ui.settings.about"]),
+        Preference.Category(i18N[I18N_R.UI_SETTINGS_ABOUT]),
 
         Preference.ExpandablePreference(
             icon = Remix.System.information_fill,
-            title = i18N["ui.settings.app.info"],
+            title = i18N[I18N_R.UI_SETTINGS_APP_INFO],
             summary = "${BuildPropInternal.APP_VERSION_NAME}\n${BuildPropInternal.APP_VERSION_CODE}",
             preferences = listOf(
                 Preference.TextPreference(
                     icon = Remix.Device.instance_fill,
-                    title = i18N["ui.settings.core.info"],
+                    title = i18N[I18N_R.UI_SETTINGS_CORE_INFO],
                     summary = if (state.isActivated) {
                         "${state.coreVersion.name}\n${state.coreVersion.code}"
                     } else {
-                        i18N["ui.settings.core.info.na"]
+                        i18N[I18N_R.UI_SETTINGS_CORE_INFO_NA]
                     },
                     onClick = {
                     }
@@ -1582,8 +1583,8 @@ private fun aboutSettings(
 
         Preference.TextPreference(
             icon = Remix.Logos.telegram_fill,
-            title = i18N["ui.settings.tg"],
-            summary = i18N["ui.settings.tg.summary"],
+            title = i18N[I18N_R.UI_SETTINGS_TG],
+            summary = i18N[I18N_R.UI_SETTINGS_TG_SUMMARY],
             onClick = {
                 BrowserUtils.launch(context, BuildProp.TG_GROUP)
             }
@@ -1600,27 +1601,27 @@ private fun aboutSettings(
                 )
                 Toast.makeText(
                     context,
-                    i18N["ui.common.copied.to.clipboard"],
+                    i18N[I18N_R.UI_COMMON_COPIED_TO_CLIPBOARD],
                     Toast.LENGTH_LONG
                 ).show()
             }
         ),
         Preference.TextPreference(
             icon = Remix.Document.article_fill,
-            title = i18N["ui.changelog.title"],
-            summary = i18N["ui.changelog.settings.summary"],
+            title = i18N[I18N_R.UI_CHANGELOG_TITLE],
+            summary = i18N[I18N_R.UI_CHANGELOG_SETTINGS_SUMMARY],
             onClick = showChangeLog,
         ),
         Preference.TextPreference(
             icon = Remix.Logos.open_source_fill,
-            title = i18N["ui.settings.open.source.license"],
+            title = i18N[I18N_R.UI_SETTINGS_OPEN_SOURCE_LICENSE],
             onClick = {
                 viewOpenSourceLicense()
             }
         ),
         Preference.TextPreference(
             icon = Remix.Document.sticky_note_2_fill,
-            title = i18N["ui.settings.privacy.statement"],
+            title = i18N[I18N_R.UI_SETTINGS_PRIVACY_STATEMENT],
             onClick = {
                 viewPrivacyStatement()
             }

@@ -16,6 +16,7 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.rememberAppComponentSelector
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberHasFoundNodeOnScreenState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberNotificationAppAndMatcherSelectorState
 import tornaco.apps.shortx.ui.base.LocalI18N
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @Composable
 fun appFactSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Boolean {
@@ -172,26 +173,26 @@ fun appFactSelectHandler(setFact: (Fact) -> Unit): (FactSelectSource) -> Boolean
     AppPkgSelectorDialog(audioFocusLostSelectorState)
 
     val notificationPostedSelectorState =
-        rememberNotificationAppAndMatcherSelectorState(LocalI18N.current["ui.fact.n.posted"]) { it, _ ->
+        rememberNotificationAppAndMatcherSelectorState(LocalI18N.current[I18N_R.UI_FACT_N_POSTED]) { it, _ ->
             setFact(Fact.NotificationPosted(n = it))
         }
     NotificationAppAndMatcherSelectorDialog(notificationPostedSelectorState)
 
     val notificationUpdatedSelectorState =
-        rememberNotificationAppAndMatcherSelectorState(LocalI18N.current["ui.fact.n.updated"]) { it, _ ->
+        rememberNotificationAppAndMatcherSelectorState(LocalI18N.current[I18N_R.UI_FACT_N_UPDATED]) { it, _ ->
             setFact(Fact.NotificationUpdated(n = it))
         }
     NotificationAppAndMatcherSelectorDialog(notificationUpdatedSelectorState)
 
 
     val notificationRemovedSelectorState =
-        rememberNotificationAppAndMatcherSelectorState(LocalI18N.current["ui.fact.n.removed"]) { it, _ ->
+        rememberNotificationAppAndMatcherSelectorState(LocalI18N.current[I18N_R.UI_FACT_N_REMOVED]) { it, _ ->
             setFact(Fact.NotificationRemoved(n = it))
         }
     NotificationAppAndMatcherSelectorDialog(notificationRemovedSelectorState)
 
     val hasNodeOnScreenState = rememberHasFoundNodeOnScreenState(
-        selectorTitle = LocalI18N.current["ui.fact.has.found.node.on.screen"],
+        selectorTitle = LocalI18N.current[I18N_R.UI_FACT_HAS_FOUND_NODE_ON_SCREEN],
         onSelected = {
             setFact(it)
         })

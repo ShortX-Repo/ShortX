@@ -54,6 +54,7 @@ import tornaco.apps.shortx.ui.subscribe.FeatureAccessDialog
 import tornaco.apps.shortx.ui.theme.Dimens
 import tornaco.apps.shortx.ui.theme.Dimens.menuDropdownFraction
 import tornaco.apps.shortx.ui.util.themedTextColor
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 @Composable
@@ -287,17 +288,17 @@ private fun listItemOverflowMenu(
     val i18N = LocalI18N.current
     val badge = if (isSubscribed) {
         null
-    } else i18N["ui.subscription.subscribed.only"]
+    } else i18N[I18N_R.UI_SUBSCRIPTION_SUBSCRIBED_ONLY]
 
     val subscribeDialogState = rememberShortXBottomSheetState()
     FeatureAccessDialog(subscribeDialogState)
 
     val deleteDialogState = rememberConfirmDialogState()
     ConfirmDialog(
-        title = i18N["ui.common.delete"],
+        title = i18N[I18N_R.UI_COMMON_DELETE],
         state = deleteDialogState,
         data = rule,
-        messageHint = { i18N["ui.delete.dialog.confirm", mapOf("wht" to rule.title)] },
+        messageHint = { i18N[I18N_R.UI_DELETE_DIALOG_CONFIRM, mapOf("wht" to rule.title)] },
         onConfirm = { handler.delete(rule) }
     )
 
@@ -307,9 +308,9 @@ private fun listItemOverflowMenu(
     RuleSetSelectorDialog(state = ruleSetSelectDialogState)
 
     val extractAsDAInputDialog =
-        rememberTextInputState(title = "ui.rule.extract.as.da", message = null) {
+        rememberTextInputState(title = I18N_R.UI_RULE_EXTRACT_AS_DA, message = null) {
             handler.extractAsDA(it, rule, shortXProps.firstOrNull())
-            Toast.makeText(context, i18N["ui.common.done"], Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, i18N[I18N_R.UI_COMMON_DONE], Toast.LENGTH_SHORT).show()
         }
     TextInputDialog(state = extractAsDAInputDialog)
 
@@ -321,77 +322,77 @@ private fun listItemOverflowMenu(
         state = menuState,
         items = listOfNotNull(
             DropdownItem(
-                labelLines = listOf(i18N[if (rule.isLocked) "ui.common.unlock" else "ui.common.lock"]),
+                labelLines = listOf(i18N[if (rule.isLocked) I18N_R.UI_COMMON_UNLOCK else I18N_R.UI_COMMON_LOCK]),
                 data = RuleItemMenuOptions.ToggleLock,
                 icon = {
                     RemixIcon(if (rule.isLocked) Remix.System.lock_unlock_line else Remix.System.lock_fill)
                 }),
             DropdownItem(
-                labelLines = listOf(i18N[if (rule.isPinned) "ui.common.unpin" else "ui.common.pinned"]),
+                labelLines = listOf(i18N[if (rule.isPinned) I18N_R.UI_COMMON_UNPIN else I18N_R.UI_COMMON_PINNED]),
                 data = RuleItemMenuOptions.TogglePin,
                 icon = {
                     RemixIcon(if (rule.isPinned) Remix.Map.pushpin_line else Remix.Map.pushpin_fill)
                 }),
             DropdownItem(
-                labelLines = listOf(i18N["ui.common.select"]),
+                labelLines = listOf(i18N[I18N_R.UI_COMMON_SELECT]),
                 data = RuleItemMenuOptions.Select,
                 icon = {
                     RemixIcon(Remix.System.checkbox_multiple_line)
                 }),
             DropdownItem(
-                labelLines = listOf(i18N["ui.common.execute.actions"]),
+                labelLines = listOf(i18N[I18N_R.UI_COMMON_EXECUTE_ACTIONS]),
                 data = RuleItemMenuOptions.Execute,
                 icon = {
                     RemixIcon(Remix.Media.play_fill)
                 }),
             if (!rule.isLocked) DropdownItem(
-                labelLines = listOf(i18N["ui.common.dup"]),
+                labelLines = listOf(i18N[I18N_R.UI_COMMON_DUP]),
                 data = RuleItemMenuOptions.Dup,
                 badge = badge,
                 icon = {
                     RemixIcon(Remix.Document.file_copy_2_fill)
                 }) else null,
             if (!rule.isLocked) DropdownItem(
-                labelLines = listOf(i18N["ui.common.edit"]),
+                labelLines = listOf(i18N[I18N_R.UI_COMMON_EDIT]),
                 data = RuleItemMenuOptions.Edit,
                 icon = {
                     RemixIcon(Remix.Design.edit_line)
                 }) else null,
             DropdownItem(
-                labelLines = listOf(i18N["ui.common.share"]),
+                labelLines = listOf(i18N[I18N_R.UI_COMMON_SHARE]),
                 data = RuleItemMenuOptions.Share,
                 badge = badge,
                 icon = {
                     RemixIcon(Remix.System.share_line)
                 }),
             if (!rule.isLocked) DropdownItem(
-                labelLines = listOf(i18N["ui.common.move.to.set"]),
+                labelLines = listOf(i18N[I18N_R.UI_COMMON_MOVE_TO_SET]),
                 data = RuleItemMenuOptions.MoveToSet,
                 badge = badge,
                 icon = {
                     RemixIcon(Remix.Document.folders_fill)
                 }) else null,
             if (!rule.isLocked) DropdownItem(
-                labelLines = listOf(LocalI18N.current["ui.common.move.out.set"]),
+                labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_MOVE_OUT_SET]),
                 data = RuleItemMenuOptions.MoveOutSet,
                 icon = {
                     RemixIcon(Remix.Document.folder_reduce_fill)
                 }) else null,
             DropdownItem(
-                labelLines = listOf(LocalI18N.current["ui.settings.eva.record"]),
+                labelLines = listOf(LocalI18N.current[I18N_R.UI_SETTINGS_EVA_RECORD]),
                 data = RuleItemMenuOptions.ViewEvaRecord,
                 icon = {
                     RemixIcon(Remix.System.history_fill)
                 }),
             if (!rule.isLocked) DropdownItem(
-                labelLines = listOf(LocalI18N.current["ui.rule.extract.as.da"]),
+                labelLines = listOf(LocalI18N.current[I18N_R.UI_RULE_EXTRACT_AS_DA]),
                 data = RuleItemMenuOptions.ExtractAsDA,
                 badge = badge,
                 icon = {
                     RemixIcon(Remix.Development.command_line)
                 }) else null,
             if (!rule.isLocked) DropdownItem(
-                labelLines = listOf(i18N["ui.common.delete"]),
+                labelLines = listOf(i18N[I18N_R.UI_COMMON_DELETE]),
                 data = RuleItemMenuOptions.Delete,
                 icon = {
                     RemixIcon(Remix.System.delete_bin_4_line)

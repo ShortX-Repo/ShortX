@@ -89,6 +89,7 @@ import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.theme.gradientColorsFromThemeColor
 import tornaco.apps.shortx.ui.util.ClipboardUtils
 import java.io.File
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @Composable
 fun DirectActionListScreen() {
@@ -103,7 +104,7 @@ fun DirectActionListScreen() {
     val i18n = LocalI18N.current
 
     val progressDialogState =
-        rememberProgressDialogState(title = i18n["ui.common.install"], message = "...")
+        rememberProgressDialogState(title = i18n[I18N_R.UI_COMMON_INSTALL], message = "...")
     ProgressDialog(state = progressDialogState)
 
     LaunchedEffect(daListViewModel) {
@@ -114,14 +115,14 @@ fun DirectActionListScreen() {
                     progressDialogState.dismiss()
                     TextDisplayActivity.start(
                         context,
-                        i18n["ui.common.install.failed"],
+                        i18n[I18N_R.UI_COMMON_INSTALL_FAILED],
                         it.stackTrace
                     )
                 }
 
                 ApkInstallState.InstallSuccess -> {
                     progressDialogState.dismiss()
-                    Toast.makeText(context, i18n["ui.common.install.success"], Toast.LENGTH_LONG)
+                    Toast.makeText(context, i18n[I18N_R.UI_COMMON_INSTALL_SUCCESS], Toast.LENGTH_LONG)
                         .show()
                 }
 
@@ -161,9 +162,9 @@ fun DirectActionListScreen() {
         appBarTitle = {
             Text(
                 text = if (isSelectionMode) {
-                    LocalI18N.current["ui.common.selected.count", mapOf("selected" to selectedDAIds.size.toString())]
+                    LocalI18N.current[I18N_R.UI_COMMON_SELECTED_COUNT, mapOf("selected" to selectedDAIds.size.toString())]
                 } else {
-                    LocalI18N.current["ui.feat.label.da"]
+                    LocalI18N.current[I18N_R.UI_FEAT_LABEL_DA]
                 }
             )
         },
@@ -382,7 +383,7 @@ fun DirectActionListContent(
             UserTip(
                 modifier = Modifier.padding(horizontal = 16.dp),
                 tipId = TipIds.commonRuleItem,
-                message = LocalI18N.current["ui.common.rule.item.tip"]
+                message = LocalI18N.current[I18N_R.UI_COMMON_RULE_ITEM_TIP]
             )
             val subscribeState by LVLStateHolder.collectAsState()
             if (isShowDetailedDAItem) {

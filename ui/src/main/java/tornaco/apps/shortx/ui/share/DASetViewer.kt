@@ -47,6 +47,7 @@ import tornaco.apps.shortx.ui.base.ShortXMediumTopAppBar
 import tornaco.apps.shortx.ui.base.ShortXTextButton
 import tornaco.apps.shortx.ui.base.TipCard
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @Composable
 fun DASetViewer(directActionSet: DirectActionSet, back: (Boolean) -> Unit) {
@@ -55,7 +56,7 @@ fun DASetViewer(directActionSet: DirectActionSet, back: (Boolean) -> Unit) {
     }
     val context = LocalContext.current
     val props = LocalShortXProps.current
-    val savedMessage = LocalI18N.current["ui.toast.da.saved"]
+    val savedMessage = LocalI18N.current[I18N_R.UI_TOAST_DA_SAVED]
     val showToast = {
         Toast.makeText(context, savedMessage, Toast.LENGTH_SHORT).show()
     }
@@ -70,7 +71,7 @@ fun DASetViewer(directActionSet: DirectActionSet, back: (Boolean) -> Unit) {
                 topBar = {
                     ShortXMediumTopAppBar(
                         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                        title = { Text(text = directActionSet.title + " - " + LocalI18N.current["ui.common.share.viewer.title"]) },
+                        title = { Text(text = directActionSet.title + " - " + LocalI18N.current[I18N_R.UI_COMMON_SHARE_VIEWER_TITLE]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 back(false)
@@ -118,14 +119,14 @@ fun DASetViewer(directActionSet: DirectActionSet, back: (Boolean) -> Unit) {
                         stickyHeader {
                             TipCard(
                                 modifier = Modifier.padding(horizontal = 16.dp),
-                                tip = LocalI18N.current["ui.common.import.set.desctiption"]
+                                tip = LocalI18N.current[I18N_R.UI_COMMON_IMPORT_SET_DESCTIPTION]
                             )
                         }
                         stickyHeader {
                             Row {
                                 ListItem(
                                     modifier = Modifier,
-                                    title = LocalI18N.current["ui.common.selected.of.total", mapOf(
+                                    title = LocalI18N.current[I18N_R.UI_COMMON_SELECTED_OF_TOTAL, mapOf(
                                         "total" to directActionSet.daList.directActionsList.size.toString(),
                                         "selected" to selectedIdList.size.toString(),
                                     )],
@@ -138,7 +139,7 @@ fun DASetViewer(directActionSet: DirectActionSet, back: (Boolean) -> Unit) {
                                                     emptyList()
                                                 }
                                         }) {
-                                            Text(text = LocalI18N.current["ui.common.select.all"])
+                                            Text(text = LocalI18N.current[I18N_R.UI_COMMON_SELECT_ALL])
                                         }
                                     }
                                 )

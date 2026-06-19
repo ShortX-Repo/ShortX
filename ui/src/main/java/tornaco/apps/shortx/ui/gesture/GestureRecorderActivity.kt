@@ -30,6 +30,7 @@ import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class GestureRecorderActivity : BaseActivity() {
@@ -66,14 +67,14 @@ class GestureRecorderActivity : BaseActivity() {
                     ) {
                         SmallTitle(
                             modifier = Modifier.padding(horizontal = 16.dp),
-                            text = LocalI18N.current["ui.gesture.record.tips"]
+                            text = LocalI18N.current[I18N_R.UI_GESTURE_RECORD_TIPS]
                         )
                         StandardSpacer()
                         Button(onClick = {
                             startRecord = true
                             shortXManager.startGestureRecording()
                         }) {
-                            Text(text = LocalI18N.current["ui.gesture.record.start"])
+                            Text(text = LocalI18N.current[I18N_R.UI_GESTURE_RECORD_START])
                         }
                     }
                 }

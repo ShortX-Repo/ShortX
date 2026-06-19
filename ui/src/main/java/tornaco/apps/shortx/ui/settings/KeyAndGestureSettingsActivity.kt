@@ -61,6 +61,7 @@ import java.math.BigDecimal
 import java.math.RoundingMode
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 private const val EDGE_GESTURE_SEQUENCE_STEP_TIMEOUT_MS_MIN = 300
 private const val EDGE_GESTURE_SEQUENCE_STEP_TIMEOUT_MS_MAX = 2000
@@ -253,7 +254,7 @@ fun KeyAndGestureSettingsActivity.EdgeGestureSettingsSelector() {
         topBar = {
             ShortXTopAppBar(
                 modifier = Modifier,
-                title = { Text(text = LocalI18N.current["ui.settings.key.and.gesture"]) },
+                title = { Text(text = LocalI18N.current[I18N_R.UI_SETTINGS_KEY_AND_GESTURE]) },
                 actions = {},
                 navigationIcon = {
                     IconButton(onClick = {
@@ -273,26 +274,26 @@ fun KeyAndGestureSettingsActivity.EdgeGestureSettingsSelector() {
         ) {
             SwitchBar(
                 isChecked = state.isEdgeGestureEnabled,
-                text = LocalI18N.current["ui.settings.touch.gesture"],
+                text = LocalI18N.current[I18N_R.UI_SETTINGS_TOUCH_GESTURE],
                 onCheckChange = {
                     vm.setGestureFeatureEnabled(it)
                 })
             MediumSpacer()
-            TipRow(LocalI18N.current["ui.settings.touch.gesture.disable"])
+            TipRow(LocalI18N.current[I18N_R.UI_SETTINGS_TOUCH_GESTURE_DISABLE])
             StandardSpacer()
 
             AnimatedVisibility(state.isEdgeGestureEnabled) {
                 Column {
-                    LargeTitle(text = LocalI18N.current["ui.settings.touch.gesture"])
+                    LargeTitle(text = LocalI18N.current[I18N_R.UI_SETTINGS_TOUCH_GESTURE])
                     MediumSpacer()
-                    TipRow(LocalI18N.current["ui.settings.touch.gesture.summary"])
+                    TipRow(LocalI18N.current[I18N_R.UI_SETTINGS_TOUCH_GESTURE_SUMMARY])
                     LargeSpacer()
 
                     GestureSettingCard(
-                        title = LocalI18N.current["ui.settings.edge.gesture.group.title"],
-                        summary = LocalI18N.current["ui.settings.edge.gesture.group.summary"]
+                        title = LocalI18N.current[I18N_R.UI_SETTINGS_EDGE_GESTURE_GROUP_TITLE],
+                        summary = LocalI18N.current[I18N_R.UI_SETTINGS_EDGE_GESTURE_GROUP_SUMMARY]
                     ) {
-                        SmallTitle(text = LocalI18N.current["ui.settings.edge.gesture.size"])
+                        SmallTitle(text = LocalI18N.current[I18N_R.UI_SETTINGS_EDGE_GESTURE_SIZE])
                         MediumSpacer()
                         Text(text = state.gestureAreaSize.toString())
                         Slider(
@@ -310,7 +311,7 @@ fun KeyAndGestureSettingsActivity.EdgeGestureSettingsSelector() {
                         )
                         LargeSpacer()
 
-                        SmallTitle(text = LocalI18N.current["ui.settings.edge.gesture.area.length"])
+                        SmallTitle(text = LocalI18N.current[I18N_R.UI_SETTINGS_EDGE_GESTURE_AREA_LENGTH])
                         MediumSpacer()
                         Text(text = state.swipeLengthScale.toString())
                         Slider(
@@ -321,7 +322,7 @@ fun KeyAndGestureSettingsActivity.EdgeGestureSettingsSelector() {
                             })
                         LargeSpacer()
 
-                        SmallTitle(text = LocalI18N.current["ui.settings.edge.gesture.swipe.distance"])
+                        SmallTitle(text = LocalI18N.current[I18N_R.UI_SETTINGS_EDGE_GESTURE_SWIPE_DISTANCE])
                         MediumSpacer()
                         Text(text = state.swipeDistanceThreshold.toString())
                         Slider(
@@ -347,13 +348,13 @@ fun KeyAndGestureSettingsActivity.EdgeGestureSettingsSelector() {
                     LargeSpacer()
 
                     GestureSettingCard(
-                        title = LocalI18N.current["ui.settings.edge.gesture.sub.group.title"],
-                        summary = LocalI18N.current["ui.settings.edge.gesture.sub.group.summary"]
+                        title = LocalI18N.current[I18N_R.UI_SETTINGS_EDGE_GESTURE_SUB_GROUP_TITLE],
+                        summary = LocalI18N.current[I18N_R.UI_SETTINGS_EDGE_GESTURE_SUB_GROUP_SUMMARY]
                     ) {
-                        SmallTitle(text = LocalI18N.current["ui.settings.edge.gesture.sub.hover.duration"])
+                        SmallTitle(text = LocalI18N.current[I18N_R.UI_SETTINGS_EDGE_GESTURE_SUB_HOVER_DURATION])
                         MediumSpacer()
                         Text(text = "${state.edgeGestureSequenceHoverDurationMs} ms")
-                        TipRow(LocalI18N.current["ui.settings.edge.gesture.sub.hover.duration.description"])
+                        TipRow(LocalI18N.current[I18N_R.UI_SETTINGS_EDGE_GESTURE_SUB_HOVER_DURATION_DESCRIPTION])
                         StandardSpacer()
                         Slider(
                             valueRange = EDGE_GESTURE_SEQUENCE_HOVER_DURATION_MS_MIN.toFloat()..EDGE_GESTURE_SEQUENCE_HOVER_DURATION_MS_MAX.toFloat(),
@@ -363,10 +364,10 @@ fun KeyAndGestureSettingsActivity.EdgeGestureSettingsSelector() {
                             })
                         LargeSpacer()
 
-                        SmallTitle(text = LocalI18N.current["ui.settings.edge.gesture.sub.hover.radius"])
+                        SmallTitle(text = LocalI18N.current[I18N_R.UI_SETTINGS_EDGE_GESTURE_SUB_HOVER_RADIUS])
                         MediumSpacer()
                         Text(text = "${state.edgeGestureSequenceHoverRadiusDp} dp")
-                        TipRow(LocalI18N.current["ui.settings.edge.gesture.sub.hover.radius.description"])
+                        TipRow(LocalI18N.current[I18N_R.UI_SETTINGS_EDGE_GESTURE_SUB_HOVER_RADIUS_DESCRIPTION])
                         StandardSpacer()
                         Slider(
                             valueRange = EDGE_GESTURE_SEQUENCE_HOVER_RADIUS_DP_MIN.toFloat()..EDGE_GESTURE_SEQUENCE_HOVER_RADIUS_DP_MAX.toFloat(),
@@ -376,10 +377,10 @@ fun KeyAndGestureSettingsActivity.EdgeGestureSettingsSelector() {
                             })
                         LargeSpacer()
 
-                        SmallTitle(text = LocalI18N.current["ui.settings.edge.gesture.sub.child.swipe.distance"])
+                        SmallTitle(text = LocalI18N.current[I18N_R.UI_SETTINGS_EDGE_GESTURE_SUB_CHILD_SWIPE_DISTANCE])
                         MediumSpacer()
                         Text(text = "${state.edgeGestureSequenceChildSwipeMinDistanceDp} dp")
-                        TipRow(LocalI18N.current["ui.settings.edge.gesture.sub.child.swipe.distance.description"])
+                        TipRow(LocalI18N.current[I18N_R.UI_SETTINGS_EDGE_GESTURE_SUB_CHILD_SWIPE_DISTANCE_DESCRIPTION])
                         StandardSpacer()
                         Slider(
                             valueRange = EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MIN_DISTANCE_DP_MIN.toFloat()..EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MIN_DISTANCE_DP_MAX.toFloat(),
@@ -389,10 +390,10 @@ fun KeyAndGestureSettingsActivity.EdgeGestureSettingsSelector() {
                             })
                         LargeSpacer()
 
-                        SmallTitle(text = LocalI18N.current["ui.settings.edge.gesture.sub.child.swipe.angle"])
+                        SmallTitle(text = LocalI18N.current[I18N_R.UI_SETTINGS_EDGE_GESTURE_SUB_CHILD_SWIPE_ANGLE])
                         MediumSpacer()
                         Text(text = "${state.edgeGestureSequenceChildSwipeMaxAngleDeviationDeg}°")
-                        TipRow(LocalI18N.current["ui.settings.edge.gesture.sub.child.swipe.angle.description"])
+                        TipRow(LocalI18N.current[I18N_R.UI_SETTINGS_EDGE_GESTURE_SUB_CHILD_SWIPE_ANGLE_DESCRIPTION])
                         StandardSpacer()
                         Slider(
                             valueRange = EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MAX_ANGLE_DEVIATION_DEG_MIN.toFloat()..EDGE_GESTURE_SEQUENCE_CHILD_SWIPE_MAX_ANGLE_DEVIATION_DEG_MAX.toFloat(),
@@ -404,24 +405,24 @@ fun KeyAndGestureSettingsActivity.EdgeGestureSettingsSelector() {
 
                         SwitchBar(
                             isChecked = state.edgeGestureSequenceChildSwipeTriggerOnRelease,
-                            text = LocalI18N.current["ui.settings.edge.gesture.sub.child.swipe.release.trigger"],
+                            text = LocalI18N.current[I18N_R.UI_SETTINGS_EDGE_GESTURE_SUB_CHILD_SWIPE_RELEASE_TRIGGER],
                             onCheckChange = {
                                 vm.setEdgeGestureSequenceChildSwipeTriggerOnRelease(it)
                             }
                         )
-                        TipRow(LocalI18N.current["ui.settings.edge.gesture.sub.child.swipe.release.trigger.description"])
+                        TipRow(LocalI18N.current[I18N_R.UI_SETTINGS_EDGE_GESTURE_SUB_CHILD_SWIPE_RELEASE_TRIGGER_DESCRIPTION])
                     }
 
                     LargeSpacer()
 
                     GestureSettingCard(
-                        title = LocalI18N.current["ui.settings.corner.gesture.group.title"],
-                        summary = LocalI18N.current["ui.settings.corner.gesture.group.summary"]
+                        title = LocalI18N.current[I18N_R.UI_SETTINGS_CORNER_GESTURE_GROUP_TITLE],
+                        summary = LocalI18N.current[I18N_R.UI_SETTINGS_CORNER_GESTURE_GROUP_SUMMARY]
                     ) {
-                        SmallTitle(text = LocalI18N.current["ui.settings.corner.gesture.size"])
+                        SmallTitle(text = LocalI18N.current[I18N_R.UI_SETTINGS_CORNER_GESTURE_SIZE])
                         MediumSpacer()
                         Text(text = "${state.cornerGestureAreaRatioPercent}%")
-                        TipRow(LocalI18N.current["ui.settings.corner.gesture.size.description"])
+                        TipRow(LocalI18N.current[I18N_R.UI_SETTINGS_CORNER_GESTURE_SIZE_DESCRIPTION])
                         StandardSpacer()
                         Slider(
                             valueRange = 6f..40f,
@@ -431,10 +432,10 @@ fun KeyAndGestureSettingsActivity.EdgeGestureSettingsSelector() {
                             })
                         LargeSpacer()
 
-                        SmallTitle(text = LocalI18N.current["ui.settings.corner.gesture.swipe.distance"])
+                        SmallTitle(text = LocalI18N.current[I18N_R.UI_SETTINGS_CORNER_GESTURE_SWIPE_DISTANCE])
                         MediumSpacer()
                         Text(text = "${state.cornerGestureMinSwipeDistanceDp} dp")
-                        TipRow(LocalI18N.current["ui.settings.corner.gesture.swipe.distance.description"])
+                        TipRow(LocalI18N.current[I18N_R.UI_SETTINGS_CORNER_GESTURE_SWIPE_DISTANCE_DESCRIPTION])
                         StandardSpacer()
                         Slider(
                             valueRange = 24f..200f,
@@ -452,17 +453,17 @@ fun KeyAndGestureSettingsActivity.EdgeGestureSettingsSelector() {
             // Keys
             SwitchBar(
                 isChecked = state.isKeyEventEnabled,
-                text = LocalI18N.current["ui.settings.keyevent"],
+                text = LocalI18N.current[I18N_R.UI_SETTINGS_KEYEVENT],
                 onCheckChange = {
                     vm.setKeyEventFeatureEnabled(it)
                 })
             MediumSpacer()
-            TipRow(LocalI18N.current["ui.settings.keyevent.disable"])
+            TipRow(LocalI18N.current[I18N_R.UI_SETTINGS_KEYEVENT_DISABLE])
             StandardSpacer()
             AnimatedVisibility(state.isKeyEventEnabled) {
                 Column {
-                    LargeTitle(text = LocalI18N.current["ui.settings.key"])
-                    SmallTitle(text = LocalI18N.current["ui.settings.key.long.press.timeout"])
+                    LargeTitle(text = LocalI18N.current[I18N_R.UI_SETTINGS_KEY])
+                    SmallTitle(text = LocalI18N.current[I18N_R.UI_SETTINGS_KEY_LONG_PRESS_TIMEOUT])
                     MediumSpacer()
                     Text(text = "${state.keyDetectorLongPressTimeoutMS} ms")
                     Slider(

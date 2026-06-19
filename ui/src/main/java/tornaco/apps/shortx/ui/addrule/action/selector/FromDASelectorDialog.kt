@@ -45,6 +45,7 @@ import tornaco.apps.shortx.ui.base.TextInputDialog
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class FromDASelectorActivity : BaseSelectorActivity<Action.FromDA>() {
@@ -72,7 +73,7 @@ private fun BaseSelectorActivity<Action.FromDA>.FromDASelector(currentData: Acti
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(LocalI18N.current["ui.action.from.da"]) },
+                        title = { Text(LocalI18N.current[I18N_R.UI_ACTION_FROM_DA]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 cancelAndFinish()
@@ -129,7 +130,7 @@ private fun BaseSelectorActivity<Action.FromDA>.FromDASelector(currentData: Acti
                         Button(onClick = {
                             daSelectorState.show()
                         }) {
-                            Text(text = LocalI18N.current["ui.title.select.da"])
+                            Text(text = LocalI18N.current[I18N_R.UI_TITLE_SELECT_DA])
                         }
 
                         LargeSpacer()
@@ -137,9 +138,9 @@ private fun BaseSelectorActivity<Action.FromDA>.FromDASelector(currentData: Acti
                         AnimatedVisibility(visible = state.parameterInputs.isNotEmpty()) {
                             Column {
                                 FieldTitleWithTip(
-                                    text = LocalI18N.current["ui.da.params"],
-                                    tipText = LocalI18N.current["ui.da.params.description",
-                                        mapOf("arg" to "$FUNC_PARAM_REF_PREFIX${LocalI18N.current["ui.da.params.name"]}")]
+                                    text = LocalI18N.current[I18N_R.UI_DA_PARAMS],
+                                    tipText = LocalI18N.current[I18N_R.UI_DA_PARAMS_DESCRIPTION,
+                                        mapOf("arg" to "$FUNC_PARAM_REF_PREFIX${LocalI18N.current[I18N_R.UI_DA_PARAMS_NAME]}")]
                                 )
                                 TinySpacer()
                                 DAFunctionParams(state) {
@@ -172,12 +173,12 @@ private fun DAFunctionParams(
 
         ListItem(
             titleLines = listOf(
-                LocalI18N.current["ui.da.params.name"] + " " + input.name,
-                LocalI18N.current["ui.da.params.value"] + " " + input.value,
+                LocalI18N.current[I18N_R.UI_DA_PARAMS_NAME] + " " + input.name,
+                LocalI18N.current[I18N_R.UI_DA_PARAMS_VALUE] + " " + input.value,
             ),
             action1 = {
                 if (param?.isRequired == true) {
-                    OutlineBadge(text = LocalI18N.current["ui.da.params.is.required"])
+                    OutlineBadge(text = LocalI18N.current[I18N_R.UI_DA_PARAMS_IS_REQUIRED])
                 }
             },
             icon = {

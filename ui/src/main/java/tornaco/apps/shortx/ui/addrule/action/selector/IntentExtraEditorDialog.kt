@@ -40,6 +40,7 @@ import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class IntentExtraEditDialogState(val title: String, val onSelected: (AndroidIntentExtra) -> Unit) :
     CommonDialogState() {
@@ -120,7 +121,7 @@ fun IntentExtraEditDialog(state: IntentExtraEditDialogState) {
                                         state.key = it
                                     },
                                     label = {
-                                        Text(text = LocalI18N.current["ui.common.extras.k"])
+                                        Text(text = LocalI18N.current[I18N_R.UI_COMMON_EXTRAS_K])
                                     },
                                     showSymbolButton = false
                                 )
@@ -132,7 +133,7 @@ fun IntentExtraEditDialog(state: IntentExtraEditDialogState) {
                                         state.value = it
                                     },
                                     label = {
-                                        Text(text = LocalI18N.current["ui.common.extras.v"])
+                                        Text(text = LocalI18N.current[I18N_R.UI_COMMON_EXTRAS_V])
                                     },
                                     showSymbolButton = false
                                 )

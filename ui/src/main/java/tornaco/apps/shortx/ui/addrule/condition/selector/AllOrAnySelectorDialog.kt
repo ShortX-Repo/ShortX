@@ -7,20 +7,21 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.MenuDialogItem
 import tornaco.apps.shortx.ui.base.MenuDialogState
 import tornaco.apps.shortx.ui.base.rememberMenuDialogState
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @Composable
 fun <DATA> rememberAppAllAnyMenuDialogState(
-    title: String = LocalI18N.current["ui.condition.selector.app.all.any.op.title"],
-    message: String? = LocalI18N.current["ui.condition.selector.app.all.any.op.message"],
+    title: String = LocalI18N.current[I18N_R.UI_CONDITION_SELECTOR_APP_ALL_ANY_OP_TITLE],
+    message: String? = LocalI18N.current[I18N_R.UI_CONDITION_SELECTOR_APP_ALL_ANY_OP_MESSAGE],
     menuItems: List<MenuDialogItem> = listOf(
         MenuDialogItem(
             id = "all",
-            title = LocalI18N.current["ui.condition.selector.app.op.all.desc"],
+            title = LocalI18N.current[I18N_R.UI_CONDITION_SELECTOR_APP_OP_ALL_DESC],
             iconName = iconForOp(Op.All)
         ),
         MenuDialogItem(
             id = "any",
-            title = LocalI18N.current["ui.condition.selector.app.op.any.desc"],
+            title = LocalI18N.current[I18N_R.UI_CONDITION_SELECTOR_APP_OP_ANY_DESC],
             iconName = iconForOp(Op.Any)
         ),
     ),
@@ -45,17 +46,17 @@ fun <DATA> rememberAppAllAnyMenuDialogState(
 
 @Composable
 fun <DATA> rememberComponentAllAnyMenuDialogState(
-    title: String = LocalI18N.current["ui.condition.selector.component.all.any.op.title"],
-    message: String? = LocalI18N.current["ui.condition.selector.component.all.any.op.message"],
+    title: String = LocalI18N.current[I18N_R.UI_CONDITION_SELECTOR_COMPONENT_ALL_ANY_OP_TITLE],
+    message: String? = LocalI18N.current[I18N_R.UI_CONDITION_SELECTOR_COMPONENT_ALL_ANY_OP_MESSAGE],
     menuItems: List<MenuDialogItem> = listOf(
         MenuDialogItem(
             id = "all",
-            title = LocalI18N.current["ui.condition.selector.component.op.all.desc"],
+            title = LocalI18N.current[I18N_R.UI_CONDITION_SELECTOR_COMPONENT_OP_ALL_DESC],
             iconName = iconForOp(Op.All)
         ),
         MenuDialogItem(
             id = "any",
-            title = LocalI18N.current["ui.condition.selector.component.op.any.desc"],
+            title = LocalI18N.current[I18N_R.UI_CONDITION_SELECTOR_COMPONENT_OP_ANY_DESC],
             iconName = iconForOp(Op.Any)
         ),
     ),

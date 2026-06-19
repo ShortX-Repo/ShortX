@@ -76,6 +76,7 @@ import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.ui.overlay.OverlayContent
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import kotlin.math.roundToInt
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class ShowOverlayButtonSelectorActivity : BaseSelectorActivity<Action.ShowOverlay>() {
@@ -99,7 +100,7 @@ private fun BaseSelectorActivity<Action.ShowOverlay>.ShowOverlayButtonSelector(c
     val selectorState by vm.state.collectAsState()
 
     ShortXAppBarScaffold(
-        title = LocalI18N.current["ui.action.show.overlay"],
+        title = LocalI18N.current[I18N_R.UI_ACTION_SHOW_OVERLAY],
         verticalScroll = false,
         onBackPressed = { cancelAndFinish() },
         actions = {
@@ -182,7 +183,7 @@ private fun Content(
                         horizontalArrangement = SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        FieldTitle(text = LocalI18N.current["ui.common.preview"])
+                        FieldTitle(text = LocalI18N.current[I18N_R.UI_COMMON_PREVIEW])
                         ExpandIndicator(state.isPreviewExpanded, expand = {
                             vm.setPreviewExpanded(it)
                         })
@@ -217,7 +218,7 @@ private fun Content(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = SpaceBetween
             ) {
-                FieldTitle(text = LocalI18N.current["ui.action.show.add.button"])
+                FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_SHOW_ADD_BUTTON])
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     ExpandIndicator(state.isButtonListExpanded, expand = {
                         vm.setButtonListExpanded(it)
@@ -291,7 +292,7 @@ private fun Content(
                     onClick = {
                         vm.addButton()
                     }) {
-                    Text(text = LocalI18N.current["ui.action.show.add.button"])
+                    Text(text = LocalI18N.current[I18N_R.UI_ACTION_SHOW_ADD_BUTTON])
                 }
                 // Add progress
                 Button(
@@ -299,7 +300,7 @@ private fun Content(
                     onClick = {
                         vm.addButton(componentType = OverlayButtonComponentType.OverlayButtonComponentType_CircleProgress)
                     }) {
-                    Text(text = LocalI18N.current["ui.action.show.add.progress.bar"])
+                    Text(text = LocalI18N.current[I18N_R.UI_ACTION_SHOW_ADD_PROGRESS_BAR])
                 }
             }
         }
@@ -309,9 +310,9 @@ private fun Content(
             Column(verticalArrangement = Arrangement.Center) {
                 FieldTitle(
                     modifier = Modifier.padding(vertical = 12.dp),
-                    LocalI18N.current["ui.action.show.overlay.tag"]
+                    LocalI18N.current[I18N_R.UI_ACTION_SHOW_OVERLAY_TAG]
                 )
-                TipBody(LocalI18N.current["ui.action.show.overlay.tag.description"])
+                TipBody(LocalI18N.current[I18N_R.UI_ACTION_SHOW_OVERLAY_TAG_DESCRIPTION])
                 SmallSpacer()
                 ShortXTextField(value = state.tag, onValueChange = {
                     vm.updateTag(it)
@@ -330,7 +331,7 @@ private fun Content(
             StandardSpacer()
             SwitchBarNoBackground(
                 isChecked = state.autoCollapse,
-                text = LocalI18N.current["ui.action.show.auto.collapse"]
+                text = LocalI18N.current[I18N_R.UI_ACTION_SHOW_AUTO_COLLAPSE]
             ) {
                 vm.setAutoCollapse(it)
             }
@@ -340,7 +341,7 @@ private fun Content(
             StandardSpacer()
             SwitchBarNoBackground(
                 isChecked = state.enableAutoEdge,
-                text = LocalI18N.current["ui.action.show.auto.edge"]
+                text = LocalI18N.current[I18N_R.UI_ACTION_SHOW_AUTO_EDGE]
             ) {
                 vm.setEnableAutoEdge(it)
             }
@@ -350,7 +351,7 @@ private fun Content(
             StandardSpacer()
             SwitchBarNoBackground(
                 isChecked = state.closeOnTouchOutside,
-                text = LocalI18N.current["ui.action.close.touch.outside"]
+                text = LocalI18N.current[I18N_R.UI_ACTION_CLOSE_TOUCH_OUTSIDE]
             ) {
                 vm.setCloseOnTouchOutside(it)
             }
@@ -360,7 +361,7 @@ private fun Content(
             StandardSpacer()
             SwitchBarNoBackground(
                 isChecked = state.closeOnAction,
-                text = LocalI18N.current["ui.action.close.on.action"]
+                text = LocalI18N.current[I18N_R.UI_ACTION_CLOSE_ON_ACTION]
             ) {
                 vm.setCloseOnAction(it)
             }
@@ -370,8 +371,8 @@ private fun Content(
             StandardSpacer()
             SwitchBarNoBackground(
                 isChecked = state.enableGlobalDrag,
-                text = LocalI18N.current["ui.common.button.enable.global.drag"],
-                tip = LocalI18N.current["ui.common.button.enable.global.drag.description"]
+                text = LocalI18N.current[I18N_R.UI_COMMON_BUTTON_ENABLE_GLOBAL_DRAG],
+                tip = LocalI18N.current[I18N_R.UI_COMMON_BUTTON_ENABLE_GLOBAL_DRAG_DESCRIPTION]
             ) {
                 vm.setEnableGlobalDrag(it)
             }
@@ -380,7 +381,7 @@ private fun Content(
         item {
             StandardSpacer()
             Column(modifier = Modifier.fillMaxWidth()) {
-                FieldTitle(text = LocalI18N.current["ui.common.overlay.max.width"])
+                FieldTitle(text = LocalI18N.current[I18N_R.UI_COMMON_OVERLAY_MAX_WIDTH])
                 Text(text = state.maxWidth.toString())
                 Slider(
                     valueRange = 20f..2000f,
@@ -394,7 +395,7 @@ private fun Content(
         item {
             StandardSpacer()
             Column(modifier = Modifier.fillMaxWidth()) {
-                FieldTitle(text = LocalI18N.current["ui.common.overlay.max.height"])
+                FieldTitle(text = LocalI18N.current[I18N_R.UI_COMMON_OVERLAY_MAX_HEIGHT])
                 Text(text = state.maxHeight.toString())
                 Slider(
                     valueRange = 20f..2000f,
@@ -407,7 +408,7 @@ private fun Content(
         item {
             StandardSpacer()
             Column(modifier = Modifier.fillMaxWidth()) {
-                FieldTitle(text = LocalI18N.current["ui.common.button.min.width"])
+                FieldTitle(text = LocalI18N.current[I18N_R.UI_COMMON_BUTTON_MIN_WIDTH])
                 Text(text = state.buttonMinWidth.toString())
                 Slider(
                     valueRange = 20f..2000f,
@@ -420,7 +421,7 @@ private fun Content(
         item {
             StandardSpacer()
             Column(modifier = Modifier.fillMaxWidth()) {
-                FieldTitle(text = LocalI18N.current["ui.common.button.overlay.padding.v"])
+                FieldTitle(text = LocalI18N.current[I18N_R.UI_COMMON_BUTTON_OVERLAY_PADDING_V])
                 Text(text = state.overlayPaddingV.toString())
                 Slider(
                     valueRange = 0f..50f,
@@ -433,7 +434,7 @@ private fun Content(
         item {
             StandardSpacer()
             Column(modifier = Modifier.fillMaxWidth()) {
-                FieldTitle(text = LocalI18N.current["ui.common.button.overlay.padding.h"])
+                FieldTitle(text = LocalI18N.current[I18N_R.UI_COMMON_BUTTON_OVERLAY_PADDING_H])
                 Text(text = state.overlayPaddingH.toString())
                 Slider(
                     valueRange = 0f..50f,
@@ -447,7 +448,7 @@ private fun Content(
         item {
             StandardSpacer()
             Column(modifier = Modifier.fillMaxWidth()) {
-                FieldTitle(text = LocalI18N.current["ui.common.bg.alpha"])
+                FieldTitle(text = LocalI18N.current[I18N_R.UI_COMMON_BG_ALPHA])
                 Text(text = "${(state.backgroundAlpha * 100).roundToInt()}%")
                 Slider(
                     valueRange = 0f..1f,
@@ -461,7 +462,7 @@ private fun Content(
         item {
             StandardSpacer()
             Column(modifier = Modifier.fillMaxWidth()) {
-                FieldTitle(text = LocalI18N.current["ui.common.bg.color"])
+                FieldTitle(text = LocalI18N.current[I18N_R.UI_COMMON_BG_COLOR])
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -514,7 +515,7 @@ private fun ButtonListItem(
         ) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = SpaceBetween) {
                 MediumTitle(
-                    text = LocalI18N.current["ui.action.show.overlay.button.of", mapOf(
+                    text = LocalI18N.current[I18N_R.UI_ACTION_SHOW_OVERLAY_BUTTON_OF, mapOf(
                         "index" to "${index + 1}"
                     )]
                 )
@@ -530,7 +531,7 @@ private fun ButtonListItem(
             Column(verticalArrangement = Arrangement.Center) {
                 SmallTitle(
                     modifier = Modifier.padding(vertical = 12.dp),
-                    LocalI18N.current["ui.action.show.overlay.text"]
+                    LocalI18N.current[I18N_R.UI_ACTION_SHOW_OVERLAY_TEXT]
                 )
                 ShortXTextField(value = button.label, onValueChange = {
                     updateLabel(index, it)
@@ -542,7 +543,7 @@ private fun ButtonListItem(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     SmallTitle(
                         modifier = Modifier.padding(vertical = 12.dp),
-                        LocalI18N.current["ui.action.show.overlay.icon"]
+                        LocalI18N.current[I18N_R.UI_ACTION_SHOW_OVERLAY_ICON]
                     )
                     IconButton(onClick = {
                         updateIcon(index, "")
@@ -575,7 +576,7 @@ private fun ButtonListItem(
                 header = {
                     SmallTitle(
                         modifier = Modifier.padding(vertical = 12.dp),
-                        text = LocalI18N.current["ui.actions.single.click.title"]
+                        text = LocalI18N.current[I18N_R.UI_ACTIONS_SINGLE_CLICK_TITLE]
                     )
                 },
                 actions = actionState.actions,
@@ -592,7 +593,7 @@ private fun ButtonListItem(
                 header = {
                     SmallTitle(
                         modifier = Modifier.padding(vertical = 12.dp),
-                        text = LocalI18N.current["ui.actions.long.click.title"]
+                        text = LocalI18N.current[I18N_R.UI_ACTIONS_LONG_CLICK_TITLE]
                     )
                 },
                 actions = longClickActionState.actions,
@@ -619,7 +620,7 @@ private fun ProgressBarListItem(
         ) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = SpaceBetween) {
                 MediumTitle(
-                    text = LocalI18N.current["ui.action.show.overlay.button.of", mapOf(
+                    text = LocalI18N.current[I18N_R.UI_ACTION_SHOW_OVERLAY_BUTTON_OF, mapOf(
                         "index" to "${index + 1}"
                     )]
                 )
@@ -635,7 +636,7 @@ private fun ProgressBarListItem(
             Column(verticalArrangement = Arrangement.Center) {
                 SmallTitle(
                     modifier = Modifier.padding(vertical = 12.dp),
-                    LocalI18N.current["ui.action.show.overlay.text"]
+                    LocalI18N.current[I18N_R.UI_ACTION_SHOW_OVERLAY_TEXT]
                 )
                 ShortXTextField(value = button.label, onValueChange = {
                     updateLabel(index, it)
@@ -646,7 +647,7 @@ private fun ProgressBarListItem(
             Column(verticalArrangement = Arrangement.Center) {
                 SmallTitle(
                     modifier = Modifier.padding(vertical = 12.dp),
-                    LocalI18N.current["ui.action.show.overlay.progress.value"]
+                    LocalI18N.current[I18N_R.UI_ACTION_SHOW_OVERLAY_PROGRESS_VALUE]
                 )
                 ShortXTextField(value = button.progressValue, onValueChange = {
                     updateProgressValue(index, it)

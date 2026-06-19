@@ -25,6 +25,7 @@ import tornaco.apps.shortx.ui.base.ShortXTextButton
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.WarnTipRow
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 data class NewPkgSet(
     val label: String,
@@ -61,7 +62,7 @@ fun rememberNewPkgSetState(
 fun NewPkgSetDialog(state: NewPkgSetState) {
     if (state.isShowing) {
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
-            DialogTitle(text = LocalI18N.current["ui.pkg.set.add.title"])
+            DialogTitle(text = LocalI18N.current[I18N_R.UI_PKG_SET_ADD_TITLE])
         }, buttons = {
             ShortXTextButton(
                 enabled = state.validateRes !is InputValidateResult.Error,
@@ -83,10 +84,10 @@ fun NewPkgSetDialog(state: NewPkgSetState) {
 
                 FieldTitle(
                     modifier = Modifier.padding(vertical = 12.dp),
-                    text = i18N["ui.pkg.set.add.input.label"]
+                    text = i18N[I18N_R.UI_PKG_SET_ADD_INPUT_LABEL]
                 )
                 SmallSpacer()
-                DialogMessage(text = i18N["ui.pkg.set.add.input.label"])
+                DialogMessage(text = i18N[I18N_R.UI_PKG_SET_ADD_INPUT_LABEL])
                 SmallSpacer()
                 ShortXTextField(
                     modifier = Modifier.fillMaxWidth(),
@@ -118,7 +119,7 @@ fun NewPkgSetDialog(state: NewPkgSetState) {
 
                 FieldTitle(
                     modifier = Modifier.padding(vertical = 12.dp),
-                    text = i18N["ui.common.note"]
+                    text = i18N[I18N_R.UI_COMMON_NOTE]
                 )
                 SmallSpacer()
                 ShortXTextField(

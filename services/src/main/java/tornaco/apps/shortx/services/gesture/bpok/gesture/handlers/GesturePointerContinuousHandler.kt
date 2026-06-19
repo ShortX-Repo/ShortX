@@ -24,6 +24,7 @@ import tornaco.apps.shortx.services.ui.GesturePointerOverlay
 import tornaco.apps.shortx.services.ui.GesturePointerVisualMode
 import kotlin.math.hypot
 import kotlin.math.roundToInt
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class GesturePointerContinuousHandler(
     private val context: Context,
@@ -266,7 +267,7 @@ class GesturePointerContinuousHandler(
         overlayScope.launch {
             Toast.makeText(
                 context,
-                i18NIns["ui.action.continuous.gesture.pointer.center.switch.short"] + ": " + mode.label(),
+                i18NIns[I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_CENTER_SWITCH_SHORT] + ": " + mode.label(),
                 Toast.LENGTH_SHORT,
             ).show()
         }
@@ -534,9 +535,9 @@ class GesturePointerContinuousHandler(
 
     private fun ReleaseMode.label(): String {
         return when (this) {
-            ReleaseMode.SingleClick -> i18NIns["ui.action.continuous.gesture.pointer.mode.single"]
-            ReleaseMode.LongPress -> i18NIns["ui.action.continuous.gesture.pointer.mode.long"]
-            ReleaseMode.DoubleClick -> i18NIns["ui.action.continuous.gesture.pointer.mode.double"]
+            ReleaseMode.SingleClick -> i18NIns[I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_MODE_SINGLE]
+            ReleaseMode.LongPress -> i18NIns[I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_MODE_LONG]
+            ReleaseMode.DoubleClick -> i18NIns[I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_MODE_DOUBLE]
         }
     }
 }

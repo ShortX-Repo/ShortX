@@ -25,6 +25,7 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.rememberConfirmDialogState
 import tornaco.apps.shortx.ui.theme.PrefIcon
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @Composable
 fun batchOpSelectedItemHighlightColor() = MaterialTheme.colorScheme.secondaryContainer
@@ -37,9 +38,9 @@ fun BatchOpToolbar(state: BatchOpState) {
         val deleteConfirmDialog = rememberConfirmDialogState()
         val i18N = LocalI18N.current
         ConfirmDialog(
-            title = i18N["ui.common.delete"],
+            title = i18N[I18N_R.UI_COMMON_DELETE],
             messageHint = {
-                i18N["ui.delete.dialog.confirm", mapOf("wht" to "")]
+                i18N[I18N_R.UI_DELETE_DIALOG_CONFIRM, mapOf("wht" to "")]
             },
             state = deleteConfirmDialog,
             data = state.batchSelectedItems,
@@ -59,7 +60,7 @@ fun BatchOpToolbar(state: BatchOpState) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             FieldTitle(
-                modifier = Modifier, text = i18N["ui.common.selected.count", mapOf(
+                modifier = Modifier, text = i18N[I18N_R.UI_COMMON_SELECTED_COUNT, mapOf(
                     "selected" to "${state.batchSelectedItems.size}"
                 )]
             )
@@ -76,7 +77,7 @@ fun BatchOpToolbar(state: BatchOpState) {
                     state.onCopy(state.batchSelectedItems)
                     Toast.makeText(
                         context,
-                        i18n["ui.common.copied.to.clipboard"],
+                        i18n[I18N_R.UI_COMMON_COPIED_TO_CLIPBOARD],
                         Toast.LENGTH_SHORT
                     ).show()
                 }) {

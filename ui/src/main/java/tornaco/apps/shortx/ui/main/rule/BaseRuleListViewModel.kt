@@ -53,6 +53,7 @@ import tornaco.apps.shortx.ui.share.SharedData
 import tornaco.apps.shortx.ui.share.addShareContentHeader
 import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import java.util.UUID
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 fun defaultNewRuleSetId() = "RS-${UUID.randomUUID()}"
 
@@ -375,7 +376,7 @@ abstract class BaseRuleListViewModel(context: Context) :
 
             if (newState) {
                 withContext(Dispatchers.Main) {
-                    Toast.makeText(context, i18N["ui.rule.only.show.enabled"], Toast.LENGTH_SHORT)
+                    Toast.makeText(context, i18N[I18N_R.UI_RULE_ONLY_SHOW_ENABLED], Toast.LENGTH_SHORT)
                         .show()
                 }
             }

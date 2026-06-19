@@ -41,6 +41,7 @@ import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.base.rememberDropdownSelectorState
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 @AndroidEntryPoint
@@ -64,7 +65,7 @@ class LightSensorSelectorActivity : BaseSelectorActivity<Fact.LightSensor>() {
             topBar = {
                 ShortXTopAppBar(
                     modifier = Modifier,
-                    title = { Text(LocalI18N.current["ui.fact.sensor.light"]) },
+                    title = { Text(LocalI18N.current[I18N_R.UI_FACT_SENSOR_LIGHT]) },
                     navigationIcon = {
                         IconButton(onClick = {
                             setResult(RESULT_CANCELED)
@@ -103,7 +104,7 @@ class LightSensorSelectorActivity : BaseSelectorActivity<Fact.LightSensor>() {
                     }
                 ValueConstraintSelector(state = constraintSelectorState)
 
-                FieldTitle(text = LocalI18N.current["ui.fact.sensor.constraint"])
+                FieldTitle(text = LocalI18N.current[I18N_R.UI_FACT_SENSOR_CONSTRAINT])
                 TinySpacer()
                 state.constraints.forEach {
                     ListItem(
@@ -127,12 +128,12 @@ class LightSensorSelectorActivity : BaseSelectorActivity<Fact.LightSensor>() {
                 Button(onClick = {
                     constraintSelectorState.show()
                 }) {
-                    Text(text = LocalI18N.current["ui.common.add"])
+                    Text(text = LocalI18N.current[I18N_R.UI_COMMON_ADD])
                 }
 
                 LargeSpacer()
 
-                FieldTitle(text = LocalI18N.current["ui.fact.sensor.value"])
+                FieldTitle(text = LocalI18N.current[I18N_R.UI_FACT_SENSOR_VALUE])
                 SmallSpacer()
 
                 val trendState = rememberDropdownSelectorState()

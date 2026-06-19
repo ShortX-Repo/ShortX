@@ -27,6 +27,7 @@ import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 private const val SPLITTER = ","
 
@@ -74,7 +75,7 @@ private fun HideOverlaySelector(dialogState: HideOverlayDialogState) {
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(text = LocalI18N.current["ui.action.hide.overlay"]) },
+                        title = { Text(text = LocalI18N.current[I18N_R.UI_ACTION_HIDE_OVERLAY]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 dialogState.dismiss()

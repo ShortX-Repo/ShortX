@@ -35,6 +35,7 @@ import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXCard
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class PkgSetSelectorState(
     val onPkgSetSelected: (PkgSet) -> Unit
@@ -75,7 +76,7 @@ private fun PkgSetSelector(selectorState: PkgSetSelectorState) {
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(text = LocalI18N.current["ui.pkg.set.title"]) },
+                        title = { Text(text = LocalI18N.current[I18N_R.UI_PKG_SET_TITLE]) },
                         actions = {},
                         navigationIcon = {
                             IconButton(onClick = {

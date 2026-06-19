@@ -29,19 +29,20 @@ import com.godaddy.android.colorpicker.HsvColor
 import com.godaddy.android.colorpicker.toColorInt
 import tornaco.apps.shortx.core.settings.DANMU_COLOR_AUTO
 import tornaco.apps.shortx.ui.composeLogger
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @Composable
 fun ColorPickerDialog(state: ColorPickerDialogState) {
     val context = LocalContext.current
     val errorMsg =
-        LocalI18N.current["ui.common.manually.input.color.format.error"]
+        LocalI18N.current[I18N_R.UI_COMMON_MANUALLY_INPUT_COLOR_FORMAT_ERROR]
     val showColorFormatError = {
         Toast.makeText(context, errorMsg, Toast.LENGTH_SHORT).show()
     }
 
     val inputDialogState = rememberTextInputState(
-        title = LocalI18N.current["ui.common.manually.input.color"],
-        message = LocalI18N.current["ui.common.manually.input.color.message"]
+        title = LocalI18N.current[I18N_R.UI_COMMON_MANUALLY_INPUT_COLOR],
+        message = LocalI18N.current[I18N_R.UI_COMMON_MANUALLY_INPUT_COLOR_MESSAGE]
     ) {
         kotlin.runCatching {
             val colorInt = android.graphics.Color.parseColor(it)
@@ -116,7 +117,7 @@ fun ColorPickerDialog(state: ColorPickerDialogState) {
                                 inputDialogState.show("#ff4018")
                             }) {
                             Text(
-                                text = LocalI18N.current["ui.common.manually.input"],
+                                text = LocalI18N.current[I18N_R.UI_COMMON_MANUALLY_INPUT],
                                 style = MaterialTheme.typography.bodySmall
                             )
                         }

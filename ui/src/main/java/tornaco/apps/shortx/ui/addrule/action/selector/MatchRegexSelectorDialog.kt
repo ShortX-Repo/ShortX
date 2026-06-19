@@ -38,6 +38,7 @@ import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class MatchRegexState(
     val onSelected: (Action.MatchRegex) -> Unit
@@ -87,7 +88,7 @@ fun MatchRegexSelectorDialog(state: MatchRegexState) {
                         topBar = {
                             ShortXTopAppBar(
                                 modifier = Modifier,
-                                title = { Text(i18n["ui.action.match.regex"]) },
+                                title = { Text(i18n[I18N_R.UI_ACTION_MATCH_REGEX]) },
                                 navigationIcon = {
                                     IconButton(onClick = {
                                         state.dismiss()
@@ -120,7 +121,7 @@ fun MatchRegexSelectorDialog(state: MatchRegexState) {
                                 .animateContentSize()
                                 .verticalScroll(rememberScrollState())
                         ) {
-                            FieldTitle(text = LocalI18N.current["ui.tools.regex.test.string"])
+                            FieldTitle(text = LocalI18N.current[I18N_R.UI_TOOLS_REGEX_TEST_STRING])
                             ShortXTextField(
                                 value = state.string,
                                 onValueChange = {
@@ -128,7 +129,7 @@ fun MatchRegexSelectorDialog(state: MatchRegexState) {
                                 })
                             StandardSpacer()
 
-                            FieldTitle(text = LocalI18N.current["ui.tools.regex.test.regex"])
+                            FieldTitle(text = LocalI18N.current[I18N_R.UI_TOOLS_REGEX_TEST_REGEX])
                             ShortXTextField(
                                 value = state.regex,
                                 onValueChange = {
@@ -138,7 +139,7 @@ fun MatchRegexSelectorDialog(state: MatchRegexState) {
 
                             AnimatedVisibility(visible = state.testResult.isNotEmpty()) {
                                 Column {
-                                    FieldTitle(text = LocalI18N.current["ui.tools.regex.test.result"])
+                                    FieldTitle(text = LocalI18N.current[I18N_R.UI_TOOLS_REGEX_TEST_RESULT])
                                     Text(text = state.testResult)
                                     StandardSpacer()
                                 }

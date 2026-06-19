@@ -28,6 +28,7 @@ import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class ContextVarSelectorState(
     val onContextVarSelected: (String) -> Unit
@@ -63,7 +64,7 @@ private fun ContextVarSelector(selectorState: ContextVarSelectorState) {
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(text = i18N["ui.context.data.title"]) },
+                        title = { Text(text = i18N[I18N_R.UI_CONTEXT_DATA_TITLE]) },
                         actions = {
                             IconButton(onClick = {
                                 UiClipboard.copy(
@@ -78,7 +79,7 @@ private fun ContextVarSelector(selectorState: ContextVarSelectorState) {
                                 )
                                 Toast.makeText(
                                     context,
-                                    i18N["ui.common.copied.to.clipboard"],
+                                    i18N[I18N_R.UI_COMMON_COPIED_TO_CLIPBOARD],
                                     Toast.LENGTH_SHORT
                                 ).show()
                             }) {

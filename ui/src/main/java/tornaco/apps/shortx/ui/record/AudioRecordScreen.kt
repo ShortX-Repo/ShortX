@@ -69,6 +69,7 @@ import java.text.DecimalFormat
 import java.util.Date
 import kotlin.math.log10
 import kotlin.math.pow
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class AudioRecordActivity : BaseActivity() {
@@ -106,7 +107,7 @@ fun AudioRecordScreen(back: () -> Unit) {
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(text = i18N["ui.settings.audio.record"]) },
+                        title = { Text(text = i18N[I18N_R.UI_SETTINGS_AUDIO_RECORD]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 back()
@@ -130,7 +131,7 @@ fun AudioRecordScreen(back: () -> Unit) {
                             is ExportResult.Success -> {
                                 scope.launch {
                                     snackbarHostState.showSnackbar(
-                                        i18N["ui.settings.audio.record.export.success", mapOf("dir" to it.path)]
+                                        i18N[I18N_R.UI_SETTINGS_AUDIO_RECORD_EXPORT_SUCCESS, mapOf("dir" to it.path)]
                                     )
                                 }
                             }
@@ -159,7 +160,7 @@ fun AudioRecordScreen(back: () -> Unit) {
                         item {
                             Column(modifier = Modifier.padding(16.dp)) {
                                 TipRow(
-                                    text = LocalI18N.current["ui.settings.audio.record.export.summary"]
+                                    text = LocalI18N.current[I18N_R.UI_SETTINGS_AUDIO_RECORD_EXPORT_SUMMARY]
                                 )
                             }
                         }
@@ -239,7 +240,7 @@ private fun listItemOverflowMenu(
     val menuState = rememberDropdownSelectorState()
 
     val textInputState = rememberTextInputState(
-        title = LocalI18N.current["ui.common.rename"],
+        title = LocalI18N.current[I18N_R.UI_COMMON_RENAME],
         message = null,
         showSymbolButton = false,
         onSelected = {
@@ -248,22 +249,22 @@ private fun listItemOverflowMenu(
     TextInputDialog(textInputState)
 
     DropdownSelector(widthFraction = 0.33f, state = menuState, items = listOf(
-        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.view"]),
+        DropdownItem(labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_VIEW]),
             data = "view",
             icon = {
                 RemixIcon(remixName = Remix.Media.play_line)
             }),
-        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.get"]),
+        DropdownItem(labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_GET]),
             data = "export",
             icon = {
                 RemixIcon(remixName = Remix.System.download_2_fill)
             }),
-        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.rename"]),
+        DropdownItem(labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_RENAME]),
             data = "rename",
             icon = {
                 RemixIcon(remixName = Remix.Editor.font_size)
             }),
-        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.delete"]),
+        DropdownItem(labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_DELETE]),
             data = "delete",
             icon = {
                 RemixIcon(remixName = Remix.System.delete_bin_fill)

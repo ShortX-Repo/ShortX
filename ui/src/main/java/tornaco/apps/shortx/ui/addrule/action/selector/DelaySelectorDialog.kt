@@ -34,6 +34,7 @@ import tornaco.apps.shortx.ui.base.ShortXSwitch
 import tornaco.apps.shortx.ui.base.ShortXTextField
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import tornaco.apps.shortx.ui.base.TipBody
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class DelayState(
     val canUseAlarm: Boolean,
@@ -85,7 +86,7 @@ fun rememberDelayState(
 fun DelaySelectorDialog(state: DelayState) {
     if (state.isShowing) {
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
-            DialogTitle(text = LocalI18N.current["ui.action.delay"])
+            DialogTitle(text = LocalI18N.current[I18N_R.UI_ACTION_DELAY])
         }, buttons = {
             ShortXTextButton(
                 enabled = state.currentValue.isNotEmpty(),
@@ -105,8 +106,8 @@ fun DelaySelectorDialog(state: DelayState) {
         }, content = {
             Column(modifier = Modifier.fillMaxWidth()) {
 
-                FieldTitle(text = LocalI18N.current["ui.action.delay"])
-                TipBody(text = LocalI18N.current["ui.action.delay.input.message"])
+                FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_DELAY])
+                TipBody(text = LocalI18N.current[I18N_R.UI_ACTION_DELAY_INPUT_MESSAGE])
                 ShortXTextField(
                     value = state.currentValue,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -154,14 +155,14 @@ fun DelaySelectorDialog(state: DelayState) {
 
 
                 if (state.canUseAlarm) {
-                    FieldTitle(text = LocalI18N.current["ui.action.delay.input.use.alarm"])
-                    TipBody(text = LocalI18N.current["ui.action.delay.input.use.alarm.summary"])
+                    FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_DELAY_INPUT_USE_ALARM])
+                    TipBody(text = LocalI18N.current[I18N_R.UI_ACTION_DELAY_INPUT_USE_ALARM_SUMMARY])
                     ShortXSwitch(checked = state.useAlarm, onCheckedChange = {
                         state.useAlarm = it
                     })
                 }
 
-                FieldTitle(text = LocalI18N.current["ui.action.delay.show.cd"])
+                FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_DELAY_SHOW_CD])
                 ShortXSwitch(checked = state.showCD, onCheckedChange = {
                     state.showCD = it
                 })

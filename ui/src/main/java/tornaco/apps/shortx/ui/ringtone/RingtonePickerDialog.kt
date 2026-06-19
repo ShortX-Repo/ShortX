@@ -41,6 +41,7 @@ import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class RingtonePickerState(
     val title: String,
@@ -115,9 +116,9 @@ private fun RingtonePicker(selectorState: RingtonePickerState) {
                         var selectedTabIndex by remember { mutableIntStateOf(0) }
                         TabRow(selectedTabIndex = selectedTabIndex) {
                             val titles = listOf(
-                                LocalI18N.current["ui.ringtone.type.alarm"],
-                                LocalI18N.current["ui.ringtone.type.notification"],
-                                LocalI18N.current["ui.ringtone.type.ringtone"]
+                                LocalI18N.current[I18N_R.UI_RINGTONE_TYPE_ALARM],
+                                LocalI18N.current[I18N_R.UI_RINGTONE_TYPE_NOTIFICATION],
+                                LocalI18N.current[I18N_R.UI_RINGTONE_TYPE_RINGTONE]
                             )
                             titles.forEachIndexed { index, title ->
                                 Tab(selected = selectedTabIndex == index,

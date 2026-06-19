@@ -28,6 +28,7 @@ import tornaco.apps.shortx.ui.actionsidebar.ActionSidebarButtonUiModel
 import tornaco.apps.shortx.ui.actionsidebar.ActionSidebarCallbacks
 import tornaco.apps.shortx.ui.actionsidebar.ActionSidebarDialogView
 import tornaco.apps.shortx.ui.actionsidebar.withDefaults
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 private const val ACTION_SIDEBAR_X_DP = 8
 private const val ACTION_SIDEBAR_Y_DP = 8
@@ -58,7 +59,7 @@ class ActionSidebarManager(
         }
 
         if (action.buttonsCount == 0) {
-            fail(action, i18NIns["ui.action.show.action.sidebar.empty"])
+            fail(action, i18NIns[I18N_R.UI_ACTION_SHOW_ACTION_SIDEBAR_EMPTY])
             return@postSafety
         }
 

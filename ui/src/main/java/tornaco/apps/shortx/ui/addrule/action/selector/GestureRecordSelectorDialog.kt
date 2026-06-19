@@ -27,6 +27,7 @@ import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.gesture.GestureRecordItem
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 class GestureRecordDialogState(
@@ -68,7 +69,7 @@ private fun GestureRecordSelector(dialogState: GestureRecordDialogState) {
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(LocalI18N.current["ui.action.gesture.record.select"]) },
+                        title = { Text(LocalI18N.current[I18N_R.UI_ACTION_GESTURE_RECORD_SELECT]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 dialogState.dismiss()

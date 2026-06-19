@@ -16,6 +16,7 @@ import tornaco.apps.shortx.ui.base.LocalI18N
 import tornaco.apps.shortx.ui.base.ShortXDialog
 import tornaco.apps.shortx.ui.base.ShortXTextButton
 import kotlin.math.roundToInt
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class BrightnessValueSelectorState(
     val selected: (Int) -> Unit
@@ -49,7 +50,7 @@ fun BrightnessValueSelector(state: BrightnessValueSelectorState) {
     if (state.isShow) {
         ShortXDialog(onDismissRequest = { state.dismiss() },
             title = {
-                DialogTitle(text = LocalI18N.current["ui.action.set.brightness"])
+                DialogTitle(text = LocalI18N.current[I18N_R.UI_ACTION_SET_BRIGHTNESS])
             },
             buttons = {
                 ShortXTextButton(onClick = {

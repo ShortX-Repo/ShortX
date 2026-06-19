@@ -25,6 +25,7 @@ import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class DavProfileSelectorState(
     val onDavProfileSelected: (WebDavProfile) -> Unit
@@ -62,7 +63,7 @@ private fun DavProfileSelector(selectorState: DavProfileSelectorState) {
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(text = LocalI18N.current["ui.settings.webdav.profile"]) },
+                        title = { Text(text = LocalI18N.current[I18N_R.UI_SETTINGS_WEBDAV_PROFILE]) },
                         actions = {},
                         navigationIcon = {
                             IconButton(onClick = {

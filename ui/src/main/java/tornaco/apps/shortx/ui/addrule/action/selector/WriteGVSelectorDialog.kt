@@ -52,6 +52,7 @@ import tornaco.apps.shortx.ui.gvar.GlobalVarSelectorDialog
 import tornaco.apps.shortx.ui.gvar.rememberGlobalVarSelectorState
 import tornaco.apps.shortx.ui.suggestion.SuggestedNavEntry
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 class WriteGVDialogState(
@@ -104,7 +105,7 @@ private fun WriteGVSelector(dialogState: WriteGVDialogState) {
                 topBar = {
                     ShortXTopAppBar(
                         modifier = Modifier,
-                        title = { Text(text = LocalI18N.current["ui.action.write.global.var"]) },
+                        title = { Text(text = LocalI18N.current[I18N_R.UI_ACTION_WRITE_GLOBAL_VAR]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 dialogState.dismiss()
@@ -156,7 +157,7 @@ private fun Content(paddingValues: PaddingValues, dialogState: WriteGVDialogStat
     ) {
 
         FieldTitle(
-            text = LocalI18N.current["ui.action.select.global.var"]
+            text = LocalI18N.current[I18N_R.UI_ACTION_SELECT_GLOBAL_VAR]
         )
         MediumSpacer()
         ShortXTextField(
@@ -174,7 +175,7 @@ private fun Content(paddingValues: PaddingValues, dialogState: WriteGVDialogStat
             })
         StandardSpacer()
 
-        FieldTitle(text = LocalI18N.current["ui.action.write.global.var.op"])
+        FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_WRITE_GLOBAL_VAR_OP])
         val opDropdownState = rememberDropdownSelectorState()
         MediumSpacer()
         Box(modifier = Modifier.fillMaxWidth()) {
@@ -195,7 +196,7 @@ private fun Content(paddingValues: PaddingValues, dialogState: WriteGVDialogStat
                             labelLines = listOfNotNull(
                                 LocalI18N.current[it.displayLabelKey()],
                                 if (it.isForListOnly()) {
-                                    LocalI18N.current["ui.action.write.global.var.op.list.only"]
+                                    LocalI18N.current[I18N_R.UI_ACTION_WRITE_GLOBAL_VAR_OP_LIST_ONLY]
                                 } else {
                                     null
                                 }
@@ -209,7 +210,7 @@ private fun Content(paddingValues: PaddingValues, dialogState: WriteGVDialogStat
         }
         StandardSpacer()
 
-        FieldTitle(text = LocalI18N.current["ui.action.var.auto.create.title"])
+        FieldTitle(text = LocalI18N.current[I18N_R.UI_ACTION_VAR_AUTO_CREATE_TITLE])
         MediumSpacer()
         Row(verticalAlignment = Alignment.CenterVertically) {
             ShortXSwitch(
@@ -217,14 +218,14 @@ private fun Content(paddingValues: PaddingValues, dialogState: WriteGVDialogStat
                 onCheckedChange = { dialogState.autoCreateIfMissing = it }
             )
             StandardSpacer()
-            Text(text = LocalI18N.current["ui.action.var.auto.create.summary"])
+            Text(text = LocalI18N.current[I18N_R.UI_ACTION_VAR_AUTO_CREATE_SUMMARY])
         }
         StandardSpacer()
 
         AnimatedVisibility(visible = dialogState.op.needUserInputValue()) {
             Column {
                 FieldTitle(
-                    text = LocalI18N.current["ui.global.var.value"]
+                    text = LocalI18N.current[I18N_R.UI_GLOBAL_VAR_VALUE]
                 )
                 MediumSpacer()
                 ShortXTextField(

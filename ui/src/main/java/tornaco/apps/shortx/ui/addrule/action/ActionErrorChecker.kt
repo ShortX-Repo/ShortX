@@ -6,6 +6,7 @@ import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.model.toAction
 import tornaco.apps.shortx.ui.addrule.condition.getGlobalVarRefs
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class ActionErrorChecker {
     private val logger = Logger("ActionErrorChecker")
@@ -23,7 +24,7 @@ class ActionErrorChecker {
             .apply { logger.d("getPkgSetRefs: $this") }
             .filter { shortXManager.getPkgSetByLabel(it) == null }
             .mapIndexed { index, it ->
-                "${gvWarnings.size + index + 1}. " + i18N["ui.condition.warning.message.pkgset.missing", mapOf(
+                "${gvWarnings.size + index + 1}. " + i18N[I18N_R.UI_CONDITION_WARNING_MESSAGE_PKGSET_MISSING, mapOf(
                     "label" to it
                 )]
             }

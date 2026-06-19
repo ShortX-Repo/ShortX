@@ -67,6 +67,7 @@ import tornaco.apps.shortx.ui.base.copy
 import tornaco.apps.shortx.ui.base.rememberTextInputState
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.util.ClipboardUtils
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class PkgSetDetailActivity : BaseActivity() {
@@ -106,7 +107,7 @@ fun PkgSetDetailScreen(id: String, back: () -> Unit) {
             modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
         ) {
             val noteInputState = rememberTextInputState(
-                title = LocalI18N.current["ui.common.note"],
+                title = LocalI18N.current[I18N_R.UI_COMMON_NOTE],
                 message = null,
                 showSymbolButton = false,
                 inputValidator = { InputValidateResult.OK },
@@ -128,7 +129,7 @@ fun PkgSetDetailScreen(id: String, back: () -> Unit) {
                 topBar = {
                     ShortXMediumTopAppBar(
                         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                        title = { Text(text = LocalI18N.current["ui.pkg.set.title"] + " " + LocalI18N.current["ui.common.app.${state.label.lowercase()}", emptyMap(), state.label]) },
+                        title = { Text(text = LocalI18N.current[I18N_R.UI_PKG_SET_TITLE] + " " + LocalI18N.current["ui.common.app.${state.label.lowercase()}", emptyMap(), state.label]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 back()
@@ -200,23 +201,23 @@ private fun PkgSetContent(
                 Column {
                     SmallTitle(
                         modifier = Modifier.padding(vertical = 12.dp),
-                        text = LocalI18N.current["ui.pkg.set.add.input.label"]
+                        text = LocalI18N.current[I18N_R.UI_PKG_SET_ADD_INPUT_LABEL]
                     )
                     ShortXTextField(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 16.dp, top = 16.dp),
                         placeholder = {
-                            Text(LocalI18N.current["ui.pkg.set.add.input.label"])
+                            Text(LocalI18N.current[I18N_R.UI_PKG_SET_ADD_INPUT_LABEL])
                         },
                         value = state.label,
                         onValueChange = { value ->
                             vm.updateLabel(value)
                         })
 
-                    CategoryTitle(title = LocalI18N.current["ui.common.note"])
+                    CategoryTitle(title = LocalI18N.current[I18N_R.UI_COMMON_NOTE])
                     ListItem(
-                        title = state.description.ifEmpty { LocalI18N.current["ui.common.note"] },
+                        title = state.description.ifEmpty { LocalI18N.current[I18N_R.UI_COMMON_NOTE] },
                         onClick = {
                             noteInputState.show(state.description)
                         }
@@ -231,12 +232,12 @@ private fun PkgSetContent(
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
                             SmallTitle(
-                                text = LocalI18N.current["ui.pkg.set.auto.add.newly.installed.apps.label"]
+                                text = LocalI18N.current[I18N_R.UI_PKG_SET_AUTO_ADD_NEWLY_INSTALLED_APPS_LABEL]
                                     ?: "Auto add newly installed apps"
                             )
                             Spacer(modifier = Modifier.size(4.dp))
                             Text(
-                                text = LocalI18N.current["ui.pkg.set.auto.add.newly.installed.apps.desc"]
+                                text = LocalI18N.current[I18N_R.UI_PKG_SET_AUTO_ADD_NEWLY_INSTALLED_APPS_DESC]
                                     ?: "Automatically add newly installed apps to this set.",
                                 style = MaterialTheme.typography.bodySmall
                             )
@@ -274,7 +275,7 @@ private fun AppItem(
             Toast
                 .makeText(
                     context,
-                    i18N["ui.common.copied.to.clipboard"],
+                    i18N[I18N_R.UI_COMMON_COPIED_TO_CLIPBOARD],
                     Toast.LENGTH_LONG
                 )
                 .show()

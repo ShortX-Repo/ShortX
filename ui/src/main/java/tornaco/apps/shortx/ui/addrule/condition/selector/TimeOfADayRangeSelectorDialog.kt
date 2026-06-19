@@ -26,6 +26,7 @@ import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.SmallTitle
 import tornaco.apps.shortx.ui.base.StandardSpacer
 import java.time.LocalTime
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 class TimeOfADayRangeSelectorState(
     val selected: (TimeOfADayRange) -> Unit
@@ -57,7 +58,7 @@ fun rememberTimeOfADayRangeSelectorState(
 fun TimeOfADayRangeSelector(state: TimeOfADayRangeSelectorState) {
     if (state.isShowing) {
         ShortXDialog(onDismissRequest = { state.dismiss() }, title = {
-            DialogTitle(text = LocalI18N.current["ui.common.time.of.day.selector.title"])
+            DialogTitle(text = LocalI18N.current[I18N_R.UI_COMMON_TIME_OF_DAY_SELECTOR_TITLE])
         }, buttons = {
             ShortXTextButton(onClick = {
                 if (state.isValid) {
@@ -112,23 +113,23 @@ private fun TimeContent(state: TimeOfADayRangeSelectorState) {
     })
     TimePickerDialog(dialogState = endSelectState)
 
-    SmallTitle(text = LocalI18N.current["ui.common.time.of.day.range.start"])
+    SmallTitle(text = LocalI18N.current[I18N_R.UI_COMMON_TIME_OF_DAY_RANGE_START])
     SmallSpacer()
     ShortXFilledTonalButton(onClick = { startSelectState.show() }) {
         Text(
             text = state.start?.let { DateUtils.formatLocalTime(it) }
-                ?: LocalI18N.current["ui.common.unselected"]
+                ?: LocalI18N.current[I18N_R.UI_COMMON_UNSELECTED]
         )
     }
 
     StandardSpacer()
 
-    SmallTitle(text = LocalI18N.current["ui.common.time.of.day.range.end"])
+    SmallTitle(text = LocalI18N.current[I18N_R.UI_COMMON_TIME_OF_DAY_RANGE_END])
     SmallSpacer()
     ShortXFilledTonalButton(onClick = { endSelectState.show() }) {
         Text(
             text = state.end?.let { DateUtils.formatLocalTime(it) }
-                ?: LocalI18N.current["ui.common.unselected"]
+                ?: LocalI18N.current[I18N_R.UI_COMMON_UNSELECTED]
         )
     }
 }

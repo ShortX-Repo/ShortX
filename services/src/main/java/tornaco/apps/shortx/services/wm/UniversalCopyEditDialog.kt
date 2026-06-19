@@ -13,6 +13,7 @@ import tornaco.apps.shortx.services.ui.i18NIns
 import tornaco.apps.shortx.services.ui.widget.showInSystemServer
 import tornaco.apps.shortx.ui.dialog.DialogButton
 import tornaco.apps.shortx.ui.dialog.EditTextDialogView
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 private val commonElementLP = LinearLayout.LayoutParams(
     LinearLayout.LayoutParams.MATCH_PARENT,
@@ -35,7 +36,7 @@ class UniversalCopyEditDialog(
                     context = context,
                     i18N = i18NIns,
                     style = DialogUiStyleSettings.newBuilder().setFontScale(1f).build(),
-                    title = i18NIns["ui.action.enable.universal.copy"],
+                    title = i18NIns[I18N_R.UI_ACTION_ENABLE_UNIVERSAL_COPY],
                     value = text,
                     onValueChange = {
                         userValue = it

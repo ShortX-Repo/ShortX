@@ -54,6 +54,7 @@ import tornaco.apps.shortx.ui.subscribe.LVLStateHolder
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import java.time.Duration
 import java.util.Date
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class GestureRecordListActivity : BaseActivity() {
@@ -88,7 +89,7 @@ fun GestureRecordListScreen(back: () -> Unit) {
         }
     )
 
-    val gestureDisabledMsg = LocalI18N.current["ui.settings.edge.gesture.disabled.warn"]
+    val gestureDisabledMsg = LocalI18N.current[I18N_R.UI_SETTINGS_EDGE_GESTURE_DISABLED_WARN]
     val showGestureDisabledToast = {
         Toast.makeText(context, gestureDisabledMsg, Toast.LENGTH_LONG).show()
     }
@@ -102,7 +103,7 @@ fun GestureRecordListScreen(back: () -> Unit) {
                 topBar = {
                     ShortXMediumTopAppBar(
                         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-                        title = { Text(text = LocalI18N.current["ui.settings.gesture.record"]) },
+                        title = { Text(text = LocalI18N.current[I18N_R.UI_SETTINGS_GESTURE_RECORD]) },
                         navigationIcon = {
                             IconButton(onClick = {
                                 back()
@@ -187,9 +188,9 @@ fun GestureRecordItem(record: GestureRecord, onClick: () -> Unit) {
     val context = LocalContext.current
     val orientationString =
         if (record.screenOrientation == ScreenOrientation.ScreenOrientation_P) {
-            LocalI18N.current["ui.common.screen.p"]
+            LocalI18N.current[I18N_R.UI_COMMON_SCREEN_P]
         } else {
-            LocalI18N.current["ui.common.screen.l"]
+            LocalI18N.current[I18N_R.UI_COMMON_SCREEN_L]
         }
     val durationString =
         DateUtils.formatDuration(Duration.ofMillis(record.duration))
@@ -220,7 +221,7 @@ private fun listItemOverflowMenu(
     val menuState = rememberDropdownSelectorState()
 
     val textInputState = rememberTextInputState(
-        title = LocalI18N.current["ui.common.rename"],
+        title = LocalI18N.current[I18N_R.UI_COMMON_RENAME],
         message = null,
         showSymbolButton = false,
         onSelected = {
@@ -229,17 +230,17 @@ private fun listItemOverflowMenu(
     TextInputDialog(textInputState)
 
     DropdownSelector(widthFraction = 0.33f, state = menuState, items = listOf(
-        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.view"]),
+        DropdownItem(labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_VIEW]),
             data = "view",
             icon = {
                 RemixIcon(remixName = Remix.Media.play_line)
             }),
-        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.rename"]),
+        DropdownItem(labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_RENAME]),
             data = "rename",
             icon = {
                 RemixIcon(remixName = Remix.Editor.font_size)
             }),
-        DropdownItem(labelLines = listOf(LocalI18N.current["ui.common.delete"]),
+        DropdownItem(labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_DELETE]),
             data = "delete",
             icon = {
                 RemixIcon(remixName = Remix.System.delete_bin_fill)

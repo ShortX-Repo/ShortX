@@ -51,6 +51,7 @@ import tornaco.apps.shortx.ui.base.StateViewModel
 import tornaco.apps.shortx.ui.base.TinySpacer
 import tornaco.apps.shortx.ui.theme.ErrorRed
 import tornaco.apps.shortx.ui.theme.ShortXTheme
+import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 @AndroidEntryPoint
@@ -170,7 +171,7 @@ private fun BaseSelectorActivity<Action.SwitchCase>.SwitchCaseSelectorDialogSele
                         title = {
                             Text(
                                 LocalI18N.current.get(
-                                    "ui.action.switch.case",
+                                    I18N_R.UI_ACTION_SWITCH_CASE,
                                     fallback = "Switch case"
                                 )
                             )
@@ -223,7 +224,7 @@ private fun BaseSelectorActivity<Action.SwitchCase>.SwitchCaseSelectorDialogSele
                         ) {
                             SmallTitle(
                                 text = LocalI18N.current.get(
-                                    "ui.action.switch.case.case",
+                                    I18N_R.UI_ACTION_SWITCH_CASE_CASE,
                                     fallback = "Case"
                                 ),
                                 modifier = Modifier
@@ -262,7 +263,7 @@ private fun BaseSelectorActivity<Action.SwitchCase>.SwitchCaseSelectorDialogSele
                                 }
                             },
                             titleLines = listOf(
-                                it.description.fallbackOnEmpty(LocalI18N.current["ui.common.unnamed"])
+                                it.description.fallbackOnEmpty(LocalI18N.current[I18N_R.UI_COMMON_UNNAMED])
                             ),
                             textDecoration = if (!it.isDisabled) TextDecoration.None else TextDecoration.LineThrough,
                             titleColor = if (!it.isDisabled) Color.Unspecified else ErrorRed,
@@ -318,8 +319,8 @@ private fun BaseSelectorActivity<Action.SwitchCase>.SwitchCaseSelectorDialogSele
                             )
                             TinySpacer()
                             Text(
-                                LocalI18N.current["ui.common.add"] + " " + LocalI18N.current.get(
-                                    "ui.action.switch.case.case",
+                                LocalI18N.current[I18N_R.UI_COMMON_ADD] + " " + LocalI18N.current.get(
+                                    I18N_R.UI_ACTION_SWITCH_CASE_CASE,
                                     fallback = "Case"
                                 )
                             )
