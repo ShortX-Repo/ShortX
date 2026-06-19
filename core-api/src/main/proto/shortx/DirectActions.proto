@@ -54,6 +54,7 @@ message DirectAction {
   ActionAsyncMode actionAsyncMode = 18;
   int32 requireMinShortXProtoVersion = 19;
   string iconColor = 20;
+  bool isLocked = 21;
 }
 
 message DirectActionHook {
