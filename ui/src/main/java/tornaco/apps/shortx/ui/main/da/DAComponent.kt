@@ -536,22 +536,6 @@ private fun daListItemOverflowMenu(
                         RemixIcon(Remix.Map.pushpin_2_line)
                     })
             },
-            // 添加锁定/解锁选项
-            if (da.isLocked) {
-                DropdownItem(
-                    labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_UNLOCK]),
-                    data = DAItemMenuOptions.Unlock,
-                    icon = {
-                        RemixIcon(Remix.System.lock_unlock_line)
-                    })
-            } else {
-                DropdownItem(
-                    labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_LOCK]),
-                    data = DAItemMenuOptions.Lock,
-                    icon = {
-                        RemixIcon(Remix.System.lock_line)
-                    })
-            },
             DropdownItem(
                 labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_SELECT]),
                 data = DAItemMenuOptions.Select,
@@ -747,14 +731,6 @@ private fun daListItemOverflowMenu(
                     handler.togglePin(da)
                 }
 
-                DAItemMenuOptions.Lock -> {
-                    handler.toggleLock(da)
-                }
-
-                DAItemMenuOptions.Unlock -> {
-                    handler.toggleLock(da)
-                }
-
                 DAItemMenuOptions.Select -> {
                     handler.select(da)
                 }
@@ -766,7 +742,7 @@ private fun daListItemOverflowMenu(
 
 
 enum class DAItemMenuOptions {
-    Select, Dup, DeepLink, ShellCommand, Delete, Edit, Share, Shortcut, DynamicShortcut, RemoveDynamicShortcut, CreateApk, MoveToSet, MoveOutSet, ViewEvaRecord, Pin, Unpin, Lock, Unlock
+    Select, Dup, DeepLink, ShellCommand, Delete, Edit, Share, Shortcut, DynamicShortcut, RemoveDynamicShortcut, CreateApk, MoveToSet, MoveOutSet, ViewEvaRecord, Pin, Unpin
 }
 
 @Composable

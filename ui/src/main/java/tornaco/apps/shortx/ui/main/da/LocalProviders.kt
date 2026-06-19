@@ -19,7 +19,6 @@ interface DAItemHandler {
     fun moveOutSet(da: DirectActionUM) {}
     fun stopAllJobs(da: DirectActionUM) {}
     fun togglePin(da: DirectActionUM) {}
-    fun toggleLock(da: DirectActionUM) {}
 }
 
 interface DASetItemHandler {
