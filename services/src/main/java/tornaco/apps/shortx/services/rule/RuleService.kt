@@ -751,39 +751,46 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     fun getRuleCount() = ruleSettingsStore.getRuleCount()
 
     fun addDirectAction(unMaskedDA: DirectAction) {
-        // Check Subscribe state.
-        val extras = unMaskedDA.extrasList
-        val token = extras.firstOrNull { it.first == BuildPropInternal.APP_PACKAGE_NAME }
-        logger.logOnDebug("addDirectAction, token: ${token?.second?.maskAll()}")
-        // Check if has advanced action or facts
+        val existing = getDirectActionById(unMaskedDA.id)
+        
+        // Skip subscription check if only isLocked field is changed
+        val isOnlyLockChanged = existing != null && 
+                unMaskedDA.isLocked != existing.isLocked &&
+                unMaskedDA.toBuilder().setIsLocked(existing.isLocked).build() == existing
+        
+        if (!isOnlyLockChanged) {
+            // Check Subscribe state.
+            val extras = unMaskedDA.extrasList
+            val token = extras.firstOrNull { it.first == BuildPropInternal.APP_PACKAGE_NAME }
+            logger.logOnDebug("addDirectAction, token: ${token?.second?.maskAll()}")
+            // Check if has advanced action or facts
 
-        var canAddRule = true
-        val subOnlyModels = subscribedOnlyModels()
+            var canAddRule = true
+            val subOnlyModels = subscribedOnlyModels()
 
-        if ((unMaskedDA.actionsList).any { actionProto ->
-                subOnlyModels.any { actionProto is_ it.java }
+            if ((unMaskedDA.actionsList).any { actionProto ->
+                    subOnlyModels.any { actionProto is_ it.java }
+                }
+            ) {
+                logger.logOnDebug("This DA contains sub only model.")
+                if (token == null || token.second.isNullOrEmpty()) {
+                    canAddRule = false
+                }
             }
-        ) {
-            logger.logOnDebug("This DA contains sub only model.")
-            if (token == null || token.second.isNullOrEmpty()) {
-                canAddRule = false
-            }
-        }
 
-        if (!canAddRule) {
-            logger.logOnDebug("Can not add DA.")
-            daObs.broadcast {
-                // "" means need subscribed.
-                kotlin.runCatching { it.onAddOrUpdate("") }
-                    .onFailure { logger.e("Call onAddOrUpdate") }
+            if (!canAddRule) {
+                logger.logOnDebug("Can not add DA.")
+                daObs.broadcast {
+                    // "" means need subscribed.
+                    kotlin.runCatching { it.onAddOrUpdate("") }
+                        .onFailure { logger.e("Call onAddOrUpdate") }
+                }
+                return
             }
-            return
         }
 
         // Must clear rule extras!
         val da = DirectAction.newBuilder(unMaskedDA).clearExtras().build()
-
-        val existing = getDirectActionById(da.id)
 
         if (existing == null) {
             logger.d("addDirectAction: $da")
