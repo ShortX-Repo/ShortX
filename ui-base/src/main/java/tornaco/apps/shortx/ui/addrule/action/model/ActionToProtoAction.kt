@@ -2617,6 +2617,18 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .build()
         }
 
+        is Action.OpenUrl -> {
+            tornaco.apps.shortx.core.proto.action.OpenUrl.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNote(overrideNote ?: note)
+                .setUrl(url)
+                .setBrowserPkg(browserPkg)
+                .build()
+        }
+
         is Action.NoAction -> {
             NoAction.newBuilder()
                 .setId(overrideId ?: id)

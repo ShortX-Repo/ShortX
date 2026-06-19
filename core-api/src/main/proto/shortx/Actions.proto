@@ -2393,3 +2393,14 @@ message GenerateQRCode {
   string note = 99;
   string id = 100;
 }
+
+message OpenUrl {
+  string url = 1;
+  string browserPkg = 2;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}

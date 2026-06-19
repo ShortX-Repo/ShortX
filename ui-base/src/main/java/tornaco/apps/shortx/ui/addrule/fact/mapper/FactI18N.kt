@@ -3,6 +3,7 @@ package tornaco.apps.shortx.ui.addrule.fact.mapper
 import android.view.KeyEvent
 import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.core.I18N
+import tornaco.apps.shortx.core.i18n.I18N_R
 import tornaco.apps.shortx.core.alarm.FixedSetting
 import tornaco.apps.shortx.core.alarm.isEveryDay
 import tornaco.apps.shortx.core.alarm.isNo
@@ -293,7 +294,7 @@ fun labelAndDescriptionForFactSelector(i18n: I18N, fact: KClass<out Fact>): Pair
         }
 
         Fact.BrowserIntercept::class -> {
-            i18n.get(key = "ui.fact.browser.intercept", fallback = "Browser link intercept") to null
+            i18n.get(key = I18N_R.UI_FACT_BROWSER_INTERCEPT, fallback = "Browser link intercept") to null
         }
 
         Fact.Logcat::class -> {
@@ -948,7 +949,7 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
 
         is Fact.BrowserIntercept -> {
             listOf(
-                i18N.get(key = "ui.fact.browser.intercept", fallback = "Browser link intercept")
+                i18N.get(key = I18N_R.UI_FACT_BROWSER_INTERCEPT, fallback = "Browser link intercept")
             )
         }
 

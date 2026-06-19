@@ -136,6 +136,11 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
     }
     GenerateQRCodeSelectorDialog(state = generateQRCodeSelectorState)
 
+    val openUrlSelectorState = rememberOpenUrlSelectorState {
+        addAction(it)
+    }
+    OpenUrlSelectorDialog(state = openUrlSelectorState)
+
     val showTextFieldSelectorState = rememberShowTextFieldDialogSettingsDialogState {
         addAction(it)
     }
@@ -358,6 +363,11 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
 
             Action.GenerateQRCode::class -> {
                 generateQRCodeSelectorState.show(source.getActionAs<Action.GenerateQRCode>())
+                true
+            }
+
+            Action.OpenUrl::class -> {
+                openUrlSelectorState.show(source.getActionAs<Action.OpenUrl>())
                 true
             }
 
@@ -686,6 +696,7 @@ fun UiActions(
         Action.TakePhoto::class,
         Action.ParseQRCode::class,
         Action.GenerateQRCode::class,
+        Action.OpenUrl::class,
         Action.ShowToast::class,
         Action.ShowDanmu::class,
         Action.ShowStatusBarChip::class,

@@ -4,6 +4,7 @@ import android.content.ComponentName
 import android.media.AudioManager
 import androidx.compose.runtime.Composable
 import tornaco.apps.shortx.core.I18N
+import tornaco.apps.shortx.core.i18n.I18N_R
 import tornaco.apps.shortx.core.proto.action.BreakActionExecuteScope
 import tornaco.apps.shortx.core.proto.action.ContextMenuAction
 import tornaco.apps.shortx.core.proto.action.CurrentLocationProviderPreference
@@ -411,6 +412,14 @@ fun labelAndDescriptionForActionSelector(
         ) to i18N.get(
             key = "ui.action.generate.qrcode.desc",
             fallback = "Generate a QR code image from text"
+        )
+
+        Action.OpenUrl::class -> i18N.get(
+            key = I18N_R.UI_ACTION_OPEN_URL,
+            fallback = "Open URL"
+        ) to i18N.get(
+            key = I18N_R.UI_ACTION_OPEN_URL_DESC,
+            fallback = "Open a URL in a browser (excludes ShortX)"
         )
 
         Action.SwitchCase::class -> i18N.get(
@@ -1618,6 +1627,12 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
             i18N.get(key = "ui.action.generate.qrcode", fallback = "Generate QR code"),
             action.text.ifBlank { null },
             action.targetDirPath.ifBlank { null }
+        )
+
+        is Action.OpenUrl -> listOfNotNull(
+            i18N.get(key = I18N_R.UI_ACTION_OPEN_URL, fallback = "Open URL"),
+            action.url.ifBlank { null },
+            action.browserPkg.ifBlank { null }
         )
 
         is Action.PluginAction -> listOfNotNull("PLUGIN NOT SUPPORTED.")

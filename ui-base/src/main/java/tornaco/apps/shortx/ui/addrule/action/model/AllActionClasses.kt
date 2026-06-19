@@ -207,4 +207,5 @@ val allActionClasses = listOf(
     Action.TakePhoto::class,
     Action.ParseQRCode::class,
     Action.GenerateQRCode::class,
+    Action.OpenUrl::class,
 )

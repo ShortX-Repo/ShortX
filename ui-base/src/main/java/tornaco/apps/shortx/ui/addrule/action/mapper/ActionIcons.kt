@@ -772,6 +772,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Device.qr_code_fill
         }
 
+        Action.OpenUrl::class -> {
+            Remix.Business.global_line
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }
