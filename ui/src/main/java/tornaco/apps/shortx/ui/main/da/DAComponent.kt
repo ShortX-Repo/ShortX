@@ -116,6 +116,7 @@ fun DirectActionItem(
                 hasFuncParameter = da.hasAnyParameter,
                 colorfulCard = colorfulCard,
                 isPinned = da.isPinned,
+                isLocked = da.isLocked,
                 onClick = {
                     if (isSelectionMode) {
                         onSelectionChange(!selected)
@@ -268,6 +269,7 @@ private fun DAListItem(
     hasFuncParameter: Boolean,
     colorfulCard: Boolean,
     isPinned: Boolean = false,
+    isLocked: Boolean = false,
     onClick: () -> Unit,
     run: () -> Unit,
     onLongClick: () -> Unit,
@@ -398,6 +400,14 @@ private fun DAListItem(
                         modifier = Modifier.size(12.dp)
                     )
                 }
+                if (isLocked) {
+                    TinySpacer()
+                    RemixIcon(
+                        remixName = Remix.System.lock_fill,
+                        tint = if (colorfulCard) themedTextColor(iconColor) else MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(12.dp)
+                    )
+                }
             }
             SmallSpacer()
             Text(
@@ -520,7 +530,12 @@ private fun daListItemOverflowMenu(
 
     DropdownSelector(
         widthFraction = menuDropdownFraction, state = menuState, items = listOfNotNull(
-            // 添加置顶/取消置顶选项（放在第一个位置）
+            DropdownItem(
+                labelLines = listOf(i18N[if (da.isLocked) I18N_R.UI_COMMON_UNLOCK else I18N_R.UI_COMMON_LOCK]),
+                data = DAItemMenuOptions.ToggleLock,
+                icon = {
+                    RemixIcon(if (da.isLocked) Remix.System.lock_unlock_line else Remix.System.lock_fill)
+                }),
             if (da.isPinned) {
                 DropdownItem(
                     labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_UNPIN]),
@@ -563,26 +578,26 @@ private fun daListItemOverflowMenu(
                 icon = {
                     RemixIcon(Remix.System.delete_bin_5_line)
                 }),
-            DropdownItem(
+            if (!da.isLocked) DropdownItem(
                 labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_INSTALL_AS_APK]),
                 data = DAItemMenuOptions.CreateApk,
                 badge = badge,
                 icon = {
                     RemixIcon(Remix.Logos.android_line)
-                }),
-            DropdownItem(
+                }) else null,
+            if (!da.isLocked) DropdownItem(
                 labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_DUP]),
                 data = DAItemMenuOptions.Dup,
                 badge = badge,
                 icon = {
                     RemixIcon(Remix.Document.file_copy_2_fill)
-                }),
-            DropdownItem(
+                }) else null,
+            if (!da.isLocked) DropdownItem(
                 labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_EDIT]),
                 data = DAItemMenuOptions.Edit,
                 icon = {
                     RemixIcon(Remix.Design.edit_line)
-                }),
+                }) else null,
             DropdownItem(
                 labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_SHARE]),
                 data = DAItemMenuOptions.Share,
@@ -602,31 +617,31 @@ private fun daListItemOverflowMenu(
                 icon = {
                     RemixIcon(Remix.Editor.hashtag)
                 }),
-            DropdownItem(
+            if (!da.isLocked) DropdownItem(
                 labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_MOVE_TO_SET]),
                 data = DAItemMenuOptions.MoveToSet,
                 badge = badge,
                 icon = {
                     RemixIcon(Remix.Document.folders_fill)
-                }),
-            DropdownItem(
+                }) else null,
+            if (!da.isLocked) DropdownItem(
                 labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_MOVE_OUT_SET]),
                 data = DAItemMenuOptions.MoveOutSet,
                 icon = {
                     RemixIcon(Remix.Document.folder_reduce_fill)
-                }),
+                }) else null,
             DropdownItem(
                 labelLines = listOf(LocalI18N.current[I18N_R.UI_SETTINGS_EVA_RECORD]),
                 data = DAItemMenuOptions.ViewEvaRecord,
                 icon = {
                     RemixIcon(Remix.System.history_fill)
                 }),
-            DropdownItem(
+            if (!da.isLocked) DropdownItem(
                 labelLines = listOf(LocalI18N.current[I18N_R.UI_COMMON_DELETE]),
                 data = DAItemMenuOptions.Delete,
                 icon = {
                     RemixIcon(Remix.System.delete_bin_4_line)
-                })
+                }) else null
         ), onSelect = {
             when (it.data) {
                 DAItemMenuOptions.Shortcut -> {
@@ -731,6 +746,10 @@ private fun daListItemOverflowMenu(
                     handler.togglePin(da)
                 }
 
+                DAItemMenuOptions.ToggleLock -> {
+                    handler.toggleLock(da)
+                }
+
                 DAItemMenuOptions.Select -> {
                     handler.select(da)
                 }
@@ -742,7 +761,7 @@ private fun daListItemOverflowMenu(
 
 
 enum class DAItemMenuOptions {
-    Select, Dup, DeepLink, ShellCommand, Delete, Edit, Share, Shortcut, DynamicShortcut, RemoveDynamicShortcut, CreateApk, MoveToSet, MoveOutSet, ViewEvaRecord, Pin, Unpin
+    ToggleLock, Select, Dup, DeepLink, ShellCommand, Delete, Edit, Share, Shortcut, DynamicShortcut, RemoveDynamicShortcut, CreateApk, MoveToSet, MoveOutSet, ViewEvaRecord, Pin, Unpin
 }
 
 @Composable

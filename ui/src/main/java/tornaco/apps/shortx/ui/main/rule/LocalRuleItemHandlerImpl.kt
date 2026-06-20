@@ -109,7 +109,7 @@ fun getLocalRuleItemHandler(
         }
 
         override fun toggleLock(rule: RuleUM) {
-            vm.toggleLock(rule)
+            vm.toggleLock(rule, props.firstOrNull())
         }
     }
     return handler

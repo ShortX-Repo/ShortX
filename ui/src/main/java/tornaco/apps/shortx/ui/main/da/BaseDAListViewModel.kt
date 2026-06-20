@@ -377,4 +377,20 @@ abstract class BaseDAListViewModel(context: Context) :
             pinDA(da)
         }
     }
+
+    fun toggleLock(da: DirectActionUM, token: String?) {
+        viewModelScope.launch {
+            shortXManager.getDirectActionById(da.id)?.let { current ->
+                val updated = current.toBuilder()
+                    .setIsLocked(!current.isLocked)
+                    .addAllExtras(mutableListOf<StringPair>().apply {
+                        if (!token.isNullOrEmpty()) {
+                            add((BuildPropInternal.APP_PACKAGE_NAME to token).toStringPair())
+                        }
+                    })
+                    .build()
+                shortXManager.addDirectAction(updated)
+            }
+        }
+    }
 }

@@ -68,7 +68,8 @@ fun ContextViewModel<*, *>.daToDirectActionUM(
         directAction = directAction,
         versionCode = directAction.versionCode,
         hasAnyParameter = directAction.parametersList.isNotEmpty(),
-        isPinned = pinnedDAIds.contains(directAction.id)
+        isPinned = pinnedDAIds.contains(directAction.id),
+        isLocked = directAction.isLocked
     )
 }
 

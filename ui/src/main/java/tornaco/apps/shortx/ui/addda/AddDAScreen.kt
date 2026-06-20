@@ -93,11 +93,13 @@ class AddDirectActionActivity : BaseActivity() {
     companion object {
         private const val KEY_DA_ID = "daId"
         private const val KEY_DA_SET_ID = "daSetId"
+        private const val KEY_READ_ONLY = "readOnly"
 
         @JvmStatic
-        fun edit(context: Context, daId: String) {
+        fun edit(context: Context, daId: String, readOnly: Boolean = false) {
             val starter = Intent(context, AddDirectActionActivity::class.java)
                 .putExtra(KEY_DA_ID, daId)
+                .putExtra(KEY_READ_ONLY, readOnly)
             context.startActivity(starter)
         }
 
@@ -112,6 +114,7 @@ class AddDirectActionActivity : BaseActivity() {
     @Composable
     override fun Content() {
         val daId = intent.getStringExtra(KEY_DA_ID)
+        val readOnly = intent.getBooleanExtra(KEY_READ_ONLY, false)
         val screenTitle = if (daId == null) {
             LocalI18N.current[I18N_R.UI_TITLE_ADD_DA]
         } else {
@@ -119,7 +122,7 @@ class AddDirectActionActivity : BaseActivity() {
         }
         // For create from a set chip.
         val daSetId = intent.getStringExtra(KEY_DA_SET_ID)
-        AddDirectActionScreen(daId = daId, daSetId = daSetId, screenTitle = screenTitle) {
+        AddDirectActionScreen(daId = daId, daSetId = daSetId, screenTitle = screenTitle, readOnly = readOnly) {
             setResult(it.select(RESULT_OK, RESULT_CANCELED))
             finish()
         }
