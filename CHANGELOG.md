@@ -1,5 +1,39 @@
 # Change Log / 变更日志
 
+## 2026-06-20
+
+### Edge Gesture IME Disable / 边缘手势输入法禁用
+- 新增边缘手势触发器属性"输入法显示时禁用"，开启后当输入法显示时该边缘手势将不会触发，避免打字时误触。 / Added "disable when IME is shown" option to edge gesture triggers; when enabled, the gesture won't fire while the input method is visible, preventing accidental triggers while typing.
+- 优化了检测时机：在手势捕获的最早阶段就检查输入法状态，直接跳过捕获而非捕获后回放，消除了之前实现的延迟。 / Optimized the check timing to inspect IME status at the earliest gesture-capture stage, skipping capture entirely instead of capturing and replaying, eliminating the delay from the previous implementation.
+
+### System Environment Variables UI / 系统环境变量界面
+- 新增系统环境变量独立 Activity 页面，可在设置中打开查看所有可用的系统环境变量。 / Added standalone system environment variables list Activity with a settings entry for viewing all available system env variables.
+- 新增 13 个系统环境变量并支持实时值显示和下拉刷新。 / Added 13 new system environment variables with live value display and pull-to-refresh support.
+- 修复了系统环境变量列表使用正确的 API 获取数据。 / Fixed system env list to use the correct API for fetching data.
+
+### OpenUrl Action / 打开网址动作
+- 新增 OpenUrl 动作，支持在浏览器中打开指定 URL。 / Added OpenUrl action for opening URLs in the browser.
+- 为 OpenUrl 动作的浏览器包名字段添加了应用选择器。 / Added app picker to the OpenUrl browser package field.
+
+### QR Code Actions / 二维码动作
+- 新增 ParseQRCode 和 GenerateQRCode 动作。 / Added ParseQRCode and GenerateQRCode actions.
+- 修复了二维码处理时的缓存目录问题。 / Fixed cache directory issues when processing QR codes.
+
+### TakePhoto Action / 拍照动作
+- 新增 TakePhoto 动作，可调用系统相机拍照。 / Added TakePhoto action to invoke the system camera.
+
+### Rule Engine Enhancement / 规则引擎增强
+- 新增同步发布 fact 的 publishFactAwait 方法，用于阻塞式 fact 处理。 / Added synchronous publishFactAwait for blocking fact processing.
+
+### Browser Intercept / 浏览器拦截
+- 新增 BrowserIntercept 触发器和 factContextData 支持。 / Added BrowserIntercept trigger and factContextData support.
+
+### i18n Code Generation / 国际化代码生成
+- 新增编译时 i18n key 常量代码生成功能。 / Added compile-time i18n key constants code generation.
+
+### InputService Fix / 输入服务修复
+- 将 InputFilter 重试限制的 watchdog fatal error 改为 warning 日志。 / Replaced watchdog fatal error with warning log for InputFilter retry limit.
+
 ## 2026-04-18
 
 ### Services Gesture Intercept Removal / Services 手势拦截模式移除
