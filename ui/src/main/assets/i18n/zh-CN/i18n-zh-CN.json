@@ -545,8 +545,6 @@
   "ui.common.pinned": "置顶",
   "ui.common.pinned.items": "置顶项目",
   "ui.common.unpin": "取消置顶",
-  "ui.common.lock": "锁定",
-  "ui.common.unlock": "解锁",
   "ui.title.jobs.count": "{count}个任务",
   "ui.fact.overlay.button.click": "点击侧边栏按钮",
   "ui.fact.app.become.bg": "应用回到后台",

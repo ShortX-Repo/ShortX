@@ -451,8 +451,6 @@
   "ui.common.pinned": "Pinned",
   "ui.common.pinned.items": "Pinned Items",
   "ui.common.unpin": "Unpin",
-  "ui.common.lock": "Lock",
-  "ui.common.unlock": "Unlock",
   "ui.common.only.show": "Only show",
   "ui.common.show.all": "Show all",
   "ui.common.copied.to.clipboard": "Has been copied to clipboard",

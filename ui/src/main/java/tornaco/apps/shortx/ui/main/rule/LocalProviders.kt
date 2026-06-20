@@ -18,7 +18,6 @@ interface RuleItemHandler {
     fun setRuleEnabled(rule: RuleUM, enable: Boolean)
     fun extractAsDA(title: String, rule: RuleUM, token: String?)
     fun togglePin(rule: RuleUM)
-    fun toggleLock(rule: RuleUM)
 }
 
 interface RuleSetItemHandler {

@@ -99,13 +99,11 @@ class AddRuleActivity : BaseActivity() {
     companion object {
         private const val KEY_RULE_ID = "ruleId"
         private const val KEY_RULE_SET_ID = "ruleSetId"
-        private const val KEY_READ_ONLY = "readOnly"
 
         @JvmStatic
-        fun edit(context: Context, ruleId: String, readOnly: Boolean = false) {
+        fun edit(context: Context, ruleId: String) {
             val starter = Intent(context, AddRuleActivity::class.java)
                 .putExtra(KEY_RULE_ID, ruleId)
-                .putExtra(KEY_READ_ONLY, readOnly)
             context.startActivity(starter)
         }
 
@@ -121,11 +119,9 @@ class AddRuleActivity : BaseActivity() {
     override fun Content() {
         val ruleId = intent.getStringExtra(KEY_RULE_ID)
         val ruleSetId = intent.getStringExtra(KEY_RULE_SET_ID)
-        val isReadOnly = intent.getBooleanExtra(KEY_READ_ONLY, false)
         AddRuleScreen(
             ruleId = ruleId,
             ruleSetId = ruleSetId,
-            readOnly = isReadOnly,
             screenTitle = if (ruleId != null) {
                 LocalI18N.current[I18N_R.UI_TITLE_EDIT_RULE]
             } else {
@@ -299,15 +295,13 @@ fun AddRuleScreen(
             ) {
                 RemixIcon(remixName = Remix.Editor.flow_chart)
             }
-            if (!readOnly) {
-                IconButton(
-                    enabled = canSaveWithoutChanges || hasAnyChanges,
-                    onClick = {
-                        vm.save(shortXProps.firstOrNull())
-                        back(true)
-                    }) {
-                    RemixIcon(remixName = saveIconName)
-                }
+            IconButton(
+                enabled = canSaveWithoutChanges || hasAnyChanges,
+                onClick = {
+                    vm.save(shortXProps.firstOrNull())
+                    back(true)
+                }) {
+                RemixIcon(remixName = saveIconName)
             }
         },
         scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior(),

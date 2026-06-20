@@ -404,13 +404,4 @@ abstract class BaseRuleListViewModel(context: Context) :
             pinRule(rule)
         }
     }
-
-    fun toggleLock(rule: RuleUM) {
-        viewModelScope.launch {
-            shortXManager.getRuleById(rule.id)?.let { current ->
-                val updated = current.toBuilder().setIsLocked(!current.isLocked).build()
-                shortXManager.addRule(updated)
-            }
-        }
-    }
 }
