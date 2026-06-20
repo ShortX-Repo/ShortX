@@ -811,10 +811,6 @@ class RuleService(shortXContext: ShortXContext) : SystemService(shortXContext, "
     fun deleteDirectAction(id: String) {
         val existing = dasSettingsStore.getDirectActionById(id)
         if (existing != null) {
-            if (existing.isLocked) {
-                logger.w("Cannot delete locked DA: $id")
-                return
-            }
             dasSettingsStore.deleteDirectAction(id)
             daObs.broadcast {
                 kotlin.runCatching { it.onDelete(id) }

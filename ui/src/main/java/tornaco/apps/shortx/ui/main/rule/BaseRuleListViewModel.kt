@@ -405,17 +405,10 @@ abstract class BaseRuleListViewModel(context: Context) :
         }
     }
 
-    fun toggleLock(rule: RuleUM, token: String?) {
+    fun toggleLock(rule: RuleUM) {
         viewModelScope.launch {
             shortXManager.getRuleById(rule.id)?.let { current ->
-                val updated = current.toBuilder()
-                    .setIsLocked(!current.isLocked)
-                    .addAllExtras(mutableListOf<StringPair>().apply {
-                        if (!token.isNullOrEmpty()) {
-                            add((BuildPropInternal.APP_PACKAGE_NAME to token).toStringPair())
-                        }
-                    })
-                    .build()
+                val updated = current.toBuilder().setIsLocked(!current.isLocked).build()
                 shortXManager.addRule(updated)
             }
         }

@@ -47,7 +47,7 @@ fun getLocalDAItemHandler(
         }
 
         override fun edit(da: DirectActionUM) {
-            AddDirectActionActivity.edit(context, da.id, readOnly = da.isLocked)
+            AddDirectActionActivity.edit(context, da.id)
         }
 
         override fun click(da: DirectActionUM) {
@@ -128,10 +128,6 @@ fun getLocalDAItemHandler(
         
         override fun togglePin(da: DirectActionUM) {
             vm.togglePin(da)
-        }
-
-        override fun toggleLock(da: DirectActionUM) {
-            vm.toggleLock(da, props.firstOrNull())
         }
     }
 
