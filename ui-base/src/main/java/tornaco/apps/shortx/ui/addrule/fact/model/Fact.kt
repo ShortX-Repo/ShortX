@@ -2435,9 +2435,7 @@ sealed interface Fact : Parcelable {
         override val isDisabled: Boolean = false,
         override val tag: String = "",
         override val customContextDataKey: CustomContextDataKey = CustomContextDataKey.getDefaultInstance(),
-        override val id: String = defaultNewFactId(),
-        val autoOpenInBrowser: Boolean = false,
-        val autoOpenBrowserPkg: String = ""
+        override val id: String = defaultNewFactId()
     ) : Fact {
         override fun clone(
             id: String,

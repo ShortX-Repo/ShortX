@@ -1212,9 +1212,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 customContextDataKey = data.customContextDataKey,
                 note = data.note,
                 isDisabled = data.isDisabled,
-                tag = data.tag,
-                autoOpenInBrowser = data.autoOpenInBrowser,
-                autoOpenBrowserPkg = data.autoOpenBrowserPkg
+                tag = data.tag
             )
         }
 

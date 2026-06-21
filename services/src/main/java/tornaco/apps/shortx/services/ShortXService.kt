@@ -103,8 +103,6 @@ import tornaco.apps.shortx.core.rule.action.su.ISu
 import tornaco.apps.shortx.core.rule.action.wrap
 import tornaco.apps.shortx.core.rule.replaceGlobalVarValues
 import tornaco.apps.shortx.core.rule.replaceLocalVarValues
-import tornaco.apps.shortx.core.rule.is_
-import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.systemui.IQSTileHost
 import tornaco.apps.shortx.core.util.ApkUtils
 import tornaco.apps.shortx.core.util.BitmapUtils
@@ -597,63 +595,6 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                     "sourceAppPkg" to sourceAppPkg
                 )
             }
-
-            // Check if any enabled rule has autoOpenInBrowser set for BrowserIntercept
-            val browserInterceptFact = tornaco.apps.shortx.core.proto.fact.BrowserIntercept::class.java
-            val matchingRule = shortXContext.rule.getAllEnabledRules().firstOrNull { rule ->
-                rule.factsList.any { fact ->
-                    fact.is_(browserInterceptFact) && run {
-                        val bf = fact unpack_ browserInterceptFact
-                        bf.autoOpenInBrowser
-                    }
-                }
-            }
-
-            if (matchingRule != null) {
-                val browserFactProto = matchingRule.factsList.first { fact ->
-                    fact.is_(browserInterceptFact)
-                } unpack_ browserInterceptFact
-
-                val browserPkg = browserFactProto.autoOpenBrowserPkg.ifBlank {
-                    resolveDefaultBrowserForIntercept()
-                }
-
-                logger.d("onBrowserIntercept: auto-open URL in browser: $url, pkg: $browserPkg")
-                try {
-                    val intent = android.content.Intent(android.content.Intent.ACTION_VIEW)
-                        .setData(uri)
-                        .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
-                    if (browserPkg.isNotBlank()) {
-                        intent.setPackage(browserPkg)
-                    }
-                    context.startActivity(intent)
-                } catch (e: Exception) {
-                    logger.e(e, "onBrowserIntercept: failed to open URL in browser")
-                }
-            }
-        }
-
-        private fun resolveDefaultBrowserForIntercept(): String {
-            val SHORTX_PKG = "tornaco.apps.shortx"
-            val pm = context.packageManager
-            val browserIntent = android.content.Intent(
-                android.content.Intent.ACTION_VIEW,
-                android.net.Uri.parse("https://example.com")
-            )
-            val resolveInfo = pm.resolveActivity(
-                browserIntent,
-                android.content.pm.PackageManager.MATCH_DEFAULT_ONLY
-            )
-            val defaultPkg = resolveInfo?.activityInfo?.packageName.orEmpty()
-            if (defaultPkg.isNotBlank() && defaultPkg != SHORTX_PKG) {
-                return defaultPkg
-            }
-            val allBrowsers = pm.queryIntentActivities(
-                browserIntent,
-                android.content.pm.PackageManager.MATCH_ALL
-            )
-            return allBrowsers.firstOrNull { it.activityInfo.packageName != SHORTX_PKG }
-                ?.activityInfo?.packageName.orEmpty()
         }
 
         override fun getAllRingtones(): List<ByteArrayWrapper> {
