@@ -911,6 +911,8 @@ fun Fact.toProtoFact(
                 .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)
                 .setCustomContextDataKey(customContextDataKey)
+                .setOpenUrlAfterTrigger(openUrlAfterTrigger)
+                .setOpenUrlBrowserPkg(openUrlBrowserPkg)
                 .build()
         }
 

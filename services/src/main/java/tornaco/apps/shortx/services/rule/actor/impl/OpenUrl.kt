@@ -28,7 +28,7 @@ object OpenUrl : Actor {
         val cv = RuleContextAndVars(params)
         val url = openUrl.url.compileContextAndVars(cv)
         val browserPkg = openUrl.browserPkg.compileContextAndVars(cv).ifBlank {
-            resolveDefaultBrowser(params)
+            resolveDefaultBrowser(params.androidContext)
         }
 
         logger.d("openUrl: $url, browserPkg: $browserPkg")
@@ -43,17 +43,18 @@ object OpenUrl : Actor {
         )
         Actor.Res.EMPTY
     }
+}
 
-    private fun resolveDefaultBrowser(params: HandleParams): String {
-        val pm = params.androidContext.packageManager
-        val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"))
-        val resolveInfo = pm.resolveActivity(browserIntent, PackageManager.MATCH_DEFAULT_ONLY)
-        val defaultPkg = resolveInfo?.activityInfo?.packageName.orEmpty()
-        if (defaultPkg.isNotBlank() && defaultPkg != SHORTX_PKG) {
-            return defaultPkg
-        }
-        val allBrowsers = pm.queryIntentActivities(browserIntent, PackageManager.MATCH_ALL)
-        return allBrowsers.firstOrNull { it.activityInfo.packageName != SHORTX_PKG }
-            ?.activityInfo?.packageName.orEmpty()
+fun resolveDefaultBrowser(context: android.content.Context): String {
+    val shortxPkg = "tornaco.apps.shortx"
+    val pm = context.packageManager
+    val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"))
+    val resolveInfo = pm.resolveActivity(browserIntent, PackageManager.MATCH_DEFAULT_ONLY)
+    val defaultPkg = resolveInfo?.activityInfo?.packageName.orEmpty()
+    if (defaultPkg.isNotBlank() && defaultPkg != shortxPkg) {
+        return defaultPkg
     }
+    val allBrowsers = pm.queryIntentActivities(browserIntent, PackageManager.MATCH_ALL)
+    return allBrowsers.firstOrNull { it.activityInfo.packageName != shortxPkg }
+        ?.activityInfo?.packageName.orEmpty()
 }

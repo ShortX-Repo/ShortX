@@ -489,6 +489,31 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             }
         }
 
+        private fun openUrlAfterBrowserIntercept(url: String) {
+            try {
+                val browserPkg = shortXContext.rule.getAllEnabledRules()
+                    .asSequence()
+                    .flatMap { it.factsList.asSequence() }
+                    .filter { it.`is`(tornaco.apps.shortx.core.proto.fact.BrowserIntercept::class.java) }
+                    .map { it.unpack(tornaco.apps.shortx.core.proto.fact.BrowserIntercept::class.java) }
+                    .firstOrNull { it.openUrlAfterTrigger }
+                    ?: return
+
+                val pkg = browserPkg.openUrlBrowserPkg.ifBlank {
+                    tornaco.apps.shortx.services.rule.actor.impl.resolveDefaultBrowser(context)
+                }
+                val intent = android.content.Intent(android.content.Intent.ACTION_VIEW)
+                    .setData(android.net.Uri.parse(url))
+                    .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                if (pkg.isNotBlank()) {
+                    intent.setPackage(pkg)
+                }
+                context.startActivityAsUser(intent, userIdToUserHandle(0))
+            } catch (e: Exception) {
+                logger.e(e, "openUrlAfterBrowserIntercept")
+            }
+        }
+
         override fun getDirectActionCount(): Int {
             return shortXContext.rule.getDirectActionCount()
         }
@@ -595,6 +620,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                     "sourceAppPkg" to sourceAppPkg
                 )
             }
+            openUrlAfterBrowserIntercept(url)
         }
 
         override fun getAllRingtones(): List<ByteArrayWrapper> {

@@ -948,9 +948,12 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
         }
 
         is Fact.BrowserIntercept -> {
-            listOf(
-                i18N.get(key = I18N_R.UI_FACT_BROWSER_INTERCEPT, fallback = "Browser link intercept")
-            )
+            buildList {
+                add(i18N.get(key = I18N_R.UI_FACT_BROWSER_INTERCEPT, fallback = "Browser link intercept"))
+                if (fact.openUrlAfterTrigger) {
+                    add(i18N.get(key = I18N_R.UI_FACT_BROWSER_INTERCEPT_AUTO_OPEN, fallback = "Open URL after trigger"))
+                }
+            }
         }
 
         is Fact.ConnectedWifiSignalLevelChanged -> {
