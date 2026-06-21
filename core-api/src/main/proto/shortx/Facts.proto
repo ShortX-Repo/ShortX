@@ -927,6 +927,9 @@ message IncomingShare {
 }
 
 message BrowserIntercept {
+  bool autoOpenInBrowser = 1;
+  string autoOpenBrowserPkg = 2;
+
   string tag = 97;
   CustomContextDataKey customContextDataKey = 98;
   string note = 99;
