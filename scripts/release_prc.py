@@ -26,6 +26,9 @@
     # 不发 Telegram
     python3 scripts/release_prc.py 1.8 --skip-telegram
 
+    # 更新已有 Telegram 消息的 caption（修复格式问题）
+    python3 scripts/release_prc.py 1.8 --skip-build --skip-github --tg-edit-message-id 12345
+
     # 通过 CLI 指定 Telegram 参数
     python3 scripts/release_prc.py 1.8 \\
         --tg-bot-token "123456:ABC-DEF" \\
@@ -40,6 +43,7 @@
     --tg-bot-token      Telegram Bot Token（也可通过 TG_BOT_TOKEN 环境变量）
     --tg-chat-id        Telegram 群组 Chat ID（也可通过 TG_CHAT_ID 环境变量）
     --tg-topic-id       Telegram Topic Thread ID（也可通过 TG_TOPIC_ID 环境变量）
+    --tg-edit-message-id  编辑已有 Telegram 消息的 caption（填入 message_id）
 
 环境变量:
     TG_BOT_TOKEN    Telegram Bot Token
@@ -252,14 +256,61 @@ class ReleaseScript:
 
     # ========== Changelog ==========
     def extract_changelog(self) -> str:
-        """提取 CHANGELOG.md 中最新一个 ## 日期段落"""
+        """提取 CHANGELOG.md 中最新一个日期段落（纯文本）"""
         if not self.changelog.is_file():
             return ""
 
         text = self.changelog.read_text(encoding="utf-8")
-        # 匹配 ## YYYY-MM-DD 开头的段落，到下一个 ## 或文件结尾
-        match = re.search(r"(^## \d{4}-\d{2}-\d{2}\b.*?)(?=^## |\Z)", text, re.MULTILINE | re.DOTALL)
+        # 匹配 YYYY-MM-DD 开头的段落，到下一个日期或文件结尾
+        match = re.search(r"(^\d{4}-\d{2}-\d{2}\b.*?)(?=^\d{4}-\d{2}-\d{2}\b|\Z)", text, re.MULTILINE | re.DOTALL)
         return match.group(1).strip() if match else ""
+
+    @staticmethod
+    def format_changelog(raw: str) -> str:
+        """将纯文本 changelog 格式化为带序号的更新日志"""
+        lines = []
+        current_section = ""
+        item_index = 0
+
+        for line in raw.splitlines():
+            stripped = line.strip()
+            # 跳过日期行
+            if re.match(r"^\d{4}-\d{2}-\d{2}$", stripped):
+                continue
+            # [小节标题]
+            if stripped.startswith("[") and stripped.endswith("]"):
+                title = stripped[1:-1]
+                # 新小节重置序号
+                if current_section != title:
+                    current_section = title
+                    item_index = 0
+                    if lines:
+                        lines.append("")
+                    lines.append(f"【{title}】")
+            elif stripped:
+                item_index += 1
+                lines.append(f"{item_index}. {stripped}")
+
+        return "\n".join(lines)
+
+    @staticmethod
+    def format_changelog_for_github(raw: str) -> str:
+        """将纯文本 changelog 格式化为 GitHub Release markdown"""
+        lines = []
+        for line in raw.splitlines():
+            stripped = line.strip()
+            # 跳过日期行
+            if re.match(r"^\d{4}-\d{2}-\d{2}$", stripped):
+                continue
+            # [小节标题] → ### 标题
+            if stripped.startswith("[") and stripped.endswith("]"):
+                title = stripped[1:-1]
+                if lines:
+                    lines.append("")
+                lines.append(f"### {title}")
+            elif stripped:
+                lines.append(f"- {stripped}")
+        return "\n".join(lines)
 
     # ========== GitHub Release ==========
     def create_github_release(self, tag: str, version: str, apk: Path, notes: str):
@@ -290,11 +341,12 @@ class ReleaseScript:
     ):
         """通过 Telegram Bot API 发送 APK 到群组 Topic"""
         release_url = f"https://github.com/{RELEASE_REPO}/releases/tag/{tag}"
-        # Telegram 文件 caption 限制 1024 字符
+
+        # notes 已经是格式化后的文本，直接使用
         caption = f"🚀 ShortX {version}\n\n"
-        # 截取 changelog 前 500 字符
-        notes_preview = notes[:500]
-        if len(notes) > 500:
+        max_notes = 900 - len(caption) - len(release_url) - 10
+        notes_preview = notes[:max_notes]
+        if len(notes) > max_notes:
             notes_preview += "\n..."
         caption += notes_preview
         caption += f"\n\n🔗 {release_url}"
@@ -316,10 +368,38 @@ class ReleaseScript:
 
         self.run("发送到 Telegram", cmd, retries=2)
 
+    def edit_telegram_message(
+        self, tag: str, version: str, notes: str,
+        bot_token: str, chat_id: str, message_id: str,
+    ):
+        """通过 Telegram Bot API 编辑已有消息的 caption"""
+        release_url = f"https://github.com/{RELEASE_REPO}/releases/tag/{tag}"
+        # notes 已经是格式化后的文本，直接使用
+        caption = f"🚀 ShortX {version}\n\n"
+        max_notes = 900 - len(caption) - len(release_url) - 10
+        notes_preview = notes[:max_notes]
+        if len(notes) > max_notes:
+            notes_preview += "\n..."
+        caption += notes_preview
+        caption += f"\n\n🔗 {release_url}"
+        if len(caption) > 1024:
+            caption = caption[:1020] + "..."
+
+        api_url = f"https://api.telegram.org/bot{bot_token}/editMessageCaption"
+        cmd = [
+            "curl", "-sS", "--retry", "3", "--retry-delay", "5",
+            "-X", "POST", api_url,
+            "-F", f"chat_id={chat_id}",
+            "-F", f"message_id={message_id}",
+            "-F", f"caption={caption}",
+        ]
+        self.run("更新 Telegram 消息", cmd, retries=2)
+
     # ========== 主流程 ==========
     def run_release(
         self, version: str | None, skip_tag: bool,
         tg_bot_token: str | None, tg_chat_id: str | None, tg_topic_id: str | None,
+        tg_edit_message_id: str | None,
         skip_telegram: bool, skip_build: bool, skip_github: bool,
     ):
         # 前置检查：只发 Telegram 时不需要 gh
@@ -357,25 +437,38 @@ class ReleaseScript:
             self.build_apk()
         apk = self.find_apk()
 
-        # 提取 changelog
-        release_notes = self.extract_changelog()
-        if not release_notes:
+        # 提取 changelog 并格式化
+        raw_notes = self.extract_changelog()
+        if not raw_notes:
             self.warn("CHANGELOG.md 中未找到有效的更新日志段落，将使用默认文案")
-            release_notes = f"Release {version}"
+            raw_notes = f"Release {version}"
+        release_notes = self.format_changelog(raw_notes)
 
         self.info("更新日志摘要:")
         preview = "\n".join(release_notes.splitlines()[:20])
         print(preview)
         print("...")
 
-        # 创建 GitHub Release
+        # 创建 GitHub Release（用 markdown 格式）
         if not skip_github:
-            self.create_github_release(tag, version, apk, release_notes)
+            gh_notes = self.format_changelog_for_github(raw_notes)
+            self.create_github_release(tag, version, apk, gh_notes)
         else:
             self.info("--skip-github 已启用，跳过 GitHub Release")
 
-        # 发送 Telegram
-        if not skip_telegram:
+        # Telegram
+        if tg_edit_message_id:
+            # 编辑模式：只更新已有消息的 caption
+            token = tg_bot_token or os.environ.get("TG_BOT_TOKEN")
+            chat = tg_chat_id or os.environ.get("TG_CHAT_ID")
+            if token and chat:
+                self.edit_telegram_message(
+                    tag, version, release_notes,
+                    bot_token=token, chat_id=chat, message_id=tg_edit_message_id,
+                )
+            else:
+                self.error("编辑 Telegram 消息需要 TG_BOT_TOKEN 和 TG_CHAT_ID")
+        elif not skip_telegram:
             token = tg_bot_token or os.environ.get("TG_BOT_TOKEN")
             chat = tg_chat_id or os.environ.get("TG_CHAT_ID")
             topic = tg_topic_id or os.environ.get("TG_TOPIC_ID")
@@ -405,6 +498,7 @@ def main():
     parser.add_argument("--tg-bot-token", default=None, help="Telegram Bot Token（也可通过 TG_BOT_TOKEN 环境变量）")
     parser.add_argument("--tg-chat-id", default=None, help="Telegram 群组 Chat ID（也可通过 TG_CHAT_ID 环境变量）")
     parser.add_argument("--tg-topic-id", default=None, help="Telegram Topic Thread ID（也可通过 TG_TOPIC_ID 环境变量）")
+    parser.add_argument("--tg-edit-message-id", default=None, help="编辑已有 Telegram 消息的 caption（填入 message_id）")
     parser.add_argument("--skip-telegram", action="store_true", help="跳过 Telegram 发送")
     args = parser.parse_args()
 
@@ -415,6 +509,7 @@ def main():
         tg_bot_token=args.tg_bot_token,
         tg_chat_id=args.tg_chat_id,
         tg_topic_id=args.tg_topic_id,
+        tg_edit_message_id=args.tg_edit_message_id,
         skip_telegram=args.skip_telegram,
         skip_build=args.skip_build,
         skip_github=args.skip_github,
