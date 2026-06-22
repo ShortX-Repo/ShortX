@@ -2,16 +2,23 @@
 """ShortX PRC Release 发布脚本
 
 用法:
-    python3 scripts/release_prc.py [version] [--skip-tag]
+    python3 scripts/release_prc.py [version] [--skip-tag] [--tg-chat-id ID] [--tg-topic-id ID]
 
 示例:
     python3 scripts/release_prc.py 1.7
-    python3 scripts/release_prc.py 1.8 --skip-tag   # tag 已存在时跳过创建
+    python3 scripts/release_prc.py 1.8 --skip-tag
+    python3 scripts/release_prc.py 1.8 --tg-chat-id -1001234567890 --tg-topic-id 42
+
+环境变量:
+    TG_BOT_TOKEN    Telegram Bot Token（必须，或通过 --tg-bot-token 传入）
+    TG_CHAT_ID      Telegram 群组 Chat ID（可通过 --tg-chat-id 传入）
+    TG_TOPIC_ID     Telegram Topic Thread ID（可通过 --tg-topic-id 传入）
 
 如果不传 version，则从最近一次 git tag 推导（自动 minor +1）
 """
 
 import argparse
+import json
 import os
 import re
 import shutil
@@ -19,6 +26,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import urllib.request
 from datetime import datetime
 from pathlib import Path
 
@@ -243,8 +251,45 @@ class ReleaseScript:
         finally:
             os.unlink(notes_file)
 
+    # ========== Telegram 发布 ==========
+    def send_to_telegram(
+        self, tag: str, version: str, apk: Path, notes: str,
+        bot_token: str, chat_id: str, topic_id: str | None,
+    ):
+        """通过 Telegram Bot API 发送 APK 到群组 Topic"""
+        release_url = f"https://github.com/{RELEASE_REPO}/releases/tag/{tag}"
+        # Telegram 文件 caption 限制 1024 字符
+        caption = f"🚀 ShortX {version}\n\n"
+        # 截取 changelog 前 500 字符
+        notes_preview = notes[:500]
+        if len(notes) > 500:
+            notes_preview += "\n..."
+        caption += notes_preview
+        caption += f"\n\n🔗 {release_url}"
+        # 确保不超过 1024
+        if len(caption) > 1024:
+            caption = caption[:1020] + "..."
+
+        api_url = f"https://api.telegram.org/bot{bot_token}/sendDocument"
+
+        cmd = [
+            "curl", "-sS", "--retry", "3", "--retry-delay", "5",
+            "-X", "POST", api_url,
+            "-F", f"chat_id={chat_id}",
+            "-F", f"document=@{apk}",
+            "-F", f"caption={caption}",
+        ]
+        if topic_id:
+            cmd.extend(["-F", f"message_thread_id={topic_id}"])
+
+        self.run("发送到 Telegram", cmd, retries=2)
+
     # ========== 主流程 ==========
-    def run_release(self, version: str | None, skip_tag: bool):
+    def run_release(
+        self, version: str | None, skip_tag: bool,
+        tg_bot_token: str | None, tg_chat_id: str | None, tg_topic_id: str | None,
+        skip_telegram: bool,
+    ):
         self.check_prerequisites()
         self.check_working_dir_clean()
 
@@ -283,6 +328,19 @@ class ReleaseScript:
         # 创建 GitHub Release
         self.create_github_release(tag, version, apk, release_notes)
 
+        # 发送 Telegram
+        if not skip_telegram:
+            token = tg_bot_token or os.environ.get("TG_BOT_TOKEN")
+            chat = tg_chat_id or os.environ.get("TG_CHAT_ID")
+            topic = tg_topic_id or os.environ.get("TG_TOPIC_ID")
+            if token and chat:
+                self.send_to_telegram(
+                    tag, version, apk, release_notes,
+                    bot_token=token, chat_id=chat, topic_id=topic,
+                )
+            else:
+                self.warn("跳过 Telegram 发送（未配置 TG_BOT_TOKEN 或 TG_CHAT_ID）")
+
         # 完成
         self.info("发布完成!")
         self.info(f"  Tag:     {tag}")
@@ -295,10 +353,21 @@ def main():
     parser = argparse.ArgumentParser(description="ShortX PRC Release 发布脚本")
     parser.add_argument("version", nargs="?", default=None, help="版本号，如 1.7（可选，默认从 git tag 推导）")
     parser.add_argument("--skip-tag", action="store_true", help="跳过 tag 创建和推送（tag 已存在时使用）")
+    parser.add_argument("--tg-bot-token", default=None, help="Telegram Bot Token（也可通过 TG_BOT_TOKEN 环境变量）")
+    parser.add_argument("--tg-chat-id", default=None, help="Telegram 群组 Chat ID（也可通过 TG_CHAT_ID 环境变量）")
+    parser.add_argument("--tg-topic-id", default=None, help="Telegram Topic Thread ID（也可通过 TG_TOPIC_ID 环境变量）")
+    parser.add_argument("--skip-telegram", action="store_true", help="跳过 Telegram 发送")
     args = parser.parse_args()
 
     script = ReleaseScript()
-    script.run_release(version=args.version, skip_tag=args.skip_tag)
+    script.run_release(
+        version=args.version,
+        skip_tag=args.skip_tag,
+        tg_bot_token=args.tg_bot_token,
+        tg_chat_id=args.tg_chat_id,
+        tg_topic_id=args.tg_topic_id,
+        skip_telegram=args.skip_telegram,
+    )
 
 
 if __name__ == "__main__":
