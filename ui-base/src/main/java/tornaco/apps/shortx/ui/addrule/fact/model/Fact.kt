@@ -2431,6 +2431,8 @@ sealed interface Fact : Parcelable {
 
     @Parcelize
     data class BrowserIntercept(
+        val openUrlAfterTrigger: Boolean = false,
+        val openUrlBrowserPkg: String = "",
         override val note: String = "",
         override val isDisabled: Boolean = false,
         override val tag: String = "",

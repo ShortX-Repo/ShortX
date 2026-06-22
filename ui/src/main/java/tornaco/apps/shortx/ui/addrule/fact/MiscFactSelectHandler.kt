@@ -12,6 +12,8 @@ import tornaco.apps.shortx.ui.addrule.fact.selector.GVSelectorDialog
 import tornaco.apps.shortx.ui.addrule.fact.selector.MethodHookSelectorActivity
 import tornaco.apps.shortx.ui.addrule.fact.selector.OnStartDynamicShortcutData
 import tornaco.apps.shortx.ui.addrule.fact.selector.OnStartDynamicShortcutDialog
+import tornaco.apps.shortx.ui.addrule.fact.selector.BrowserInterceptSelectorDialog
+import tornaco.apps.shortx.ui.addrule.fact.selector.rememberBrowserInterceptSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberGVSelectorState
 import tornaco.apps.shortx.ui.addrule.fact.selector.rememberOnStartDynamicShortcutState
 import tornaco.apps.shortx.ui.base.BaseSelectorActivity
@@ -72,6 +74,11 @@ fun miscFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Boolea
         addFact(Fact.GlobalVarChanged(gvId = varName))
     })
     GVSelectorDialog(state = gvSelectorDialogState)
+
+    val browserInterceptSelectorState = rememberBrowserInterceptSelectorState(onSelected = { fact ->
+        addFact(fact)
+    })
+    BrowserInterceptSelectorDialog(state = browserInterceptSelectorState)
 
     fun createUrl(tag: String) = "shortx://trigger?tag=${tag}"
 
@@ -159,7 +166,7 @@ fun miscFactSelectHandler(addFact: (Fact) -> Unit): (FactSelectSource) -> Boolea
             }
 
             Fact.BrowserIntercept::class -> {
-                addFact(Fact.BrowserIntercept())
+                browserInterceptSelectorState.show(source.getFactAs<Fact.BrowserIntercept>())
                 true
             }
 
