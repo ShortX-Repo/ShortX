@@ -489,6 +489,7 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             }
         }
 
+        @SuppressLint("MissingPermission")
         private fun openUrlAfterBrowserIntercept(url: String) {
             try {
                 val browserPkg = shortXContext.rule.getAllEnabledRules()
@@ -620,7 +621,9 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
                     "sourceAppPkg" to sourceAppPkg
                 )
             }
-            openUrlAfterBrowserIntercept(url)
+            systemServiceScope.launchSafety("openUrlAfterBrowserIntercept") {
+                openUrlAfterBrowserIntercept(url)
+            }
         }
 
         override fun getAllRingtones(): List<ByteArrayWrapper> {

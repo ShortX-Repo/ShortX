@@ -10,7 +10,9 @@ import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util.OsUtils
+import util.Reflections
 import kotlin.math.hypot
 
 enum class GesturePointerVisualMode {
@@ -20,6 +22,7 @@ enum class GesturePointerVisualMode {
 }
 
 class GesturePointerOverlay(private val context: Context) {
+    private val logger = Logger("GesturePointerOverlay")
     private val windowManager by lazy {
         context.getSystemService(WindowManager::class.java)
     }
@@ -86,10 +89,18 @@ class GesturePointerOverlay(private val context: Context) {
                 privateFlags =
                     privateFlags or WindowManager.LayoutParams.PRIVATE_FLAG_FORCE_HARDWARE_ACCELERATED
             }
-            type = WindowManager.LayoutParams.TYPE_SECURE_SYSTEM_OVERLAY
+            type = WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY
+            packageName = context.packageName
             title = "GesturePointerOverlay-ShortX"
             inputFeatures =
                 inputFeatures or WindowManager.LayoutParams.INPUT_FEATURE_NO_INPUT_CHANNEL
+            trySetTrustedOverlay()
+        }
+    }
+
+    private fun WindowManager.LayoutParams.trySetTrustedOverlay() {
+        runCatching { Reflections.callMethod(this, "setTrustedOverlay") }.onFailure {
+            logger.e(it, "trySetTrustedOverlay")
         }
     }
 }
