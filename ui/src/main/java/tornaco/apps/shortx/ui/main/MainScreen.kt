@@ -201,7 +201,7 @@ fun HomeScreen() {
                     LaunchedEffect(lastViewedChangeLogVersionCode) {
                         if (lastViewedChangeLogVersionCode < BuildPropInternal.APP_VERSION_CODE) {
                             delay(1000)
-                            changeLogState.show()
+                            // changeLogState.show()
                             pref.setLastViewedChangeLogVersionCode(BuildPropInternal.APP_VERSION_CODE)
                         }
                     }
