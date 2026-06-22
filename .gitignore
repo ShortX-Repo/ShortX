@@ -28,3 +28,4 @@ Thumbs.db
 **/bin/
 **/out/
 scripts/downloads/
+scripts/__pycache__/
