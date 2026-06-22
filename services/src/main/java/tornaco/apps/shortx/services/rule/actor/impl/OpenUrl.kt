@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import com.google.protobuf.Message
+import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.rule.compileContextAndVars
 import tornaco.apps.shortx.core.rule.unpack_
 import tornaco.apps.shortx.core.util.UserHandleUtils
@@ -13,7 +14,6 @@ import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 
 object OpenUrl : Actor {
-    private const val SHORTX_PKG = "tornaco.apps.shortx"
 
     override fun actionsCanHandle(): Class<out Message> {
         return tornaco.apps.shortx.core.proto.action.OpenUrl::class.java
@@ -46,15 +46,14 @@ object OpenUrl : Actor {
 }
 
 fun resolveDefaultBrowser(context: android.content.Context): String {
-    val shortxPkg = "tornaco.apps.shortx"
     val pm = context.packageManager
     val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("https://example.com"))
     val resolveInfo = pm.resolveActivity(browserIntent, PackageManager.MATCH_DEFAULT_ONLY)
     val defaultPkg = resolveInfo?.activityInfo?.packageName.orEmpty()
-    if (defaultPkg.isNotBlank() && defaultPkg != shortxPkg) {
+    if (defaultPkg.isNotBlank() && defaultPkg != BuildPropInternal.APP_PACKAGE_NAME) {
         return defaultPkg
     }
     val allBrowsers = pm.queryIntentActivities(browserIntent, PackageManager.MATCH_ALL)
-    return allBrowsers.firstOrNull { it.activityInfo.packageName != shortxPkg }
+    return allBrowsers.firstOrNull { it.activityInfo.packageName != BuildPropInternal.APP_PACKAGE_NAME }
         ?.activityInfo?.packageName.orEmpty()
 }
