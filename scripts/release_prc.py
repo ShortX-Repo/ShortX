@@ -2,17 +2,49 @@
 """ShortX PRC Release 发布脚本
 
 用法:
-    python3 scripts/release_prc.py [version] [--skip-tag] [--tg-chat-id ID] [--tg-topic-id ID]
+    python3 scripts/release_prc.py [version] [选项]
 
 示例:
-    python3 scripts/release_prc.py 1.7
+    # 完整发布：创建 tag → 构建 → GitHub Release → Telegram
+    python3 scripts/release_prc.py 1.8
+
+    # 自动推导版本号（最新 tag minor +1）
+    python3 scripts/release_prc.py
+
+    # tag 已存在，跳过创建和推送
     python3 scripts/release_prc.py 1.8 --skip-tag
-    python3 scripts/release_prc.py 1.8 --tg-chat-id -1001234567890 --tg-topic-id 42
+
+    # 已构建过，不重新构建，直接发 GitHub + Telegram
+    python3 scripts/release_prc.py 1.8 --skip-tag --skip-build
+
+    # GitHub 已发过，只补发 Telegram（不重新构建）
+    python3 scripts/release_prc.py 1.8 --skip-build --skip-github
+
+    # 只发 Telegram，重新构建
+    python3 scripts/release_prc.py 1.8 --skip-github
+
+    # 不发 Telegram
+    python3 scripts/release_prc.py 1.8 --skip-telegram
+
+    # 通过 CLI 指定 Telegram 参数
+    python3 scripts/release_prc.py 1.8 \\
+        --tg-bot-token "123456:ABC-DEF" \\
+        --tg-chat-id "-1001234567890" \\
+        --tg-topic-id "42"
+
+选项:
+    --skip-tag          跳过 tag 创建和推送（tag 已存在时使用）
+    --skip-build        跳过 APK 构建，直接使用本地已有的 APK
+    --skip-github       跳过 GitHub Release（只发 Telegram 时使用）
+    --skip-telegram     跳过 Telegram 发送
+    --tg-bot-token      Telegram Bot Token（也可通过 TG_BOT_TOKEN 环境变量）
+    --tg-chat-id        Telegram 群组 Chat ID（也可通过 TG_CHAT_ID 环境变量）
+    --tg-topic-id       Telegram Topic Thread ID（也可通过 TG_TOPIC_ID 环境变量）
 
 环境变量:
-    TG_BOT_TOKEN    Telegram Bot Token（必须，或通过 --tg-bot-token 传入）
-    TG_CHAT_ID      Telegram 群组 Chat ID（可通过 --tg-chat-id 传入）
-    TG_TOPIC_ID     Telegram Topic Thread ID（可通过 --tg-topic-id 传入）
+    TG_BOT_TOKEN    Telegram Bot Token
+    TG_CHAT_ID      Telegram 群组 Chat ID
+    TG_TOPIC_ID     Telegram Topic Thread ID
 
 如果不传 version，则从最近一次 git tag 推导（自动 minor +1）
 """
@@ -288,30 +320,41 @@ class ReleaseScript:
     def run_release(
         self, version: str | None, skip_tag: bool,
         tg_bot_token: str | None, tg_chat_id: str | None, tg_topic_id: str | None,
-        skip_telegram: bool,
+        skip_telegram: bool, skip_build: bool, skip_github: bool,
     ):
-        self.check_prerequisites()
-        self.check_working_dir_clean()
+        # 前置检查：只发 Telegram 时不需要 gh
+        if not skip_github:
+            self.check_prerequisites()
+        else:
+            if not shutil.which("curl"):
+                self.error("未安装 curl")
+
+        if not skip_github:
+            self.check_working_dir_clean()
 
         version = self.resolve_version(version)
         tag = f"v{version}"
         self.info(f"目标版本: {version} (tag: {tag})")
 
         # Tag 检查
-        if self.tag_exists(tag):
-            if skip_tag:
-                self.warn(f"Tag {tag} 已存在，--skip-tag 已启用，跳过创建和推送")
+        if not skip_github:
+            if self.tag_exists(tag):
+                if skip_tag:
+                    self.warn(f"Tag {tag} 已存在，--skip-tag 已启用，跳过创建和推送")
+                else:
+                    self.error(f"Tag {tag} 已存在，请使用 --skip-tag 跳过创建，或删除 tag 后重试")
             else:
-                self.error(f"Tag {tag} 已存在，请使用 --skip-tag 跳过创建，或删除 tag 后重试")
-        else:
-            skip_tag = False
+                skip_tag = False
 
-        # 创建并推送 tag
-        if not skip_tag:
-            self.create_and_push_tag(tag, version)
+            # 创建并推送 tag
+            if not skip_tag:
+                self.create_and_push_tag(tag, version)
 
         # 构建 APK
-        self.build_apk()
+        if skip_build:
+            self.info("--skip-build 已启用，跳过构建")
+        else:
+            self.build_apk()
         apk = self.find_apk()
 
         # 提取 changelog
@@ -326,7 +369,10 @@ class ReleaseScript:
         print("...")
 
         # 创建 GitHub Release
-        self.create_github_release(tag, version, apk, release_notes)
+        if not skip_github:
+            self.create_github_release(tag, version, apk, release_notes)
+        else:
+            self.info("--skip-github 已启用，跳过 GitHub Release")
 
         # 发送 Telegram
         if not skip_telegram:
@@ -345,7 +391,8 @@ class ReleaseScript:
         self.info("发布完成!")
         self.info(f"  Tag:     {tag}")
         self.info(f"  APK:     {apk.name}")
-        self.info(f"  Release: https://github.com/{RELEASE_REPO}/releases/tag/{tag}")
+        if not skip_github:
+            self.info(f"  Release: https://github.com/{RELEASE_REPO}/releases/tag/{tag}")
         self.info(f"  日志:    {self.log_file}")
 
 
@@ -353,6 +400,8 @@ def main():
     parser = argparse.ArgumentParser(description="ShortX PRC Release 发布脚本")
     parser.add_argument("version", nargs="?", default=None, help="版本号，如 1.7（可选，默认从 git tag 推导）")
     parser.add_argument("--skip-tag", action="store_true", help="跳过 tag 创建和推送（tag 已存在时使用）")
+    parser.add_argument("--skip-build", action="store_true", help="跳过 APK 构建，直接使用本地已有的 APK")
+    parser.add_argument("--skip-github", action="store_true", help="跳过 GitHub Release（只发 Telegram 时使用）")
     parser.add_argument("--tg-bot-token", default=None, help="Telegram Bot Token（也可通过 TG_BOT_TOKEN 环境变量）")
     parser.add_argument("--tg-chat-id", default=None, help="Telegram 群组 Chat ID（也可通过 TG_CHAT_ID 环境变量）")
     parser.add_argument("--tg-topic-id", default=None, help="Telegram Topic Thread ID（也可通过 TG_TOPIC_ID 环境变量）")
@@ -367,6 +416,8 @@ def main():
         tg_chat_id=args.tg_chat_id,
         tg_topic_id=args.tg_topic_id,
         skip_telegram=args.skip_telegram,
+        skip_build=args.skip_build,
+        skip_github=args.skip_github,
     )
 
 
