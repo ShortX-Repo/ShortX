@@ -1,14 +1,24 @@
 package tornaco.apps.shortx.services.rule.actor.impl
 
 import android.annotation.SuppressLint
+import android.content.Context
 import com.google.protobuf.Message
+import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.rule.actor.Actor
 import tornaco.apps.shortx.services.rule.actor.HandleParams
 import tornaco.apps.shortx.services.rule.actor.mvel.handle.impl.HwImpl
 
 object ToggleFlashLight : Actor {
     @SuppressLint("StaticFieldLeak")
-    private var hw: HwImpl? = null
+    var hw: HwImpl? = null
+
+    fun initHW(androidContext: Context, shortXContext: ShortXContext) {
+        synchronized(ToggleFlashLight) {
+            if (hw == null) {
+                hw = HwImpl(androidContext, shortXContext)
+            }
+        }
+    }
 
     override fun actionsCanHandle(): Class<out Message> {
         return tornaco.apps.shortx.core.proto.action.ToggleFlashLight::class.java
@@ -17,11 +27,7 @@ object ToggleFlashLight : Actor {
     override suspend fun handle(
         params: HandleParams
     ) = with(params) {
-        synchronized(ToggleFlashLight) {
-            if (hw == null) {
-                hw = HwImpl(androidContext, shortXContext)
-            }
-        }
+        initHW(androidContext, shortXContext)
         val enabled = hw?.isFlashlightEnabled() == true
         if (enabled) {
             hw?.disableFlashlight()
