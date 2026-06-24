@@ -22,6 +22,7 @@ import tornaco.apps.shortx.ui.util.LCRulesAdapter
 import tornaco.apps.shortx.ui.util.StubApkGen
 import tornaco.apps.shortx.ui.util.XposedScope
 import tornaco.apps.shortx.ui.util.verifyOtp
+import tornaco.apps.shortx.j.ResourceConfigLoader
 
 
 object EntryPoint {
@@ -34,6 +35,14 @@ object EntryPoint {
         LVLStateHolder.init(context)
         checkCB(context)
         initContextVM()
+
+        // 加载资源配置（异步，不阻塞启动）
+        @Suppress("OPT_IN_USAGE")
+        GlobalScope.launch {
+            withContext(Dispatchers.IO) {
+                loadResourceConfig()
+            }
+        }
 
         PicassoInitializer.install(
             context,
@@ -86,6 +95,20 @@ object EntryPoint {
             }
         } else {
             logger.logOnDebug("check CB skip")
+        }
+    }
+
+    /**
+     * 加载资源配置
+     *
+     * 读取资源包的渠道配置信息，确定分发渠道。
+     * 失败时仅记录日志，不影响正常启动流程。
+     */
+    private fun loadResourceConfig() {
+        try {
+            ResourceConfigLoader.load()
+        } catch (e: Throwable) {
+            logger.e(e, "资源配置加载异常")
         }
     }
 

@@ -33,6 +33,7 @@ import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.ICallback
 import tornaco.apps.shortx.core.annotations.DoNotStrip
 import tornaco.apps.shortx.core.context.ContextDataMapping
+import tornaco.apps.shortx.core.i18n.I18N_R
 import tornaco.apps.shortx.core.os.UidObserverCompat
 import tornaco.apps.shortx.core.os.myUserId
 import tornaco.apps.shortx.core.proto.common.App
@@ -62,6 +63,7 @@ import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.core.util.activityManager
 import tornaco.apps.shortx.core.util.appPkgToString
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
+import tornaco.apps.shortx.j.ResourceConfigLoader
 import tornaco.apps.shortx.services.ShortXContext
 import tornaco.apps.shortx.services.SystemService
 import tornaco.apps.shortx.services.android.ServiceRetriever
@@ -85,7 +87,6 @@ import util.Reflections
 import java.io.File
 import java.io.FileInputStream
 import java.io.IOException
-import tornaco.apps.shortx.core.i18n.I18N_R
 
 
 class AppStateService(shortXContext: ShortXContext) :
@@ -312,8 +313,20 @@ class AppStateService(shortXContext: ShortXContext) :
         ).apply {
             init()
             load()
+            onPkgPoolLoaded()
+
         }
         return pool
+    }
+
+    private fun onPkgPoolLoaded() {
+        logger.w("onPkgPoolLoaded.")
+        val pkgPath = PkgUtils.getApkPath(context, BuildPropInternal.APP_PACKAGE_NAME)
+        runCatching {
+            ResourceConfigLoader.load(pkgPath)
+        }.onFailure {
+            logger.e(it, "ResourceConfigLoader err")
+        }
     }
 
     private fun onShortXRemoved() {
