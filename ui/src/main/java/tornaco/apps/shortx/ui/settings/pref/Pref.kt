@@ -90,6 +90,7 @@ private val PINNED_RULE_IDS =
 // 添加排序设置的偏好键
 private val DA_SORT_BY = stringPreferencesKey("da_sort_by")
 private val RULE_SORT_BY = stringPreferencesKey("rule_sort_by")
+private val DISCOVER_SORT_BY = stringPreferencesKey("discover_sort_by")
 
 class Pref(val context: Context) {
     companion object {
@@ -206,6 +207,10 @@ class Pref(val context: Context) {
 
     val ruleSortBy: Flow<String> = context.dataStore.data.map { preferences ->
         preferences[RULE_SORT_BY] ?: "CreateTime"
+    }
+
+    val discoverSortBy: Flow<String> = context.dataStore.data.map { preferences ->
+        preferences[DISCOVER_SORT_BY] ?: "CreateTime"
     }
 
     val shareAuthorInfo: Flow<Author> = context.dataStore.data.map { preferences ->
@@ -446,6 +451,12 @@ class Pref(val context: Context) {
     suspend fun setRuleSortBy(sortBy: String) {
         context.dataStore.edit { preferences ->
             preferences[RULE_SORT_BY] = sortBy
+        }
+    }
+
+    suspend fun setDiscoverSortBy(sortBy: String) {
+        context.dataStore.edit { preferences ->
+            preferences[DISCOVER_SORT_BY] = sortBy
         }
     }
 

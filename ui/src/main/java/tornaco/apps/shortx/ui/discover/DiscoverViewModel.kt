@@ -32,6 +32,7 @@ import tornaco.apps.shortx.ui.main.model.DirectActionUM
 import tornaco.apps.shortx.ui.main.model.RuleUM
 import tornaco.apps.shortx.ui.main.model.daToDirectActionUM
 import tornaco.apps.shortx.ui.main.model.ruleToRuleUM
+import tornaco.apps.shortx.ui.main.DASortBy
 import tornaco.apps.shortx.ui.remote.OnlineRepo
 import tornaco.apps.shortx.ui.settings.pref.DiscoveryRepoSetting
 import tornaco.apps.shortx.ui.settings.pref.Pref
@@ -93,6 +94,7 @@ data class DiscoverState(
     val customRepos: Set<DiscoveryRepoSetting> = emptySet(),
     val enableChucker: Boolean = false,
     val searchQuery: String = "",
+    val discoverSortBy: DASortBy = DASortBy.CreateTime,
 )
 
 const val assetName = "prebuilt/prebuilt-all.zip"
@@ -150,6 +152,15 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
                         enableChucker = it
                     )
                 }
+            }
+        }
+
+        viewModelScope.launch {
+            pref.discoverSortBy.collectLatest { sortByName ->
+                val sortBy = runCatching { DASortBy.valueOf(sortByName) }
+                    .getOrDefault(DASortBy.CreateTime)
+                logger.d("discoverSortBy changed: $sortByName -> $sortBy")
+                updateState { copy(discoverSortBy = sortBy) }
             }
         }
     }
@@ -224,6 +235,12 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
     fun updateSearchQuery(query: String) {
         updateState {
             copy(searchQuery = query)
+        }
+    }
+
+    fun updateDiscoverSortBy(sortBy: DASortBy) {
+        viewModelScope.launch {
+            pref.setDiscoverSortBy(sortBy.name)
         }
     }
 

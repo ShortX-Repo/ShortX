@@ -78,7 +78,9 @@ import tornaco.apps.shortx.ui.discover.contribute.ContributorActivity
 import tornaco.apps.shortx.ui.main.MainScaffold
 import tornaco.apps.shortx.ui.main.MainViewModel
 import tornaco.apps.shortx.ui.main.da.DAViewerDialog
+import tornaco.apps.shortx.ui.main.da.DASortSelector
 import tornaco.apps.shortx.ui.main.da.rememberDAViewerState
+import tornaco.apps.shortx.ui.main.da.sortDirectActions
 import tornaco.apps.shortx.ui.main.model.RuleUM
 import tornaco.apps.shortx.ui.main.rule.RuleViewerDialog
 import tornaco.apps.shortx.ui.main.rule.rememberRuleViewerState
@@ -242,6 +244,10 @@ fun DiscoverScreen() {
         enableSearch = true,
         searchBarState = searchBarState,
         appBarActions = {
+            DASortSelector(
+                currentSortBy = discoverState.discoverSortBy,
+                onSortByChanged = { discoverModel.updateDiscoverSortBy(it) }
+            )
             IconButton(onClick = {
                 val selections = when (val currentRepo = discoverState.discoverRepo) {
                     DiscoverRepo.PrebuiltLocal -> {
@@ -521,7 +527,7 @@ private fun DiscoverDA(
                     titlePinyin = { it.titlePinyin },
                     description = { it.description },
                     author = { it.author }
-                )
+                ).let(sortDirectActions(discoverState.discoverSortBy))
                 if (filteredDAs.isEmpty()) {
                     EmptyList(modifier = Modifier.fillMaxSize()) {
                         refresh()
