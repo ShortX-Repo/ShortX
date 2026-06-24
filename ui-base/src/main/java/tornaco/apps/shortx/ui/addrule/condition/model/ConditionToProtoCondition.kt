@@ -47,6 +47,7 @@ import tornaco.apps.shortx.core.proto.condition.RequireWifiConnected
 import tornaco.apps.shortx.core.proto.condition.RequireWifiDisconnected
 import tornaco.apps.shortx.core.proto.condition.RequireWindowRotation
 import tornaco.apps.shortx.core.proto.condition.ScreenIsOn
+import tornaco.apps.shortx.core.proto.condition.FlashlightIsOn
 import tornaco.apps.shortx.core.proto.condition.ScreenOrientationIsPort
 import tornaco.apps.shortx.core.proto.condition.ScreenStayAwake
 import tornaco.apps.shortx.core.proto.condition.ServiceIsRunning
@@ -408,6 +409,16 @@ fun Condition.toProtoCondition(overrideId: String? = null): ProtoMessage {
 
         is Condition.ScreenIsOn -> {
             ScreenIsOn.newBuilder()
+                .setId(overrideId ?: id)
+                .setNote(note)
+                .setIsInvert(isInvert)
+                .setIsDisabled(isDisabled)
+                .setCustomContextDataKey(customContextDataKey)
+                .build()
+        }
+
+        is Condition.FlashlightIsOn -> {
+            FlashlightIsOn.newBuilder()
                 .setId(overrideId ?: id)
                 .setNote(note)
                 .setIsInvert(isInvert)

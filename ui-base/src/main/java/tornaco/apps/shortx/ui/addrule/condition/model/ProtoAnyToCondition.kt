@@ -47,6 +47,7 @@ import tornaco.apps.shortx.core.proto.condition.RequireWifiConnected
 import tornaco.apps.shortx.core.proto.condition.RequireWifiDisconnected
 import tornaco.apps.shortx.core.proto.condition.RequireWindowRotation
 import tornaco.apps.shortx.core.proto.condition.ScreenIsOn
+import tornaco.apps.shortx.core.proto.condition.FlashlightIsOn
 import tornaco.apps.shortx.core.proto.condition.ScreenOrientationIsPort
 import tornaco.apps.shortx.core.proto.condition.ScreenStayAwake
 import tornaco.apps.shortx.core.proto.condition.ServiceIsRunning
@@ -262,6 +263,16 @@ fun ProtoAny.toCondition(shortXManager: ShortXManager): Condition? {
         this is_ ScreenIsOn::class.java -> {
             val data = this unpack_ ScreenIsOn::class.java
             Condition.ScreenIsOn(
+                id = data.id,
+                note = data.note,
+                isDisabled = data.isDisabled,
+                isInvert = data.isInvert
+            )
+        }
+
+        this is_ FlashlightIsOn::class.java -> {
+            val data = this unpack_ FlashlightIsOn::class.java
+            Condition.FlashlightIsOn(
                 id = data.id,
                 note = data.note,
                 isDisabled = data.isDisabled,

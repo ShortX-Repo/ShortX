@@ -91,6 +91,7 @@ fun SystemConditions(
         Condition.IsHeadsetPlug::class,
         Condition.RequireSensorOff::class,
         Condition.RequireTileState::class,
+        Condition.FlashlightIsOn::class,
     )
 
     val systemConditions = listOf(

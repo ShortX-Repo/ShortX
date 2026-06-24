@@ -485,6 +485,11 @@ fun systemConditionSelectHandler(addCondition: (Condition) -> Unit): (ConditionS
                 true
             }
 
+            Condition.FlashlightIsOn::class -> {
+                addCondition(Condition.FlashlightIsOn())
+                true
+            }
+
             Condition.ScreenStayAwake::class -> {
                 screenStayAwakeStateSelectorState.show(source.getConditionAs<Condition.ScreenStayAwake>()?.isInvert)
                 true

@@ -133,6 +133,10 @@ enum class PrebuiltCond : CondProvider {
         override val cond: Cond
             get() = tornaco.apps.shortx.services.rule.cond.impl.ScreenIsOn
     },
+    FlashlightIsOn {
+        override val cond: Cond
+            get() = tornaco.apps.shortx.services.rule.cond.impl.FlashlightIsOn
+    },
     ScreenStayAwake {
         override val cond: Cond
             get() = tornaco.apps.shortx.services.rule.cond.impl.ScreenStayAwake

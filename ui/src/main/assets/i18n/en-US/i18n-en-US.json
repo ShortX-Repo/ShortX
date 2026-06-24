@@ -39,6 +39,7 @@
   "ui.conditions.eva.context.var": "Check context var",
   "ui.conditions.eva.local.var": "Check local var",
   "ui.conditions.screen.on": "Screen is ON",
+  "ui.conditions.flashlight.on": "Flashlight is ON",
   "ui.conditions.screen.stay.awake": "Screen stay awake is on",
   "ui.conditions.screen.stay.awake.state": "Screen-on state",
   "ui.conditions.screen.stay.awake.on": "Keeping awake",

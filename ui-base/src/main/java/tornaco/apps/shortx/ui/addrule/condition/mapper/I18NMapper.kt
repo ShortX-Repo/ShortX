@@ -122,6 +122,12 @@ fun labelForConditionSelector(i18N: I18N, condition: KClass<out Condition>): Lis
             )
         }
 
+        Condition.FlashlightIsOn::class -> {
+            listOf(
+                i18N["ui.conditions.flashlight.on"]
+            )
+        }
+
         Condition.ScreenStayAwake::class -> {
             listOf(
                 i18N["ui.conditions.screen.stay.awake.state"]
@@ -420,6 +426,12 @@ fun labelForCondition(i18N: I18N, condition: Condition): List<String> {
         is Condition.ScreenIsOn -> {
             listOf(
                 i18N["ui.conditions.screen.on"],
+            )
+        }
+
+        is Condition.FlashlightIsOn -> {
+            listOf(
+                i18N["ui.conditions.flashlight.on"],
             )
         }
 
