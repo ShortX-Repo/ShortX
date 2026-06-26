@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShortX CI Dashboard</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-dim: #8b949e;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --red: #f85149;
+    --yellow: #d29922;
+    --orange: #db6d28;
+    --purple: #bc8cff;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header h1 {
+    font-size: 20px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .header h1 .logo {
+    width: 28px;
+    height: 28px;
+    background: var(--accent);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--bg);
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .token-input {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    width: 200px;
+    font-family: monospace;
+  }
+
+  .token-input:focus { outline: none; border-color: var(--accent); }
+  .token-input::placeholder { color: var(--text-dim); }
+
+  .status-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .refresh-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .countdown-ring {
+    width: 28px;
+    height: 28px;
+    position: relative;
+  }
+
+  .countdown-ring svg {
+    transform: rotate(-90deg);
+    width: 28px;
+    height: 28px;
+  }
+
+  .countdown-ring .track {
+    fill: none;
+    stroke: var(--border);
+    stroke-width: 2.5;
+  }
+
+  .countdown-ring .progress {
+    fill: none;
+    stroke: var(--accent);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1s linear;
+  }
+
+  .countdown-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--text-dim);
+  }
+
+  .refresh-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: border-color 0.2s;
+  }
+
+  .refresh-btn:hover { border-color: var(--accent); }
+
+  .container {
+    max-width: 1800px;
+    margin: 0 auto;
+    padding: 24px;
+  }
+
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px;
+    text-align: center;
+  }
+
+  .stat-card .number {
+    font-size: 28px;
+    font-weight: 700;
+  }
+
+  .stat-card .label {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .stat-card.success .number { color: var(--green); }
+  .stat-card.failure .number { color: var(--red); }
+  .stat-card.running .number { color: var(--yellow); }
+  .stat-card.total .number { color: var(--accent); }
+
+  .run-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+
+  .run-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .run-card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px rgba(88, 166, 255, 0.1);
+  }
+
+  .run-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .run-status-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .run-status-icon.success { background: rgba(63, 185, 80, 0.15); color: var(--green); }
+  .run-status-icon.failure { background: rgba(248, 81, 73, 0.15); color: var(--red); }
+  .run-status-icon.running { background: rgba(210, 153, 34, 0.15); color: var(--yellow); }
+  .run-status-icon.cancelled { background: rgba(139, 148, 158, 0.15); color: var(--text-dim); }
+
+  .run-info { flex: 1; min-width: 0; }
+
+  .run-title {
+    font-weight: 600;
+    font-size: 15px;
+    line-height: 1.4;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    margin-bottom: 6px;
+  }
+
+  .run-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+
+  .run-meta a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .run-meta a:hover { text-decoration: underline; }
+
+  .run-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    flex-shrink: 0;
+  }
+
+  .run-duration {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+  }
+
+  .run-time {
+    font-size: 12px;
+    color: var(--text-dim);
+    white-space: nowrap;
+  }
+
+  .pipeline {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-top: 8px;
+    overflow-x: auto;
+    padding: 4px 0;
+  }
+
+  .job-node {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .job-node:hover {
+    border-color: var(--accent);
+    background: rgba(88, 166, 255, 0.05);
+  }
+
+  .job-node .job-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .job-node.success .job-dot { background: var(--green); }
+  .job-node.failure .job-dot { background: var(--red); }
+  .job-node.running .job-dot { background: var(--yellow); animation: pulse 1.5s infinite; }
+  .job-node.pending .job-dot { background: var(--text-dim); }
+  .job-node.cancelled .job-dot { background: var(--text-dim); }
+
+  .pipeline-arrow {
+    width: 16px;
+    height: 2px;
+    background: var(--border);
+    position: relative;
+    flex-shrink: 0;
+  }
+
+  .pipeline-arrow::after {
+    content: '';
+    position: absolute;
+    right: -1px;
+    top: -3px;
+    border: 4px solid transparent;
+    border-left-color: var(--border);
+  }
+
+  .job-steps {
+    display: none;
+    margin-top: 6px;
+    padding: 6px 0 2px 8px;
+    border-left: 2px solid var(--border);
+    margin-left: 6px;
+  }
+
+  .job-steps.expanded { display: block; }
+
+  .step-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 0 3px 10px;
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  .step-item .step-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .step-item.success .step-dot { background: var(--green); }
+  .step-item.failure .step-dot { background: var(--red); }
+  .step-item.running .step-dot { background: var(--yellow); }
+  .step-item.pending .step-dot { background: var(--text-dim); }
+  .step-item.cancelled .step-dot { background: var(--text-dim); }
+
+  .step-duration {
+    margin-left: auto;
+    font-size: 10px;
+    color: var(--text-dim);
+  }
+
+  .duration-bar {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    margin-top: auto;
+    padding-top: 10px;
+    overflow: hidden;
+  }
+
+  .duration-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.3s;
+  }
+
+  .duration-bar-fill.success { background: var(--green); }
+  .duration-bar-fill.failure { background: var(--red); }
+  .duration-bar-fill.running { background: var(--yellow); animation: progress 2s ease-in-out infinite; }
+
+  @keyframes progress {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-dim);
+    grid-column: 1 / -1;
+  }
+
+  .empty-state .icon { font-size: 48px; margin-bottom: 16px; }
+
+  .loading {
+    text-align: center;
+    padding: 60px;
+    color: var(--text-dim);
+    grid-column: 1 / -1;
+  }
+
+  .spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 12px;
+  }
+
+  @media (max-width: 1400px) {
+    .run-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  @media (max-width: 1024px) {
+    .run-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  @media (max-width: 640px) {
+    .run-grid { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 768px) {
+    .stats-bar { grid-template-columns: repeat(2, 1fr); }
+    .container { padding: 16px; }
+    .header { flex-wrap: wrap; gap: 12px; }
+    .token-input { width: 100%; order: 3; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>
+    <span class="logo">SX</span>
+    ShortX CI Dashboard
+  </h1>
+  <div class="header-right">
+    <input type="password" class="token-input" id="tokenInput" placeholder="GitHub Token (ghp_...)" />
+    <div class="status-badge">
+      <span class="status-dot" id="liveDot"></span>
+      <span id="liveText">Live</span>
+    </div>
+    <div class="refresh-group">
+      <div class="countdown-ring" id="countdownRing">
+        <svg viewBox="0 0 28 28">
+          <circle class="track" cx="14" cy="14" r="11" />
+          <circle class="progress" id="countdownProgress" cx="14" cy="14" r="11"
+            stroke-dasharray="69.115"
+            stroke-dashoffset="0" />
+        </svg>
+        <span class="countdown-text" id="countdownText">30</span>
+      </div>
+      <button class="refresh-btn" onclick="manualRefresh()">Refresh</button>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="stats-bar" id="statsBar">
+    <div class="stat-card total"><div class="number" id="statTotal">-</div><div class="label">Total Runs</div></div>
+    <div class="stat-card success"><div class="number" id="statSuccess">-</div><div class="label">Success</div></div>
+    <div class="stat-card failure"><div class="number" id="statFailure">-</div><div class="label">Failed</div></div>
+    <div class="stat-card running"><div class="number" id="statRunning">-</div><div class="label">Running</div></div>
+  </div>
+
+  <div id="runList" class="run-grid">
+    <div class="loading"><div class="spinner"></div>Loading workflow runs...</div>
+  </div>
+</div>
+
+<script>
+const OWNER = 'Tornaco';
+const REPO = 'ShortX';
+const API_BASE = `https://api.github.com/repos/${OWNER}/${REPO}`;
+const REFRESH_INTERVAL = 30;
+const CIRCUMFERENCE = 2 * Math.PI * 11;
+
+let countdown = REFRESH_INTERVAL;
+let countdownTimer = null;
+
+function getToken() {
+  const urlToken = new URLSearchParams(window.location.search).get('token');
+  if (urlToken) {
+    localStorage.setItem('gh_token', urlToken);
+    return urlToken;
+  }
+  const inputVal = document.getElementById('tokenInput').value.trim();
+  if (inputVal) return inputVal;
+  return localStorage.getItem('gh_token') || '';
+}
+
+function apiHeaders() {
+  const token = getToken();
+  const headers = { 'Accept': 'application/vnd.github+json' };
+  if (token) headers['Authorization'] = `Bearer ${token}`;
+  return headers;
+}
+
+document.getElementById('tokenInput').value = localStorage.getItem('gh_token') || '';
+document.getElementById('tokenInput').addEventListener('change', (e) => {
+  localStorage.setItem('gh_token', e.target.value.trim());
+  fetchRuns();
+});
+
+const statusIcons = {
+  success: '&#10003;',
+  failure: '&#10007;',
+  running: '&#9654;',
+  cancelled: '&#9679;',
+  skipped: '&#8250;',
+  pending: '&#9679;',
+};
+
+function formatDuration(ms) {
+  if (!ms) return '-';
+  const s = Math.floor(ms / 1000);
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  if (m === 0) return `${sec}s`;
+  return `${m}m ${sec}s`;
+}
+
+function formatTime(dateStr) {
+  const d = new Date(dateStr);
+  const now = new Date();
+  const diff = now - d;
+  if (diff < 60000) return 'just now';
+  if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
+  if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
+  return d.toLocaleDateString('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+}
+
+function getRunStatus(run) {
+  if (run.status === 'in_progress' || run.status === 'queued') return 'running';
+  if (run.conclusion === 'success') return 'success';
+  if (run.conclusion === 'failure' || run.conclusion === 'timed_out') return 'failure';
+  if (run.conclusion === 'cancelled') return 'cancelled';
+  return 'pending';
+}
+
+function getJobStatus(job) {
+  if (job.status === 'in_progress' || job.status === 'queued') return 'running';
+  if (job.conclusion === 'success') return 'success';
+  if (job.conclusion === 'failure' || job.conclusion === 'timed_out') return 'failure';
+  if (job.conclusion === 'cancelled') return 'cancelled';
+  return 'pending';
+}
+
+function getStepStatus(step) {
+  if (step.status === 'in_progress') return 'running';
+  if (step.status === 'queued') return 'pending';
+  if (step.conclusion === 'success') return 'success';
+  if (step.conclusion === 'failure') return 'failure';
+  if (step.conclusion === 'cancelled') return 'cancelled';
+  if (step.conclusion === 'skipped') return 'skipped';
+  return 'pending';
+}
+
+function truncate(str, len) {
+  if (!str) return '';
+  return str.length > len ? str.slice(0, len) + '...' : str;
+}
+
+function estimateRunDuration(run) {
+  if (run.run_started_at && run.updated_at) {
+    return new Date(run.updated_at) - new Date(run.run_started_at);
+  }
+  return null;
+}
+
+function renderRun(run, jobs) {
+  const status = getRunStatus(run);
+  const duration = estimateRunDuration(run);
+  const branch = run.head_branch || run.head_ref || '-';
+  const commitMsg = run.head_commit?.message || run.display_title || '-';
+  const author = run.actor?.login || '-';
+  const runUrl = run.html_url;
+
+  let pipelineHtml = '';
+  if (jobs && jobs.length > 0) {
+    const jobNodes = jobs.map((job, i) => {
+      const js = getJobStatus(job);
+      return `
+        <div class="job-node ${js}" onclick="toggleSteps(this)">
+          <span class="job-dot"></span>
+          ${truncate(job.name, 24)}
+        </div>
+        ${i < jobs.length - 1 ? '<div class="pipeline-arrow"></div>' : ''}
+      `;
+    }).join('');
+
+    const stepsHtml = jobs.map(job => {
+      if (!job.steps || job.steps.length === 0) return '';
+      const steps = job.steps.map(step => {
+        const ss = getStepStatus(step);
+        const dur = step.number > 0 && step.started_at && step.completed_at
+          ? formatDuration(new Date(step.completed_at) - new Date(step.started_at))
+          : '';
+        return `
+          <div class="step-item ${ss}">
+            <span class="step-dot"></span>
+            <span>${step.name}</span>
+            <span class="step-duration">${dur}</span>
+          </div>
+        `;
+      }).join('');
+      return `
+        <div class="job-steps" data-job="${job.name}">
+          ${steps}
+        </div>
+      `;
+    }).join('');
+
+    pipelineHtml = `
+      <div class="pipeline">${jobNodes}</div>
+      ${stepsHtml}
+    `;
+  }
+
+  const durationBar = duration
+    ? `<div class="duration-bar"><div class="duration-bar-fill ${status}" style="width: ${Math.min(100, (duration / 600000) * 100)}%"></div></div>`
+    : '';
+
+  return `
+    <div class="run-card">
+      <div class="run-top">
+        <div class="run-status-icon ${status}">${statusIcons[status]}</div>
+        <div class="run-info">
+            <div class="run-title">${commitMsg || '-'}</div>
+          <div class="run-meta">
+            <span>#${run.run_number}</span>
+            <a href="${runUrl}" target="_blank">${branch}</a>
+            <span>by ${author}</span>
+          </div>
+        </div>
+        <div class="run-right">
+          <div class="run-duration">
+            ${duration ? formatDuration(duration) : (status === 'running' ? '<span style="color:var(--yellow)">running</span>' : '-')}
+          </div>
+          <div class="run-time">${formatTime(run.created_at)}</div>
+        </div>
+      </div>
+      ${pipelineHtml}
+      ${durationBar}
+    </div>
+  `;
+}
+
+function toggleSteps(node) {
+  const jobName = node.textContent.trim();
+  const card = node.closest('.run-card');
+  const stepsEl = card.querySelector(`.job-steps[data-job="${jobName}"]`);
+  if (stepsEl) {
+    stepsEl.classList.toggle('expanded');
+  }
+}
+
+function updateStats(runs) {
+  let success = 0, failure = 0, running = 0;
+  runs.forEach(run => {
+    const s = getRunStatus(run);
+    if (s === 'success') success++;
+    else if (s === 'failure') failure++;
+    else if (s === 'running') running++;
+  });
+  document.getElementById('statTotal').textContent = runs.length;
+  document.getElementById('statSuccess').textContent = success;
+  document.getElementById('statFailure').textContent = failure;
+  document.getElementById('statRunning').textContent = running;
+}
+
+async function fetchRuns() {
+  const listEl = document.getElementById('runList');
+
+  try {
+    const res = await fetch(`${API_BASE}/actions/runs?per_page=20&branch=main`, { headers: apiHeaders() });
+    if (!res.ok) throw new Error(`GitHub API ${res.status}`);
+    const data = await res.json();
+    const runs = data.workflow_runs || [];
+
+    if (runs.length === 0) {
+      listEl.innerHTML = `
+        <div class="empty-state">
+          <div class="icon">&#128640;</div>
+          <div>No workflow runs found</div>
+        </div>
+      `;
+      return;
+    }
+
+    updateStats(runs);
+
+    const recentRuns = runs.slice(0, 8);
+    const jobResults = await Promise.all(
+      recentRuns.map(run =>
+        fetch(`${API_BASE}/actions/runs/${run.id}/jobs`, { headers: apiHeaders() })
+          .then(r => r.json())
+          .then(d => ({ runId: run.id, jobs: d.jobs || [] }))
+          .catch(() => ({ runId: run.id, jobs: [] }))
+      )
+    );
+
+    const jobsMap = {};
+    jobResults.forEach(j => { jobsMap[j.runId] = j.jobs; });
+
+    listEl.innerHTML = runs.map(run => renderRun(run, jobsMap[run.id] || null)).join('');
+
+  } catch (err) {
+    const hasToken = !!getToken();
+    listEl.innerHTML = `
+      <div class="empty-state">
+        <div class="icon">&#9888;</div>
+        <div>Failed to load: ${err.message}</div>
+        <div style="margin-top:8px;font-size:12px;color:var(--text-dim)">
+          ${hasToken ? 'Token may be invalid or lack repo access' : 'Private repo requires a GitHub token — paste ghp_xxx above'}
+        </div>
+      </div>
+    `;
+  }
+}
+
+function updateCountdown() {
+  const progress = document.getElementById('countdownProgress');
+  const text = document.getElementById('countdownText');
+  const offset = CIRCUMFERENCE * (1 - countdown / REFRESH_INTERVAL);
+  progress.setAttribute('stroke-dashoffset', offset);
+  text.textContent = countdown;
+}
+
+function startCountdown() {
+  countdown = REFRESH_INTERVAL;
+  updateCountdown();
+  if (countdownTimer) clearInterval(countdownTimer);
+  countdownTimer = setInterval(() => {
+    countdown--;
+    if (countdown <= 0) {
+      fetchRuns();
+      countdown = REFRESH_INTERVAL;
+    }
+    updateCountdown();
+  }, 1000);
+}
+
+function manualRefresh() {
+  fetchRuns();
+  startCountdown();
+}
+
+document.getElementById('liveText').textContent = `Auto-refresh`;
+
+fetchRuns();
+startCountdown();
+</script>
+</body>
+</html>
