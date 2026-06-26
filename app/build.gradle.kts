@@ -39,7 +39,7 @@ android {
 
     signingConfigs {
         create("release") {
-            Configs.KeyStorePath.also {
+            Configs.effectiveKeyStorePath.also {
                 storeFile = rootProject.file(it)
                 storePassword = keyStorePassword()
                 keyAlias = keyStoreAlias()

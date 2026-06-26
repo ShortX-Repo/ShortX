@@ -37,6 +37,14 @@ object Configs {
     val Project.magiskModuleBuildDir get() = File("${outDir}/magisk_module")
 
     const val KeyStorePath = "environment/keys/android.jks"
+    const val CIKeyStorePath = "environment/keys/ci.jks"
+    const val CIKeyAlias = "ci-shortx"
+    const val CIKeyPassword = "ci123456"
+
+    val isCI: Boolean get() = System.getenv("CI") == "true"
+
+    val effectiveKeyStorePath: String
+        get() = if (isCI) CIKeyStorePath else KeyStorePath
 
     operator fun get(key: String): String? {
         val v = props[key] as? String ?: return null
@@ -49,10 +57,12 @@ object Configs {
     }
 
     fun Project.keyStoreAlias(): String {
+        if (isCI) return CIKeyAlias
         return Configs["keyAlias"] ?: this.findProperty("keyAlias")?.toString() ?: ""
     }
 
     fun Project.keyStorePassword(): String {
+        if (isCI) return CIKeyPassword
         return Configs["keyPassword"] ?: this.findProperty("keyPassword")?.toString() ?: ""
     }
 }

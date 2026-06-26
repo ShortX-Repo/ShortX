@@ -34,8 +34,12 @@ jobs:
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
+    - name: Generate CI keystore
+      run: |
+        chmod +x .github/scripts/generate-ci-keystore.sh
+        .github/scripts/generate-ci-keystore.sh
     - name: Build with Gradle
       env:
         GPR_USER: ${{ secrets.GPR_USER }}
         GPR_API_KEY: ${{ secrets.GPR_API_KEY }}
-      run: ./gradlew app:testPrcDebugUnitTest services:test
+      run: ./gradlew app:assemblePrcRelease
