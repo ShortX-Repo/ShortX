@@ -14,6 +14,17 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
+    - name: Cache Gradle build
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+          .gradle
+        key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          gradle-${{ runner.os }}-
+    
     - uses: nttld/setup-ndk@v1
       with:
         ndk-version: r29
@@ -22,7 +33,7 @@ jobs:
     - uses: lukka/get-cmake@latest  
       with:
         useLocalCache: true
-        useCloudCache: false
+        useCloudCache: true
         cmakeVersion: 3.16.3
     
     - name: set up JDK 21
@@ -42,4 +53,4 @@ jobs:
       env:
         GPR_USER: ${{ secrets.GPR_USER }}
         GPR_API_KEY: ${{ secrets.GPR_API_KEY }}
-      run: ./gradlew app:assemblePrcRelease
+      run: ./gradlew app:assemblePrcRelease --build-cache --no-daemon
