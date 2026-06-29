@@ -208,4 +208,5 @@ val allActionClasses = listOf(
     Action.ParseQRCode::class,
     Action.GenerateQRCode::class,
     Action.OpenUrl::class,
+    Action.ShowPieMenu::class,
 )

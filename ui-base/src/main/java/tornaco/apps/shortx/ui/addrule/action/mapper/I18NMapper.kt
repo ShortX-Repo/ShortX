@@ -430,6 +430,14 @@ fun labelAndDescriptionForActionSelector(
         Action.PluginAction::class -> i18N["ui.action.plugin"] to null
         Action.NoAction::class -> i18N["ui.action.no.action"] to null
 
+        Action.ShowPieMenu::class -> i18N.get(
+            key = "ui.action.show.pie.menu",
+            fallback = "PIE Menu"
+        ) to i18N.get(
+            key = "ui.action.show.pie.menu.desc",
+            fallback = "Show a radial arc menu on continuous gesture"
+        )
+
         else -> {
             "N/A" to null
         }
@@ -1636,6 +1644,11 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         )
 
         is Action.PluginAction -> listOfNotNull("PLUGIN NOT SUPPORTED.")
+
+        is Action.ShowPieMenu -> listOfNotNull(
+            i18N.get(key = "ui.action.show.pie.menu", fallback = "PIE Menu"),
+            "${action.items.size} items",
+        )
     }
 }
 

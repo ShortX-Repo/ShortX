@@ -840,6 +840,10 @@ enum class PrebuiltActor : ActorProvider {
         override val actor: Actor
             get() = tornaco.apps.shortx.services.rule.actor.impl.OpenUrl
     },
+    ShowPieMenu {
+        override val actor: Actor
+            get() = tornaco.apps.shortx.services.rule.actor.impl.ShowPieMenu
+    },
 
     ;
 

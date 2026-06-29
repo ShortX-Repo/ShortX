@@ -16,6 +16,7 @@ import tornaco.apps.shortx.core.logOnDebug
 import tornaco.apps.shortx.core.proto.action.ContinuousAdjustBrightness
 import tornaco.apps.shortx.core.proto.action.ContinuousGesturePointer
 import tornaco.apps.shortx.core.proto.action.ContinuousAdjustVolume
+import tornaco.apps.shortx.core.proto.action.ShowPieMenu
 import tornaco.apps.shortx.core.proto.common.AppPkg
 import tornaco.apps.shortx.core.proto.common.AppPkgList
 import tornaco.apps.shortx.core.proto.fact.CornerSwipeToCenter
@@ -37,6 +38,7 @@ import tornaco.apps.shortx.core.util.Logger
 import tornaco.apps.shortx.core.util._dp
 import tornaco.apps.shortx.services.gesture.bpok.gesture.handlers.BrightnessContinuousHandler
 import tornaco.apps.shortx.services.gesture.bpok.gesture.handlers.GesturePointerContinuousHandler
+import tornaco.apps.shortx.services.gesture.bpok.gesture.handlers.PieMenuContinuousHandler
 import tornaco.apps.shortx.services.gesture.bpok.gesture.handlers.VolumeContinuousHandler
 import kotlin.math.roundToInt
 
@@ -622,6 +624,17 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
                                     )
                                 }
 
+                                actionProto is_ ShowPieMenu::class.java -> {
+                                    val action = actionProto unpack_ ShowPieMenu::class.java
+                                    ContinuousGestureActionPayload.PieMenu(
+                                        items = action.itemsList,
+                                        pieColor = action.pieColorArgb.takeIf { it != 0 } ?: 0xFF229C8C.toInt(),
+                                        iconColor = action.iconColorArgb,
+                                        scalePercent = action.scalePercent.takeIf { it > 0 } ?: 100,
+                                        arcSpanDegrees = action.arcSpanDegrees.toFloat().takeIf { it > 0f } ?: 160f,
+                                    )
+                                }
+
                                 else -> null
                             }
                         }
@@ -719,6 +732,15 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
                 context = context,
                 streamType = payload.streamType,
                 sensitivityScale = payload.sensitivityScale,
+            )
+
+            is ContinuousGestureActionPayload.PieMenu -> PieMenuContinuousHandler(
+                context = context,
+                items = payload.items,
+                pieColor = payload.pieColor,
+                iconColor = payload.iconColor,
+                scalePercent = payload.scalePercent,
+                arcSpanDegrees = payload.arcSpanDegrees,
             )
         }
     }

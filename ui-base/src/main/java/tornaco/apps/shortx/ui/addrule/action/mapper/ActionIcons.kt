@@ -776,6 +776,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.Business.global_line
         }
 
+        Action.ShowPieMenu::class -> {
+            Remix.Business.pie_chart_2_line
+        }
+
         else -> {
             Remix.Document.file_unknow_fill
         }

@@ -3,6 +3,7 @@ package tornaco.apps.shortx.services.gesture.bpok.gesture
 import tornaco.apps.shortx.core.proto.action.GesturePointerDragButton
 import tornaco.apps.shortx.core.proto.action.GesturePointerReleaseButton
 import tornaco.apps.shortx.core.proto.action.GesturePointerScrollMode
+import tornaco.apps.shortx.core.proto.action.PieMenuItem
 import tornaco.apps.shortx.core.proto.fact.CornerSwipeToCenter
 import tornaco.apps.shortx.core.proto.fact.EdgeGesture
 import tornaco.apps.shortx.core.proto.fact.EdgeGestureStep
@@ -35,6 +36,14 @@ sealed interface ContinuousGestureActionPayload {
     data class Volume(
         val streamType: Int,
         val sensitivityScale: Float,
+    ) : ContinuousGestureActionPayload
+
+    data class PieMenu(
+        val items: List<PieMenuItem>,
+        val pieColor: Int,
+        val iconColor: Int,
+        val scalePercent: Int,
+        val arcSpanDegrees: Float,
     ) : ContinuousGestureActionPayload
 }
 

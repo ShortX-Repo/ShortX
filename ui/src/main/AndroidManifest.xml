@@ -427,6 +427,9 @@
             android:name="tornaco.apps.shortx.ui.addrule.action.selector.actionsidebar.ShowActionSidebarSelectorActivity"
             android:exported="false" />
         <activity
+            android:name="tornaco.apps.shortx.ui.addrule.action.selector.piemenu.ShowPieMenuSelectorActivity"
+            android:exported="false" />
+        <activity
             android:name="tornaco.apps.shortx.ui.discover.contribute.ContributorActivity"
             android:exported="false" />
         <activity

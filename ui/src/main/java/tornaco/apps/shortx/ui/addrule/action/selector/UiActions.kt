@@ -18,6 +18,7 @@ import tornaco.apps.shortx.ui.addrule.action.mapper.summaryKey
 import tornaco.apps.shortx.ui.addrule.action.mapper.toAndroidContextMenuActionLabelKey
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.selector.actionsidebar.ShowActionSidebarSelectorActivity
+import tornaco.apps.shortx.ui.addrule.action.selector.piemenu.ShowPieMenuSelectorActivity
 import tornaco.apps.shortx.ui.addrule.action.selector.dialog.ShowChoiceDialogSelectorActivity
 import tornaco.apps.shortx.ui.addrule.action.selector.dialog.ShowDialogSelectorActivity
 import tornaco.apps.shortx.ui.addrule.action.selector.dialog.ShowListDialogSelectorActivity
@@ -227,6 +228,16 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
         }
     )
 
+    val showPieMenuLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult(),
+        onResult = { result ->
+            val action = result.popupSelectorResult<Action.ShowPieMenu>()
+            action?.let {
+                addAction(it)
+            }
+        }
+    )
+
     val getNodeTextSelectorState = rememberTextInputState(
         title = LocalI18N.current[I18N_R.UI_ACTION_GET_TEXT_FROM_NODE],
         message = LocalI18N.current[I18N_R.UI_ACTION_GET_TEXT_FROM_NODE_TIP_GET_ALL],
@@ -430,6 +441,17 @@ fun uiActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource) -> 
                         context = context,
                         currentData = source.getActionAs<Action.ShowActionSidebar>(),
                         clazz = ShowActionSidebarSelectorActivity::class.java
+                    )
+                )
+                true
+            }
+
+            Action.ShowPieMenu::class -> {
+                showPieMenuLauncher.launch(
+                    newIntent(
+                        context = context,
+                        currentData = source.getActionAs<Action.ShowPieMenu>(),
+                        clazz = ShowPieMenuSelectorActivity::class.java
                     )
                 )
                 true
@@ -709,6 +731,7 @@ fun UiActions(
         Action.ShowFloatWindow::class,
         Action.HideFloatWindow::class,
         Action.ShowActionSidebar::class,
+        Action.ShowPieMenu::class,
         if (BuildPropInternal.APP_IS_DEBUG) Action.ShowSideBar::class else null,
         if (BuildPropInternal.APP_IS_DEBUG) Action.HideSideBar::class else null,
         Action.ShowAlertDialog::class,

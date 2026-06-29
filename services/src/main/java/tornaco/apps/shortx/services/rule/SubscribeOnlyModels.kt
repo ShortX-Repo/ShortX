@@ -8,6 +8,8 @@ import tornaco.apps.shortx.core.proto.action.ClickNotification
 import tornaco.apps.shortx.core.proto.action.ClickNotificationActionButton
 import tornaco.apps.shortx.core.proto.action.ClickTile
 import tornaco.apps.shortx.core.proto.action.ConnectWifi
+import tornaco.apps.shortx.core.proto.action.ContinuousAdjustBrightness
+import tornaco.apps.shortx.core.proto.action.ContinuousAdjustVolume
 import tornaco.apps.shortx.core.proto.action.DownloadFile
 import tornaco.apps.shortx.core.proto.action.EnableUniversalCopy
 import tornaco.apps.shortx.core.proto.action.ExecuteJS
@@ -20,6 +22,7 @@ import tornaco.apps.shortx.core.proto.action.FindPointsByColor
 import tornaco.apps.shortx.core.proto.action.ForEach
 import tornaco.apps.shortx.core.proto.action.ForEachPkgSet
 import tornaco.apps.shortx.core.proto.action.ExecuteFunction
+import tornaco.apps.shortx.core.proto.action.GenerateQRCode
 import tornaco.apps.shortx.core.proto.action.GetCurrentLocationAddress
 import tornaco.apps.shortx.core.proto.action.GetCurrentLocationInfo
 import tornaco.apps.shortx.core.proto.action.GetScreenOnTime
@@ -58,6 +61,7 @@ import tornaco.apps.shortx.core.proto.action.ShowFloatWindow
 import tornaco.apps.shortx.core.proto.action.ShowGlobalActionsMenu
 import tornaco.apps.shortx.core.proto.action.ShowListDialog
 import tornaco.apps.shortx.core.proto.action.ShowOverlayButton
+import tornaco.apps.shortx.core.proto.action.ShowPieMenu
 import tornaco.apps.shortx.core.proto.action.ShowRecentApps
 import tornaco.apps.shortx.core.proto.action.ShowStatusBarChip
 import tornaco.apps.shortx.core.proto.action.StartGestureRecording
@@ -103,6 +107,7 @@ import tornaco.apps.shortx.core.proto.fact.AppLostWindowFocus
 import tornaco.apps.shortx.core.proto.fact.BTConnectedTo
 import tornaco.apps.shortx.core.proto.fact.BTDisconnectedFrom
 import tornaco.apps.shortx.core.proto.fact.BatteryTemperatureChanged
+import tornaco.apps.shortx.core.proto.fact.BrowserIntercept
 import tornaco.apps.shortx.core.proto.fact.CombineKeyEvent
 import tornaco.apps.shortx.core.proto.fact.ConnectedWifiSignalLevelChanged
 import tornaco.apps.shortx.core.proto.fact.CornerSwipeToCenter
@@ -161,6 +166,7 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out Genera
         ProximitySensorStateChanged::class,
         ShakeDevice::class,
         OnMenuActionTrigger::class,
+        BrowserIntercept::class,
 
         AppHasAudioFocus::class,
         RequireMobileDataEnabled::class,
@@ -260,6 +266,10 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<out Genera
         ExecuteMVEL::class,
         ExecuteJS::class,
         ForEach::class,
+        ShowPieMenu::class,
+        GenerateQRCode::class,
+        ContinuousAdjustBrightness::class,
+        ContinuousAdjustVolume::class,
     ).also {
         onRes()
     }

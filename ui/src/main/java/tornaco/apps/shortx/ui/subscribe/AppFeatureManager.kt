@@ -119,6 +119,7 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<*>> = arra
     Fact.EdgeGesture::class,
     Fact.ScreenGesture::class,
     Fact.OnMenuActionTrigger::class,
+    Fact.BrowserIntercept::class,
     // Remember to update also: tornaco.apps.shortx.services.rule.SubscribeOnlyModels.kt
 
     Condition.AppHasAudioFocus::class,
@@ -219,6 +220,10 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<*>> = arra
     Action.ForEach::class,
     Action.ExecuteJS::class,
     Action.MVEL::class,
+    Action.GenerateQRCode::class,
+    Action.ShowPieMenu::class,
+    Action.ContinuousAdjustVolume::class,
+    Action.ContinuousAdjustBrightness::class,
     // Remember to update also: tornaco.apps.shortx.services.rule.SubscribeOnlyModels.kt
 )
 

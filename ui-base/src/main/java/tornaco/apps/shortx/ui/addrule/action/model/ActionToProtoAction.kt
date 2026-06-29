@@ -2639,5 +2639,20 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setIcon(icon)
                 .build()
         }
+
+        is Action.ShowPieMenu -> {
+            tornaco.apps.shortx.core.proto.action.ShowPieMenu.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNote(overrideNote ?: note)
+                .addAllItems(items)
+                .setPieColorArgb(pieColorArgb)
+                .setIconColorArgb(iconColorArgb)
+                .setScalePercent(scalePercent)
+                .setArcSpanDegrees(arcSpanDegrees)
+                .build()
+        }
     }
 }

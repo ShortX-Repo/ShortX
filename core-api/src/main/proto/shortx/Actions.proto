@@ -2404,3 +2404,23 @@ message OpenUrl {
   string note = 99;
   string id = 100;
 }
+
+message PieMenuItem {
+  string label = 1;
+  google.protobuf.Any action = 2;
+  string iconDescription = 3;
+}
+
+message ShowPieMenu {
+  repeated PieMenuItem items = 1;
+  int32 pieColorArgb = 2;
+  int32 iconColorArgb = 3;
+  int32 scalePercent = 4;
+  int32 arcSpanDegrees = 5;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
