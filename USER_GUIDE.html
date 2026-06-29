@@ -1,0 +1,4560 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShortX 自动指令使用教程</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sidebar-w: 280px;
+  --bg: #fafbfc;
+  --surface: #ffffff;
+  --fg: #1a1a2e;
+  --fg2: #4a5568;
+  --accent: #4f46e5;
+  --accent-soft: #eef2ff;
+  --accent-hover: #4338ca;
+  --border: #e2e8f0;
+  --border-light: #f1f5f9;
+  --code-bg: #f8fafc;
+  --code-fg: #e11d48;
+  --pre-bg: #0f172a;
+  --pre-fg: #e2e8f0;
+  --table-stripe: #f8fafc;
+  --table-header: #f1f5f9;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,.05);
+  --shadow: 0 4px 6px -1px rgba(0,0,0,.07), 0 2px 4px -2px rgba(0,0,0,.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,.08), 0 4px 6px -4px rgba(0,0,0,.04);
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;scroll-padding-top:80px;}
+body{
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans SC",sans-serif;
+  line-height:1.75;color:var(--fg);background:var(--bg);
+  display:flex;min-height:100vh;
+}
+
+/* ===== SIDEBAR ===== */
+.sidebar{
+  position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);
+  background:var(--surface);border-right:1px solid var(--border);
+  overflow-y:auto;z-index:100;
+  padding:24px 0;
+  transition:transform .3s cubic-bezier(.4,0,.2,1);
+}
+.sidebar-header{
+  padding:0 20px 20px;border-bottom:1px solid var(--border-light);
+  margin-bottom:12px;
+}
+.sidebar-logo{
+  font-size:18px;font-weight:700;color:var(--accent);
+  display:flex;align-items:center;gap:8px;
+}
+.sidebar-logo svg{width:24px;height:24px;}
+.sidebar-subtitle{font-size:12px;color:var(--fg2);margin-top:4px;}
+.sidebar nav{padding:0 12px;}
+.sidebar nav a{
+  display:block;padding:7px 12px;border-radius:var(--radius-sm);
+  color:var(--fg2);text-decoration:none;font-size:13px;font-weight:500;
+  transition:all .15s;line-height:1.4;
+}
+.sidebar nav a:hover{background:var(--accent-soft);color:var(--accent);}
+.sidebar nav a.active{background:var(--accent-soft);color:var(--accent);font-weight:600;}
+.sidebar nav .nav-group{
+  font-size:11px;font-weight:700;color:var(--fg2);
+  text-transform:uppercase;letter-spacing:.5px;
+  padding:16px 12px 6px;opacity:.7;
+}
+.sidebar nav .nav-sub{padding-left:20px;}
+.sidebar nav .nav-sub a{font-size:12px;padding:4px 12px;}
+
+/* Mobile hamburger */
+.menu-btn{
+  display:none;position:fixed;top:16px;left:16px;z-index:200;
+  width:40px;height:40px;border-radius:10px;border:none;
+  background:var(--surface);box-shadow:var(--shadow);
+  cursor:pointer;align-items:center;justify-content:center;
+}
+.menu-btn svg{width:20px;height:20px;color:var(--fg);}
+.overlay{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);
+  z-index:90;opacity:0;transition:opacity .3s;
+}
+.overlay.show{opacity:1;}
+
+/* ===== MAIN CONTENT ===== */
+.main{
+  margin-left:var(--sidebar-w);flex:1;
+  padding:40px 48px 80px;max-width:900px;
+}
+.main h1{
+  font-size:2.2rem;font-weight:800;color:var(--fg);
+  margin-bottom:8px;letter-spacing:-.02em;
+}
+.main .subtitle{font-size:15px;color:var(--fg2);margin-bottom:32px;}
+.main h2{
+  font-size:1.5rem;font-weight:700;color:var(--fg);
+  margin-top:48px;margin-bottom:16px;padding-bottom:10px;
+  border-bottom:2px solid var(--border);
+  scroll-margin-top:24px;
+}
+.main h2 .h2-num{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:32px;height:32px;border-radius:8px;font-size:14px;font-weight:700;
+  background:var(--accent);color:#fff;margin-right:10px;
+  vertical-align:middle;
+}
+.main h3{
+  font-size:1.15rem;font-weight:600;color:var(--fg);
+  margin-top:28px;margin-bottom:10px;scroll-margin-top:24px;
+}
+.main h4{
+  font-size:1rem;font-weight:600;color:var(--accent);
+  margin-top:20px;margin-bottom:8px;scroll-margin-top:24px;
+}
+.main p{margin-bottom:12px;color:var(--fg);}
+.main strong{font-weight:600;color:var(--fg);}
+.main a{color:var(--accent);text-decoration:none;font-weight:500;}
+.main a:hover{text-decoration:underline;}
+.main ul,.main ol{margin:8px 0 16px 20px;}
+.main li{margin-bottom:4px;color:var(--fg);}
+
+/* Code */
+code{
+  font-family:"SF Mono","Fira Code","JetBrains Mono",Consolas,monospace;
+  font-size:.88em;background:var(--code-bg);color:var(--code-fg);
+  padding:2px 6px;border-radius:5px;
+}
+.main pre{
+  background:var(--pre-bg);color:var(--pre-fg);
+  padding:16px 20px;border-radius:var(--radius-sm);
+  overflow-x:auto;margin:12px 0 20px;line-height:1.6;
+  box-shadow:var(--shadow-sm);
+}
+.main pre code{background:none;color:inherit;padding:0;font-size:.85em;}
+
+/* Tables */
+.main table{
+  width:100%;border-collapse:separate;border-spacing:0;
+  margin:12px 0 20px;font-size:.9em;
+  border:1px solid var(--border);border-radius:var(--radius-sm);
+  overflow:hidden;box-shadow:var(--shadow-sm);
+}
+.main th{
+  background:var(--table-header);font-weight:600;
+  padding:10px 14px;text-align:left;border-bottom:1px solid var(--border);
+  font-size:.85em;color:var(--fg2);
+}
+.main td{padding:10px 14px;border-bottom:1px solid var(--border-light);}
+.main tr:last-child td{border-bottom:none;}
+.main tr:hover td{background:var(--accent-soft);}
+
+/* Blockquote */
+.main blockquote{
+  border-left:4px solid var(--accent);padding:14px 18px;
+  margin:16px 0;background:var(--accent-soft);
+  border-radius:0 var(--radius-sm) var(--radius-sm) 0;
+}
+.main blockquote p{margin-bottom:0;color:var(--fg);}
+
+/* Cards for mindmap */
+#mindmap-container{
+  width:100%;border:1px solid var(--border);border-radius:var(--radius);
+  overflow:auto;background:var(--surface);margin:16px 0 24px;
+  padding:24px;max-height:800px;box-shadow:var(--shadow);
+}
+.mm{font-family:'Inter',-apple-system,sans-serif;font-size:13px;line-height:1.5;user-select:none;}
+.mm ul{list-style:none;margin:0;padding:0;}
+.mm>ul{display:flex;justify-content:center;gap:0;}
+.mm li{position:relative;padding:6px 10px;border-radius:6px;white-space:nowrap;cursor:pointer;transition:background .15s;}
+.mm li:hover{background:rgba(0,0,0,.04);}
+.mm .l1>ul{flex-direction:column;gap:6px;margin-top:12px;}
+.mm .l1>ul>li{position:relative;}
+.mm .l2>ul{flex-direction:column;gap:3px;margin-top:8px;}
+.mm .l3>ul{flex-direction:column;gap:2px;margin-top:6px;font-size:12px;color:#64748b;}
+.mm .n0{background:var(--accent);color:#fff;font-weight:700;font-size:18px;padding:10px 20px;border-radius:10px;display:inline-block;}
+.mm .n1{font-weight:600;font-size:14px;padding:5px 12px;border-radius:6px;display:inline-block;}
+.mm .n1.c0{background:#dbeafe;color:#1e40af;}
+.mm .n1.c1{background:#fee2e2;color:#991b1b;}
+.mm .n1.c2{background:#dcfce7;color:#166534;}
+.mm .n1.c3{background:#ffedd5;color:#9a3412;}
+.mm .n1.c4{background:#f3e8ff;color:#6b21a8;}
+.mm .n1.c5{background:#cffafe;color:#155e75;}
+.mm .n1.c6{background:#fce7f3;color:#9d174d;}
+.mm .n2{font-weight:500;font-size:13px;padding:3px 8px;border-radius:4px;display:inline-block;background:#f1f5f9;color:#334155;}
+.mm .n3{font-size:12px;padding:2px 6px;border-radius:3px;display:inline-block;background:#f8fafc;color:#64748b;border:1px solid #e2e8f0;}
+.mm .l1>ul>li::before{content:'';position:absolute;left:-16px;top:14px;width:16px;height:2px;background:#94a3b8;}
+.mm .l1>ul>li::after{content:'';position:absolute;left:-16px;top:0;width:2px;height:100%;background:#94a3b8;}
+.mm .l1>ul>li:last-child::after{height:14px;}
+.mm .l2>ul>li::before{content:'';position:absolute;left:-10px;top:50%;width:10px;height:1.5px;background:#cbd5e1;}
+.mm .l3>ul>li::before{content:'';position:absolute;left:-8px;top:50%;width:8px;height:1px;background:#e2e8f0;}
+.mm .toggle{display:inline-block;width:14px;height:14px;border-radius:50%;background:#e2e8f0;text-align:center;line-height:14px;font-size:10px;color:#64748b;margin-right:4px;cursor:pointer;vertical-align:middle;}
+.mm .collapsed>ul{display:none;}
+.mm .collapsed>.toggle::after{content:'+';}
+.mm .expanded>.toggle::after{content:'\2212';}
+
+/* Scrollbar */
+.sidebar::-webkit-scrollbar,.main::-webkit-scrollbar{width:6px;}
+.sidebar::-webkit-scrollbar-thumb,.main::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px;}
+
+/* Responsive - Mobile */
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%);width:280px;}
+  .sidebar.open{transform:translateX(0);box-shadow:var(--shadow-lg);}
+  .menu-btn{display:flex;}
+  .overlay.show{display:block;}
+  .main{margin-left:0;padding:72px 16px 80px;max-width:100%;}
+  .main h1{font-size:1.6rem;}
+  .main h2{font-size:1.3rem;margin-top:32px;}
+  .main h2 .h2-num{width:28px;height:28px;font-size:13px;}
+  .main h3{font-size:1.1rem;}
+  .main h4{font-size:0.95rem;}
+  .main p{font-size:15px;line-height:1.7;}
+  .main pre{padding:12px 14px;font-size:0.82em;margin:8px 0 16px;}
+  .main code{font-size:0.85em;padding:1px 4px;}
+  .main table{font-size:0.82em;display:block;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .main th{padding:8px 10px;font-size:0.8em;}
+  .main td{padding:8px 10px;font-size:0.85em;}
+  .main blockquote{padding:10px 14px;margin:12px 0;}
+  .main ul,.main ol{margin:6px 0 12px 16px;}
+  #mindmap-container{max-height:400px;padding:16px;overflow-x:auto;}
+  .mm{font-size:12px;}
+  .mm .n0{font-size:15px;padding:8px 14px;}
+  .mm .n1{font-size:13px;}
+}
+
+/* Small phones */
+@media(max-width:480px){
+  .main{padding:68px 12px 60px;}
+  .main h1{font-size:1.4rem;}
+  .main h2{font-size:1.2rem;}
+  .main pre{padding:10px 12px;font-size:0.78em;white-space:pre-wrap;word-break:break-all;}
+  .main table{font-size:0.78em;}
+  .main th,.main td{padding:6px 8px;}
+  .sidebar{width:260px;}
+  #mindmap-container{max-height:350px;padding:12px;}
+}
+</style>
+</head>
+<body>
+
+<!-- Mobile menu button -->
+<button class="menu-btn" onclick="toggleSidebar()" aria-label="Toggle menu">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+</button>
+
+<!-- Back to top button -->
+<button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Back to top">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 15l-6-6-6 6"/></svg>
+</button>
+<style>
+.back-to-top{
+  display:none;position:fixed;bottom:24px;right:24px;z-index:200;
+  width:44px;height:44px;border-radius:50%;border:none;
+  background:var(--accent);color:#fff;cursor:pointer;
+  box-shadow:var(--shadow-lg);align-items:center;justify-content:center;
+  transition:opacity .3s,transform .3s;
+}
+.back-to-top:hover{background:var(--accent-hover);transform:scale(1.1);}
+.back-to-top.show{display:flex;}
+@media(max-width:900px){
+  .back-to-top{bottom:20px;right:20px;width:40px;height:40px;}
+}
+</style>
+<div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+
+<!-- Sidebar -->
+<aside class="sidebar" id="sidebar">
+<div class="sidebar-header">
+<div class="sidebar-logo">
+<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+ShortX Docs
+</div>
+<div class="sidebar-subtitle">自动指令使用教程</div>
+</div>
+<nav id="sidebar-nav">
+<div class="nav-group">开始</div>
+<a href="#1">简介</a>
+<a href="#2">安装与环境要求</a>
+<div class="nav-group">核心概念</div>
+<a href="#3">核心概念总览</a>
+<div class="nav-sub">
+<a href="#31-rule">自动指令 (Rule)</a>
+<a href="#32-direct-action">一键指令 (DA)</a>
+<a href="#33-fact">触发器 (Fact)</a>
+<a href="#34-condition">条件 (Condition)</a>
+<a href="#35-action">动作 (Action)</a>
+</div>
+<div class="nav-group">变量</div>
+<a href="#4">变量系统</a>
+<div class="nav-sub">
+<a href="#41-global-variable">全局变量</a>
+<a href="#42-local-variable">局部变量</a>
+<a href="#43-context-variable">上下文变量</a>
+<a href="#44-system-env">系统环境变量</a>
+<a href="#45">引用语法</a>
+</div>
+<div class="nav-group">参考手册</div>
+<a href="#5">触发器完整参考</a>
+<div class="nav-sub">
+<a href="#51">应用生命周期</a>
+<a href="#52">通知</a>
+<a href="#53">系统状态</a>
+<a href="#54">连接状态</a>
+<a href="#55">传感器</a>
+<a href="#56">手势</a>
+<a href="#57">时间与调度</a>
+<a href="#58">按键与输入</a>
+<a href="#59">广播与事件</a>
+<a href="#510">电源与充电</a>
+<a href="#511">媒体与音频</a>
+<a href="#511-screensensor">屏幕与显示</a>
+<a href="#511">其他</a>
+</div>
+<a href="#6">条件完整参考</a>
+<div class="nav-sub">
+<a href="#61">应用状态</a>
+<a href="#62">系统状态</a>
+<a href="#63">变量评估</a>
+<a href="#64">连接条件</a>
+<a href="#65">时间条件</a>
+<a href="#66">屏幕与显示</a>
+<a href="#67">代码条件</a>
+</div>
+<a href="#7-action">动作完整参考</a>
+<div class="nav-sub">
+<a href="#71">流程控制</a>
+<a href="#72">应用管理</a>
+<a href="#73">系统开关</a>
+<a href="#74">通知操作</a>
+<a href="#75">UI 交互</a>
+<a href="#76">变量操作</a>
+<a href="#77">脚本执行</a>
+<a href="#78">网络与通信</a>
+<a href="#79">文件与存储</a>
+<a href="#710">媒体与音频</a>
+<a href="#711">屏幕与显示</a>
+<a href="#712">输入与手势</a>
+<a href="#713">定位与导航</a>
+<a href="#714">二维码与图像</a>
+<a href="#714">其他</a>
+</div>
+<div class="nav-group">高级功能</div>
+<a href="#8-quit">退出指令</a>
+<a href="#9-hook">钩子机制</a>
+<a href="#10-function">函数</a>
+<a href="#11">脚本引擎</a>
+<div class="nav-sub">
+<a href="#111-javascript-executejs">JavaScript</a>
+<a href="#112-mvel-executemvel">MVEL</a>
+</div>
+<a href="#12">高级功能</a>
+<div class="nav-sub">
+<a href="#121-method-hook">方法钩子</a>
+<a href="#122-edge-gesture">边缘手势</a>
+<a href="#123">浮窗与侧边栏</a>
+<a href="#124-qs-tile">磁贴</a>
+<a href="#125-status-bar-chip">状态栏 Chip</a>
+<a href="#126">流体云</a>
+</div>
+<div class="nav-group">附录</div>
+<a href="#13">导入与导出</a>
+<a href="#14">常见使用场景</a>
+<a href="#16">指令文件示例</a>
+<div class="nav-sub">
+<a href="#16-file-format">文件格式说明</a>
+<a href="#16-da-simple">一键指令：蓝牙开关</a>
+<a href="#16-da-globalvar">一键指令：WiFi 开关</a>
+<a href="#16-da-dialog">一键指令：用户输入+HTTP</a>
+<a href="#16-rule-appfg">自动指令：应用前台</a>
+<a href="#16-rule-notification">自动指令：通知过滤</a>
+<a href="#16-rule-quit">自动指令：退出机制</a>
+<a href="#16-rule-hook">自动指令：钩子+参数</a>
+<a href="#16-rule-js">自动指令：JS 脚本</a>
+<a href="#16-import-export">导入导出格式</a>
+</div>
+<a href="#15">调试与排错</a>
+</nav>
+</aside>
+
+<!-- Main content -->
+<main class="main">
+
+<h1 id="shortx">ShortX 自动指令使用教程</h1>
+
+<h2 id="1">1. 简介</h2>
+<p>ShortX 是一个功能强大的 Android 自动化工具，同时作为标准 Android 应用和 Xposed/Magisk 模块运行。它允许用户通过配置"自动指令"和"一键指令"来自动化手机上的各种操作。</p>
+<p><strong>核心能力：</strong><br />
+- 监听系统事件（通知、应用切换、按键、传感器等）<br />
+- 基于条件判断执行自动化操作<br />
+- 支持 Shell 命令、JavaScript、MVEL 脚本<br />
+- 浮窗、侧边栏、状态栏芯片等 UI 交互<br />
+- 手势录制与回放<br />
+- OCR 文字识别<br />
+- WebSocket 通信<br />
+- WebDAV 备份同步</p>
+
+<h2 id="2">2. 安装与环境要求</h2>
+<p><strong>基本要求：</strong><br />
+- Android 系统<br />
+- Root 权限（部分功能需要）<br />
+- Xposed/LSPosed 框架（Xposed 相关功能需要）</p>
+<p><strong>安装方式：</strong><br />
+- 作为普通 Android 应用安装 APK<br />
+- 作为 Magisk/Zygisk 模块安装</p>
+<p><strong>首次使用：</strong><br />
+1. 安装后打开应用<br />
+2. 授予必要的权限（无障碍服务、通知监听等）<br />
+3. 如果使用 Xposed 功能，确保在 LSPosed 中激活模块<br />
+4. 开始创建自动指令或导入社区指令</p>
+
+<h2 id="3">3. 核心概念</h2>
+<p>ShortX 的自动化基于三个核心概念：<strong>触发器 → 条件 → 动作</strong>。</p>
+<h3 id="31-rule">3.1 自动指令 (Rule)</h3>
+<p>自动指令是自动化的主体。当指定的触发器事件发生时，系统会检查条件是否满足，如果满足则执行动作。</p>
+<p><strong>自动指令结构：</strong></p>
+<pre><code>触发器 (Facts)  →  条件 (Conditions)  →  动作 (Actions)
+     ↓                  ↓                    ↓
+  事件监听          前置判断             实际执行
+</code></pre>
+<p><strong>自动指令属性：</strong></p>
+<table>
+<thead><tr><th>属性</th><th>说明</th></tr></thead>
+<tbody><tr><td><code>facts</code></td><td>触发器列表，定义何时触发自动指令</td></tr><tr><td><code>conditions</code></td><td>条件列表，定义触发后是否执行</td></tr><tr><td><code>actions</code></td><td>动作列表，定义触发后执行什么</td></tr><tr><td><code>isEnabled</code></td><td>自动指令是否启用</td></tr><tr><td><code>condOp</code></td><td>条件组合方式（ALL/ANY/NONE/MVEL）</td></tr><tr><td><code>asyncMode</code></td><td>异步模式（Async/Sync/Sync_InRule）</td></tr><tr><td><code>conflictPolicy</code></td><td>冲突策略（ExecuteBoth/ReplaceOld/SkipNew）</td></tr><tr><td><code>hook</code></td><td>钩子，自动指令启用/禁用/删除时执行的动作</td></tr><tr><td><code>quit</code></td><td>退出指令，满足条件时停止自动指令执行</td></tr><tr><td><code>parameters</code></td><td>指令参数，可在导入时自定义</td></tr>
+<tr><td><code>ruleInstanceIdGenerator</code></td><td>指令实例 ID 生成器（见下方详解）</td></tr></tbody>
+</table>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/Rule",
+  "facts": [
+    {"@type": "type.googleapis.com/AppBecomeFg", "apps": [{"pkgName": "com.example.app"}], "tag": "触发器标签"}
+  ],
+  "conditions": [
+    {"@type": "type.googleapis.com/True"}
+  ],
+  "actions": [
+    {"@type": "type.googleapis.com/ShowToast", "message": "Hello"}
+  ],
+  "id": "规则唯一ID",
+  "title": "规则标题",
+  "description": "规则描述",
+  "isEnabled": true,
+  "condOp": "ALL",
+  "asyncMode": "AsyncMode_Async",
+  "conflictPolicy": "ConflictStrategy_ExecuteBoth",
+  "hook": {
+    "actionsOnEnabled": [],
+    "actionsOnDisabled": [],
+    "actionsOnDeleted": [],
+    "actionsOnUpdated": [],
+    "actionsOnStop": []
+  },
+  "quit": {
+    "isEnabled": false,
+    "facts": [],
+    "conditions": [],
+    "condOp": "ALL",
+    "actions": [],
+    "evaluatePolicy": "Quit_EvaluatePolicy_Always"
+  },
+  "parameters": [
+    {"name": "参数名", "defaultValue": "默认值", "isRequired": false, "comments": "说明"}
+  ],
+  "ruleInstanceIdGenerator": {
+    "@type": "type.googleapis.com/RuleInstanceIdGenerator_Static",
+    "insId": "固定实例ID"
+  },
+  "actionAsyncMode": "ActionAsyncMode_Sync",
+  "icon": "icon-name",
+  "iconColor": "#4F46E5"
+}</code></pre>
+<h4 id="condop">condOp 条件组合方式</h4>
+<p>控制多个条件之间的逻辑关系。对应代码 <code>ConditionEvaluatorImpl.kt</code> 中的 <code>when (condOp)</code> 分支。</p>
+<table>
+<thead><tr><th>值</th><th>逻辑</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td><code>ALL</code></td><td>AND</td><td><strong>所有</strong>条件都满足时才执行（默认）</td></tr>
+<tr><td><code>ANY</code></td><td>OR</td><td><strong>任一</strong>条件满足即执行</td></tr>
+<tr><td><code>NONE</code></td><td>NOR</td><td><strong>所有</strong>条件<strong>都不</strong>满足时才执行</td></tr>
+<tr><td><code>MVEL</code></td><td>自定义</td><td>用 MVEL 表达式自定义条件组合逻辑</td></tr>
+</tbody>
+</table>
+<p><strong>ALL（默认）：</strong>需要同时满足多个条件</p>
+<pre><code>条件1: 当前应用是微信
+条件2: 屏幕是亮的
+条件3: WiFi 已连接
+→ 三个条件全部满足才执行动作</code></pre>
+<p><strong>ANY：</strong>满足任一条件即可</p>
+<pre><code>条件1: 当前应用是微信
+条件2: 当前应用是 QQ
+→ 只要在微信或 QQ 中就执行动作</code></pre>
+<p><strong>NONE：</strong>所有条件都不满足才执行</p>
+<pre><code>条件1: 在通话中
+条件2: 屏幕是息屏的
+→ 既不在通话中，屏幕也不是息屏状态才执行</code></pre>
+<p><strong>MVEL：</strong>需要复杂的条件组合逻辑时使用。在表达式中用 <code>c1</code>、<code>c2</code>、<code>c3</code>... 引用各条件的评估结果（<code>c1.call()</code> 执行第 1 个条件）。</p>
+<pre><code>// 条件1 AND (条件2 OR 条件3)
+c1.call() &amp;&amp; (c2.call() || c3.call())
+
+// 条件1 为真，但条件2 和 条件3 不同时为真
+c1.call() &amp;&amp; !(c2.call() &amp;&amp; c3.call())</code></pre>
+<h4 id="asyncmode">asyncMode 多指令同异步策略</h4>
+<p>控制<strong>多个自动指令之间</strong>的执行关系。对应代码 <code>DefaultRuleEngine.kt</code> 中 <code>runActionsJobLocked</code> 方法的 <code>when (asyncMode)</code> 分支。</p>
+<table>
+<thead><tr><th>值</th><th>说明</th><th>锁机制</th></tr></thead>
+<tbody>
+<tr><td><code>Async</code></td><td>异步执行，不同指令的动作<strong>并行</strong>执行</td><td>无锁</td></tr>
+<tr><td><code>Sync</code></td><td>同步执行，不同指令的动作<strong>按先后顺序</strong>依次执行</td><td>全局互斥锁 globalMuteX</td></tr>
+<tr><td><code>Sync_InRule</code></td><td>同指令同步，<strong>相同指令</strong>按顺序执行，不同指令之间仍然并行</td><td>指令级互斥锁 muteX</td></tr>
+</tbody>
+</table>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "asyncMode": "AsyncMode_Async",
+  "actionAsyncMode": "ActionAsyncMode_Sync"
+}</code></pre>
+<p><strong>Async（默认）：</strong>各指令独立执行，互不影响</p>
+<pre><code>自动指令A: 收到通知 → 弹幕显示（耗时 2 秒）
+自动指令B: 收到通知 → 发送 HTTP 请求（耗时 3 秒）
+→ A 和 B 同时开始，各自独立完成</code></pre>
+<p><strong>Sync：</strong>严格按顺序执行，避免并发冲突</p>
+<pre><code>自动指令A: 充电插拔 → 执行 Shell 命令修改充电参数
+自动指令B: 充电插拔 → 执行另一个 Shell 命令
+→ A 先执行完，B 再执行，避免 Shell 命令冲突</code></pre>
+<blockquote><p>⚠️ <strong>注意：</strong>Sync 模式使用全局锁，不要在同步指令内执行耗时动作（特别长的延迟、死循环），否则会阻塞其他指令。</p></blockquote>
+<p><strong>Sync_InRule：</strong>同一指令串行，不同指令并行</p>
+<pre><code>自动指令A: 通知触发 → 执行动作序列（2秒）
+自动指令A: 再次通知触发 → 等待上一次执行完再执行
+自动指令B: 通知触发 → 不受影响，立即执行</code></pre>
+<p><strong>与 actionAsyncMode 的区别：</strong></p>
+<ul>
+<li><code>asyncMode</code>：控制<strong>指令之间</strong>的执行关系</li>
+<li><code>actionAsyncMode</code>：控制<strong>同一指令内</strong>各动作之间的执行关系（Sync 顺序执行 / Async 并行执行）</li>
+</ul>
+<h4 id="conflictpolicy">conflictPolicy 冲突策略</h4>
+<p>当同一自动指令的触发器<strong>连续触发</strong>、且上一次执行<strong>尚未完成</strong>时的处理策略。对应代码 <code>DefaultRuleEngine.kt</code> 中 <code>Check ConflictStrategy</code> 段落。</p>
+<table>
+<thead><tr><th>值</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td><code>ExecuteBoth</code></td><td><strong>同时执行</strong>新旧任务（默认）</td></tr>
+<tr><td><code>ReplaceOld</code></td><td><strong>取消旧任务</strong>，执行新任务</td></tr>
+<tr><td><code>SkipNew</code></td><td><strong>跳过新任务</strong>，保留旧任务</td></tr>
+</tbody>
+</table>
+<p><strong>ExecuteBoth（默认）：</strong>适合互不影响的操作</p>
+<pre><code>触发器: 收到通知
+动作: 弹幕显示通知内容
+→ 第一条通知还在弹幕中，第二条来了也同时弹幕</code></pre>
+<p><strong>ReplaceOld：</strong>适合状态更新类操作，只关心最新状态</p>
+<pre><code>{"@type": "type.googleapis.com/WiFi"} 信号强度变化
+动作: 更新状态栏 Chip 显示当前信号强度
+→ 新信号来了，旧的显示过时了，应该取消旧的并更新为新的</code></pre>
+<p><strong>SkipNew：</strong>适合防重复操作</p>
+<pre><code>触发器: 连接蓝牙
+动作: 自动播放音乐
+→ 第一次连接蓝牙开始播放了，短时间内再次触发不重复播放</code></pre>
+<p><strong>判断逻辑（代码）：</strong></p>
+<pre><code>// DefaultRuleEngine.kt 第 270-297 行
+if (isThisRuleAlreadyRunning) {
+    shouldExecuteActions = when (conflictStrategy) {
+        ExecuteBoth -&gt; true           // 允许新任务
+        ReplaceOld -&gt; {
+            cancelJobs(...)           // 取消旧任务
+            true                      // 允许新任务
+        }
+        SkipNew -&gt; false              // 拒绝新任务
+    }
+}</code></pre>
+<h4 id="hook">hook 钩子机制</h4>
+<p>在自动指令/一键指令的<strong>生命周期事件</strong>中自动执行额外动作。对应代码 <code>RuleService</code> 中对 <code>RuleHook</code> 和 <code>DirectActionHook</code> 的处理。</p>
+<p><strong>自动指令钩子 (RuleHook)：</strong></p>
+<table>
+<thead><tr><th>钩子</th><th>i18n 名称</th><th>典型用途</th></tr></thead>
+<tbody>
+<tr><td><code>actionsOnEnabled</code></td><td>被启用时</td><td>初始化目录、创建全局变量</td></tr>
+<tr><td><code>actionsOnDisabled</code></td><td>被禁用时</td><td>清理临时文件</td></tr>
+<tr><td><code>actionsOnDeleted</code></td><td>被删除时</td><td>删除关联的全局变量</td></tr>
+<tr><td><code>actionsOnUpdated</code></td><td>更新时</td><td>更新配置</td></tr>
+<tr><td><code>actionsOnStop</code></td><td>被停止时</td><td>释放资源</td></tr>
+</tbody>
+</table>
+<p><strong>一键指令钩子 (DirectActionHook)：</strong></p>
+<table>
+<thead><tr><th>钩子</th><th>触发时机</th><th>典型用途</th></tr></thead>
+<tbody>
+<tr><td><code>actionsOnStart</code></td><td>指令启动时</td><td>初始化环境</td></tr>
+<tr><td><code>actionsOnStop</code></td><td>指令停止时</td><td>清理工作</td></tr>
+</tbody>
+</table>
+<p><strong>自动指令钩子 Proto：</strong></p>
+<pre><code>{
+  "actionsOnEnabled": [
+    {"@type": "type.googleapis.com/ShellCommand", "command": "mkdir -p /data/system/shortx_xxx/data"}
+  ],
+  "actionsOnDisabled": [],
+  "actionsOnDeleted": [
+    {"@type": "type.googleapis.com/DeleteGlobalVar", "varName": "临时变量"}
+  ],
+  "actionsOnUpdated": [],
+  "actionsOnStop": []
+}</code></pre>
+<p><strong>一键指令钩子 Proto：</strong></p>
+<pre><code>{
+  "actionsOnStart": [],
+  "actionsOnStop": []
+}</code></pre>
+<p><strong>示例：通知过滤器初始化</strong></p>
+<pre><code>{
+  "hook": {
+    "actionsOnEnabled": [
+      {
+        "@type": "type.googleapis.com/ShellCommand",
+        "command": "mkdir -p /data/system/shortx_xxx/data/Notification_filter"
+      },
+      {
+        "@type": "type.googleapis.com/CreateGlobalVar",
+        "globalVar": {
+          "name": "通知过滤器模式",
+          "type": {"@type": "type.googleapis.com/StringVar"}
+        }
+      },
+      {
+        "@type": "type.googleapis.com/WriteGlobalVar",
+        "varName": "通知过滤器模式",
+        "valueAsString": "训练"
+      }
+    ]
+  }
+}</code></pre>
+<h4 id="quit">quit 退出指令</h4>
+<p>当触发器事件<strong>不匹配</strong>自动指令的正常触发器时，系统会检查退出逻辑。如果退出触发器匹配且退出条件满足，则<strong>取消该指令正在运行的任务</strong>，并执行退出动作。</p>
+<p><strong>退出流程（代码 DefaultRuleEngine.kt 第 389-484 行）：</strong></p>
+<pre><code>正常触发器不匹配
+  → 检查 quit.isEnabled
+  → 检查退出评估策略 (evaluatePolicy)
+  → 匹配退出触发器 (quit.facts)
+  → 评估退出条件 (quit.conditions)
+  → 取消运行中的任务 (cancelJobs)
+  → 执行退出动作 (quit.actions)</code></pre>
+<p><strong>退出评估策略 (Quit_EvaluatePolicy)：</strong></p>
+<table>
+<thead><tr><th>策略</th><th>说明</th><th>代码逻辑</th></tr></thead>
+<tbody>
+<tr><td><code>Always</code></td><td>总是评估退出逻辑</td><td>每次触发器事件都检查</td></tr>
+<tr><td><code>Only_When_Is_Running</code></td><td>仅当有运行中的任务时评估</td><td>activeJobs() 包含该指令才检查</td></tr>
+<tr><td><code>Once</code></td><td>每次执行指令后仅评估一次</td><td>quitEvaPolicyOO 集合记录已评估的指令</td></tr>
+</tbody>
+</table>
+<p><strong>退出 Proto 定义：</strong></p>
+<pre><code>{
+  "isEnabled": true,
+  "facts": [
+    {"@type": "type.googleapis.com/AppBecomeBg", "apps": [{"pkgName": "com.example.app"}]}
+  ],
+  "conditions": [
+    {"@type": "type.googleapis.com/VPNIsConnected"}
+  ],
+  "condOp": "ALL",
+  "actions": [
+    {"@type": "type.googleapis.com/StopApp", "appPkg": [{"pkgName": "com.v2ray.ang"}]}
+  ],
+  "evaluatePolicy": "Quit_EvaluatePolicy_Always"
+}</code></pre>
+<p><strong>VPN 自动管理（经典退出场景）：</strong></p>
+<pre><code>"facts": [
+  {"@type": "type.googleapis.com/AppBecomeFg", "pkgSets": ["翻墙"], "tag": "开启"},
+  {"@type": "type.googleapis.com/PkgStopRunning", "pkgSets": ["翻墙"], "tag": "关闭"}
+],
+"actions": [
+  {"@type": "type.googleapis.com/IfThenElse",
+    "If": [{"@type": "type.googleapis.com/RequireFactTag", "tag": "开启"},
+           {"@type": "type.googleapis.com/VPNIsConnected", "isInvert": true}],
+    "IfActions": [
+      {"@type": "type.googleapis.com/ShellCommand", "command": "am start-foreground-service com.v2ray.ang/...V2RayVpnService", "singleShot": true},
+      {"@type": "type.googleapis.com/ShowToast", "message": "已开启VPN"}
+    ]},
+  {"@type": "type.googleapis.com/IfThenElse",
+    "If": [{"@type": "type.googleapis.com/RequireFactTag", "tag": "关闭"},
+           {"@type": "type.googleapis.com/VPNIsConnected"},
+           {"@type": "type.googleapis.com/AppHasTask", "pkgSets": ["翻墙"], "isInvert": true}],
+    "IfActions": [
+      {"@type": "type.googleapis.com/StopApp", "appPkg": [{"pkgName": "com.v2ray.ang"}]},
+      {"@type": "type.googleapis.com/ShowToast", "message": "已关闭VPN"}
+    ]}
+],
+"quit": {
+  "isEnabled": true,
+  "facts": [{"@type": "type.googleapis.com/AppBecomeBg", "pkgSets": ["翻墙"]}],
+  "conditions": [{"@type": "type.googleapis.com/VPNIsConnected"}, {"@type": "type.googleapis.com/AppHasTask", "pkgSets": ["翻墙"], "isInvert": true}],
+  "actions": [{"@type": "type.googleapis.com/StopApp", "appPkg": [{"pkgName": "com.v2ray.ang"}]}],
+  "evaluatePolicy": "Quit_EvaluatePolicy_Always"
+}</code></pre>
+<p><strong>息屏挂机（Once 策略）：</strong></p>
+<pre><code>"facts": [
+  {"@type": "type.googleapis.com/ScreenOff"}
+],
+"actions": [
+  {"@type": "type.googleapis.com/ShellCommand", "command": "input keyevent KEYCODE_WAKEUP"},
+  {"@type": "type.googleapis.com/ShowToast", "message": "息屏挂机中"}
+],
+"quit": {
+  "isEnabled": true,
+  "facts": [{"@type": "type.googleapis.com/ScreenOn"}],
+  "actions": [{"@type": "type.googleapis.com/ShowToast", "message": "已取消息屏挂机"}],
+  "evaluatePolicy": "Quit_EvaluatePolicy_Once"
+}</code></pre>
+<h4 id="parameters">parameters 指令参数</h4>
+<p>为自动指令/一键指令定义可自定义的参数，用户在导入指令时可以修改这些参数值。</p>
+<p><strong>参数结构 (FuncParameter)：</strong></p>
+<table>
+<thead><tr><th>字段</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td><code>name</code></td><td>参数名（在动作中通过 {参数名} 引用）</td></tr>
+<tr><td><code>defaultValue</code></td><td>默认值</td></tr>
+<tr><td><code>isRequired</code></td><td>是否必填</td></tr>
+<tr><td><code>comments</code></td><td>说明文字</td></tr>
+</tbody>
+</table>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "parameters": [
+    {"name": "目标包名", "defaultValue": "com.tencent.mm", "isRequired": true, "comments": "要操作的应用包名"},
+    {"name": "Webhook地址", "defaultValue": "https://hooks.example.com/xxx", "isRequired": true, "comments": "Webhook URL"}
+  ]
+}</code></pre>
+<p><strong>可配置的通知转发指令：</strong></p>
+<pre><code>{
+  "parameters": [
+    {
+      "name": "目标包名",
+      "defaultValue": "com.tencent.mm",
+      "isRequired": true,
+      "comments": "要转发通知的应用包名"
+    },
+    {
+      "name": "Webhook地址",
+      "defaultValue": "https://hooks.example.com/xxx",
+      "isRequired": true,
+      "comments": "企业微信/钉钉机器人的 Webhook URL"
+    }
+  ],
+  "actions": [
+    {
+      "@type": "type.googleapis.com/PostNotification",
+      "title": "转发自 {目标包名}",
+      "message": "{contentText}"
+    }
+  ]
+}</code></pre>
+<p>用户导入时可以修改"目标包名"为 <code>com.tencent.mobileqq</code>，无需编辑指令本身。</p>
+<h4 id="ruleinstanceidgenerator">ruleInstanceIdGenerator 指令实例 ID 生成器</h4>
+<p>生成指令的<strong>实例 ID</strong>，用于冲突策略判断。相同实例 ID 的任务才会触发冲突处理。对应代码 <code>RuleInstanceIdGenerator.kt</code>。</p>
+<p><strong>生成器类型：</strong></p>
+<table>
+<thead><tr><th>类型</th><th>说明</th><th>适用场景</th></tr></thead>
+<tbody>
+<tr><td><code>Static</code></td><td>固定值，始终返回同一 ID</td><td>同一指令的所有触发共享一个任务（默认）</td></tr>
+<tr><td><code>String</code></td><td>支持变量插值的字符串</td><td>根据上下文动态生成 ID</td></tr>
+<tr><td><code>MVEL</code></td><td>MVEL 表达式</td><td>复杂的动态 ID 逻辑</td></tr>
+<tr><td><code>JS</code></td><td>JavaScript 表达式</td><td>最灵活的动态 ID 逻辑</td></tr>
+</tbody>
+</table>
+<p><strong>Static Proto：</strong></p>
+<pre><code>{
+  "ruleInstanceIdGenerator": {
+    "@type": "type.googleapis.com/RuleInstanceIdGenerator_Static",
+    "insId": "固定实例ID"
+  }
+}</code></pre>
+<p><strong>String Proto：</strong></p>
+<pre><code>{
+  "ruleInstanceIdGenerator": {
+    "@type": "type.googleapis.com/RuleInstanceIdGenerator_String",
+    "insId": "{pkgName}"
+  }
+}</code></pre>
+<p><strong>MVEL Proto：</strong></p>
+<pre><code>{
+  "ruleInstanceIdGenerator": {
+    "@type": "type.googleapis.com/RuleInstanceIdGenerator_MVEL",
+    "expression": ""group_" + ({batteryLevel} > 50 ? "high" : "low")"
+  }
+}</code></pre>
+<p><strong>JS Proto：</strong></p>
+<pre><code>{
+  "ruleInstanceIdGenerator": {
+    "@type": "type.googleapis.com/RuleInstanceIdGenerator_JS",
+    "expression": "var hour = new Date().getHours(); hour < 12 ? 'morning' : 'afternoon';"
+  }
+}</code></pre>
+<p><strong>Static（默认）：</strong>同一指令只保留一个任务</p>
+<pre><code>指令A: 通知触发 → 执行动作
+每次通知来了，如果上一次还没执行完，根据 conflictPolicy 处理
+（默认 Static，insId = 指令ID，所有触发共享同一实例）</code></pre>
+<p><strong>String（按应用分组）：</strong>不同应用的通知独立管理</p>
+<pre><code>指令A: 通知触发 → 显示弹幕
+insId = "{pkgName}" (使用通知来源应用包名作为实例ID)
+
+→ 微信通知来了，实例ID = "com.tencent.mm"
+→ QQ通知来了，实例ID = "com.tencent.mobileqq"
+→ 两个通知各自独立执行，互不影响
+→ 同一应用连续通知来了，根据 conflictPolicy 处理</code></pre>
+<pre><code>{
+  "ruleInstanceIdGenerator": {
+    "@type": "type.googleapis.com/RuleInstanceIdGenerator_String",
+    "insId": "{pkgName}"
+  }
+}</code></pre>
+<p><strong>MVEL（复杂逻辑）：</strong>按时间段分组</p>
+<pre><code>{
+  "ruleInstanceIdGenerator": {
+    "@type": "type.googleapis.com/RuleInstanceIdGenerator_MVEL",
+    "expression": "\"group_\" + ({batteryLevel} &gt; 50 ? \"high\" : \"low\")"
+  }
+}</code></pre>
+<p><strong>JS（最灵活）：</strong>按自定义逻辑分组</p>
+<pre><code>{
+  "ruleInstanceIdGenerator": {
+    "@type": "type.googleapis.com/RuleInstanceIdGenerator_JS",
+    "expression": "var hour = new Date().getHours(); hour &lt; 12 ? 'morning' : 'afternoon';"
+  }
+}</code></pre>
+<h3 id="32-direct-action">3.2 一键指令 (Direct Action)</h3>
+<p>一键指令是无需触发条件、手动执行的动作序列。</p>
+<p><strong>与自动指令的区别：</strong><br />
+- 没有触发器（Facts）<br />
+- 用户手动点击执行<br />
+- 适合快捷操作（如蓝牙开关、WiFi开关）</p>
+<p><strong>一键指令结构：</strong></p>
+<pre><code>动作 1 → 动作 2 → 动作 3 → ...
+</code></pre>
+<p><strong>一键指令属性：</strong></p>
+<table>
+<thead><tr><th>属性</th><th>说明</th></tr></thead>
+<tbody><tr><td><code>actions</code></td><td>动作列表</td></tr><tr><td><code>hook</code></td><td>钩子，启动/停止时执行的动作</td></tr><tr><td><code>quit</code></td><td>退出机制</td></tr></tbody>
+</table>
+| <code>parameters</code> 
+<h3 id="33-fact">3.3 事实/触发器 (Fact)</h3>
+<p>触发器定义了"什么时候"触发自动指令。每个 Fact 对应一类系统事件。</p>
+<p><strong>所有 Fact 都有的字段：</strong></p>
+<table>
+<thead><tr><th>字段</th><th>说明</th></tr></thead>
+<tbody><tr><td><code>tag</code></td><td>标签，用于在条件中通过 <code>RequireFactTag</code> 判断是哪个触发器触发的</td></tr><tr><td><code>customContextDataKey</code></td><td>自定义上下文数据映射</td></tr><tr><td><code>id</code></td><td>唯一标识</td></tr><tr><td><code>isDisabled</code></td><td>是否禁用</td></tr></tbody>
+</table>
+| <code>note</code> 
+<p><strong>示例：AppBecomeFg（应用进入前台）</strong></p>
+<pre><code class="language-json">{
+  &quot;@type&quot;: &quot;type.googleapis.com/AppBecomeFg&quot;,
+  &quot;apps&quot;: [{&quot;pkgName&quot;: &quot;com.tencent.mm&quot;}],
+  &quot;tag&quot;: &quot;微信前台&quot;,
+  &quot;id&quot;: &quot;F-xxx&quot;
+}
+</code></pre>
+<h3 id="34-condition">3.4 条件 (Condition)</h3>
+<p>条件定义了"满足什么要求"才执行动作。</p>
+<p><strong>所有 Condition 都有的字段：</strong></p>
+<table>
+<thead><tr><th>字段</th><th>说明</th></tr></thead>
+<tbody><tr><td><code>isDisabled</code></td><td>是否禁用</td></tr><tr><td><code>isInvert</code></td><td>是否取反（将条件结果反转）</td></tr><tr><td><code>id</code></td><td>唯一标识</td></tr></tbody>
+</table>
+| <code>note</code> 
+<p><strong>条件组合方式 (ConditionOperator)：</strong></p>
+<table>
+<thead><tr><th>值</th><th>说明</th></tr></thead>
+<tbody><tr><td><code>ALL</code></td><td>所有条件都满足（AND）</td></tr><tr><td><code>ANY</code></td><td>任一条件满足（OR）</td></tr><tr><td><code>NONE</code></td><td>所有条件都不满足（NOR）</td></tr></tbody>
+</table>
+| <code>MVEL</code> 
+<h3 id="35-action">3.5 动作 (Action)</h3>
+<p>动作定义了"执行什么操作"。</p>
+<p><strong>所有 Action 都有的字段：</strong></p>
+<table>
+<thead><tr><th>字段</th><th>说明</th></tr></thead>
+<tbody><tr><td><code>isDisabled</code></td><td>是否禁用</td></tr><tr><td><code>actionOnError</code></td><td>出错时行为（Continue/Break）</td></tr><tr><td><code>id</code></td><td>唯一标识</td></tr><tr><td><code>note</code></td><td>备注</td></tr></tbody>
+</table>
+| <code>customContextDataKey</code> 
+
+<h2 id="4">4. 变量系统</h2>
+<p>变量就是"一个有名字的盒子"，你可以往里面放东西（写入），也可以拿出来用（读取）。ShortX 的变量系统让不同的动作之间可以传递数据——比如 Shell 命令的输出可以传给下一个动作使用。</p>
+<p>ShortX 有三种变量，它们的<strong>核心区别</strong>是<strong>活多久</strong>：</p>
+<table>
+<thead><tr><th>类型</th><th>能活多久</th><th>谁能用</th><th>比喻</th></tr></thead>
+<tbody>
+<tr><td><strong>全局变量</strong></td><td>永远（直到手动删除）</td><td>所有自动指令和一键指令</td><td>贴了标签的储物柜，谁都能打开</td></tr>
+<tr><td><strong>局部变量</strong></td><td>仅当指令执行期间</td><td>只有当前这条指令</td><td>用完即扔的便签纸</td></tr>
+<tr><td><strong>上下文变量</strong></td><td>仅当动作执行期间</td><td>系统自动填，你只能读</td><td>系统递给你的快递单</td></tr>
+</tbody>
+</table>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "condOp": "ALL",
+  "condOpPayload": {"expression": "c1.call() && (c2.call() || c3.call())"}
+}</code></pre>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/DirectAction",
+  "actions": [
+    {"@type": "type.googleapis.com/ShowToast", "message": "执行完成"}
+  ],
+  "id": "一键指令唯一ID",
+  "title": "指令标题",
+  "description": "指令描述",
+  "conflictPolicy": "ConflictStrategy_ExecuteBoth",
+  "parameters": [
+    {"name": "参数名", "defaultValue": "默认值", "isRequired": false, "comments": "说明"}
+  ],
+  "hook": {
+    "actionsOnStart": [],
+    "actionsOnStop": []
+  },
+  "quit": {
+    "isEnabled": false,
+    "facts": [],
+    "conditions": [],
+    "condOp": "ALL",
+    "actions": [],
+    "evaluatePolicy": "Quit_EvaluatePolicy_Always"
+  },
+  "asyncMode": "AsyncMode_Async",
+  "actionAsyncMode": "ActionAsyncMode_Sync",
+  "icon": "icon-name",
+  "iconColor": "#4F46E5"
+}</code></pre>
+
+<h3 id="41-global-variable">4.1 全局变量 (Global Variable)</h3>
+<p>全局变量是<strong>永久保存</strong>的数据盒子，存放在手机本地。你创建了它，它就一直在那里，直到你手动删除。不同的自动指令之间可以通过全局变量共享数据。</p>
+<p><strong>通俗理解：</strong> 全局变量就像手机上的"备忘录"，你在一条自动指令里写入了一段文字，另一条自动指令也能读到。</p>
+
+<h4>变量类型</h4>
+<p>全局变量有 6 种类型，分别装不同种类的数据：</p>
+<table>
+<thead><tr><th>类型</th><th>能装什么</th><th>通俗解释</th><th>举例</th></tr></thead>
+<tbody>
+<tr><td><code>StringVar</code></td><td>文字</td><td>一个文字盒子</td><td>"Hello"、"com.tencent.mm"、"12345"</td></tr>
+<tr><td><code>Int64Var</code></td><td>数字</td><td>一个数字盒子</td><td>0、1、100、-5</td></tr>
+<tr><td><code>BoolVar</code></td><td>真/假</td><td>一个开关盒子（开/关）</td><td>true（开）、false（关）</td></tr>
+<tr><td><code>StringListVar</code></td><td>文字列表</td><td>一个文字盒子的货架</td><td>["苹果", "香蕉", "橘子"]</td></tr>
+<tr><td><code>Int64ListVar</code></td><td>数字列表</td><td>一个数字盒子的货架</td><td>[1, 2, 3, 100]</td></tr>
+<tr><td><code>BoolListVar</code></td><td>开关列表</td><td>一个开关盒子的货架</td><td>[true, false, true]</td></tr>
+</tbody>
+</table>
+
+<h4>创建全局变量</h4>
+<p>使用 <code>CreateGlobalVar</code> 动作创建一个全局变量。对应代码 <code>CreateGlobalVar.kt</code>。</p>
+<p><strong>示例：创建一个"WiFi状态"变量</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/CreateGlobalVar",
+  "globalVar": {
+    "name": "WiFi状态",
+    "type": {"@type": "type.googleapis.com/StringVar"}
+  }
+}</code></pre>
+<p>这条指令会在系统中创建一个叫"WiFi状态"的字符串变量，初始值为空。之后你就可以往里面写入数据了。</p>
+<p><strong>实际场景：</strong> 你创建一个"蓝牙连接次数"变量来统计蓝牙连接了多少次。</p>
+<pre><code>{
+  "@type": "type.googleapis.com/CreateGlobalVar",
+  "globalVar": {
+    "name": "蓝牙连接次数",
+    "type": {"@type": "type.googleapis.com/Int64Var"}
+  }
+}</code></pre>
+
+<h4>写入全局变量</h4>
+<p>使用 <code>WriteGlobalVar</code> 动作往变量里写入数据。对应代码 <code>WriteGlobalVar.kt</code>。</p>
+<p><strong>最简单的用法——直接写入值：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/WriteGlobalVar",
+  "varName": "WiFi状态",
+  "valueAsString": "已连接",
+  "op": "WriteGlobalVarOp_Override"
+}</code></pre>
+<p>这条指令把"WiFi状态"变量的值设为"已连接"。<code>Override</code> 表示直接覆盖，不管之前是什么。</p>
+
+<h4>写入操作详解</h4>
+<p><code>WriteGlobalVar</code> 支持 15 种写入方式，对应代码 <code>WriteGlobalVar.kt</code> 中的 <code>handleGVOp</code> 方法：</p>
+
+<table>
+<thead><tr><th>操作</th><th>通俗解释</th><th>举例（假设变量原值为 "AB"）</th></tr></thead>
+<tbody>
+<tr><td><code>Override</code></td><td>直接覆盖，不管之前是什么</td><td>"AB" → 写入 "CD" → 变成 "CD"</td></tr>
+<tr><td><code>AppendToLast</code></td><td>在末尾追加</td><td>"AB" → 追加 "CD" → 变成 "ABCD"</td></tr>
+<tr><td><code>AppendToFirst</code></td><td>在开头插入</td><td>"AB" → 插入 "CD" → 变成 "CDAB"</td></tr>
+<tr><td><code>DeleteValue</code></td><td>删除指定内容</td><td>"ABCD" → 删除 "BC" → 变成 "AD"</td></tr>
+<tr><td><code>DeleteLast</code></td><td>删除列表最后一个</td><td>列表 [A,B,C] → 变成 [A,B]</td></tr>
+<tr><td><code>DeleteFirst</code></td><td>删除列表第一个</td><td>列表 [A,B,C] → 变成 [B,C]</td></tr>
+<tr><td><code>RemoveAtIndex</code></td><td>删除列表指定位置</td><td>列表 [A,B,C] → 删除第1个 → 变成 [A,C]</td></tr>
+<tr><td><code>Clear</code></td><td>清空所有内容</td><td>列表 [A,B,C] → 变成 []</td></tr>
+<tr><td><code>Reverse</code></td><td>反转列表顺序</td><td>列表 [A,B,C] → 变成 [C,B,A]</td></tr>
+<tr><td><code>Shuffle</code></td><td>随机打乱列表</td><td>列表 [A,B,C] → 变成 [B,A,C]（随机）</td></tr>
+<tr><td><code>Plus1</code></td><td>数字加 1</td><td>5 → 变成 6</td></tr>
+<tr><td><code>Minus1</code></td><td>数字减 1</td><td>5 → 变成 4</td></tr>
+<tr><td><code>Invert</code></td><td>布尔取反（开→关，关→开）</td><td>true → 变成 false</td></tr>
+<tr><td><code>PlusDelta</code></td><td>数字加指定值</td><td>5 → 加 10 → 变成 15</td></tr>
+<tr><td><code>MinusDelta</code></td><td>数字减指定值</td><td>5 → 减 3 → 变成 2</td></tr>
+</tbody>
+</table>
+
+<p><strong>实际场景 1：统计蓝牙连接次数</strong></p>
+<p>每次蓝牙连接时，把"蓝牙连接次数"加 1：</p>
+<pre><code>{
+  "@type": "type.googleapis.com/WriteGlobalVar",
+  "varName": "蓝牙连接次数",
+  "valueAsString": "1",
+  "op": "WriteGlobalVarOp_PlusDelta"
+}</code></pre>
+
+<p><strong>实际场景 2：记录最近连接的蓝牙设备</strong></p>
+<p>用一个列表变量保存最近 3 个连接过的蓝牙设备：</p>
+<pre><code>{
+  "@type": "type.googleapis.com/WriteGlobalVar",
+  "varName": "最近蓝牙设备",
+  "valueAsString": "小米耳机",
+  "op": "WriteGlobalVarOp_AppendToLast"
+}</code></pre>
+<p>每次新连接追加到末尾，如果列表太长，可以再用 <code>DeleteFirst</code> 删除最早的记录。</p>
+
+<p><strong>实际场景 3：WiFi 开关状态记忆</strong></p>
+<p>用一个布尔变量记住 WiFi 当前状态（开/关），用来做切换：</p>
+<pre><code>// 第一步：读取当前状态，判断是开还是关
+// 如果是关 → 开启 WiFi → 把变量设为 true
+// 如果是开 → 关闭 WiFi → 把变量设为 false
+
+{
+  "@type": "type.googleapis.com/WriteGlobalVar",
+  "varName": "WiFi开关状态",
+  "valueAsString": "true",
+  "op": "WriteGlobalVarOp_Invert"
+}</code></pre>
+
+<h4>删除全局变量</h4>
+<p>使用 <code>DeleteGlobalVar</code> 动作删除不再需要的变量。</p>
+<pre><code>{
+  "@type": "type.googleapis.com/DeleteGlobalVar",
+  "varName": "蓝牙连接次数"
+}</code></pre>
+<p><strong>建议：</strong> 在自动指令的"被删除时"钩子中清理不再使用的全局变量，保持整洁。</p>
+
+<h4>向列表变量添加元素</h4>
+<p>使用 <code>AddToGlobalVar</code> 动作向列表变量追加一个新元素：</p>
+<pre><code>{
+  "@type": "type.googleapis.com/AddToGlobalVar",
+  "varName": "最近蓝牙设备",
+  "valueAsString": "蓝牙音箱"
+}</code></pre>
+
+<h4>跨指令共享数据</h4>
+<p>全局变量最大的优势是<strong>跨指令共享</strong>。比如：</p>
+<ul>
+<li>指令 A 监听 WiFi 连接，把当前 WiFi 名称写入全局变量 "当前WiFi"</li>
+<li>指令 B 在其他时机读取"当前WiFi"变量，判断是否在家</li>
+</ul>
+<p>这两条指令不需要直接通信，通过全局变量就能传递信息。</p>
+
+<h3 id="42-local-variable">4.2 局部变量 (Local Variable)</h3>
+<p>局部变量是<strong>临时</strong>的数据盒子，只在当前这条指令执行期间有效。指令执行结束后，局部变量就会被自动销毁。</p>
+<p><strong>通俗理解：</strong> 局部变量就像你在纸上写的临时笔记——事情办完了，纸就扔了。它不会影响其他指令，也不会被其他指令看到。</p>
+<p><strong>为什么要用局部变量？</strong></p>
+<ul>
+<li><strong>避免污染</strong>：不想让临时数据占用全局变量的位置</li>
+<li><strong>安全性</strong>：临时数据不会被其他指令意外修改</li>
+<li><strong>性能</strong>：不需要持久化保存的数据用局部变量更合适</li>
+</ul>
+
+<h4>创建局部变量</h4>
+<p>使用 <code>CreateLocalVar</code> 动作创建局部变量。对应代码 <code>CreateLocalVar.kt</code>。</p>
+<pre><code>{
+  "@type": "type.googleapis.com/CreateLocalVar",
+  "localVar": {
+    "name": "临时搜索结果",
+    "type": {"@type": "type.googleapis.com/StringVar"}
+  }
+}</code></pre>
+
+<h4>写入局部变量</h4>
+<p>使用 <code>WriteLocalVar</code> 动作写入局部变量：</p>
+<pre><code>{
+  "@type": "type.googleapis.com/WriteLocalVar",
+  "varName": "临时搜索结果",
+  "valueAsString": "找到 3 条匹配记录"
+}</code></pre>
+
+<h4>局部变量的实际场景</h4>
+<p><strong>场景：剪贴板搜索</strong></p>
+<p>搜索剪贴板内容时，需要一个临时变量来存储搜索结果，搜索完显示给用户就行了，不需要永久保存：</p>
+<pre><code>// 步骤1：创建局部变量
+{
+  "@type": "type.googleapis.com/CreateLocalVar",
+  "localVar": {"name": "搜索结果", "type": {"@type": "type.googleapis.com/StringVar"}}
+}
+
+// 步骤2：执行搜索，结果自动存入 {shellOut}
+{"@type": "type.googleapis.com/ShellCommand", "command": "grep '关键词' /path/to/clipboard.txt"}
+
+// 步骤3：把搜索结果写入局部变量
+{
+  "@type": "type.googleapis.com/WriteLocalVar",
+  "varName": "搜索结果",
+  "valueAsString": "{shellOut}"
+}
+
+// 步骤4：用对话框显示搜索结果
+{
+  "@type": "type.googleapis.com/ShowAlertDialog",
+  "title": "搜索结果",
+  "message": "{搜索结果}"
+}
+
+// 指令执行结束后，"搜索结果"变量自动销毁</code></pre>
+
+<h3 id="43-context-variable">4.3 上下文变量 (Context Variable)</h3>
+<p>上下文变量是<strong>系统自动填充</strong>的运行时数据，你<strong>不能手动创建或修改</strong>，只能读取使用。</p>
+<p><strong>通俗理解：</strong> 上下文变量就像系统递给你的"快递单"——上面写着包裹的来源、内容、时间等信息，你只需要看一眼就能用，不需要自己填写。</p>
+<p><strong>核心特点：</strong></p>
+<ul>
+<li><strong>自动填充</strong>：系统根据当前事件自动填入数据</li>
+<li><strong>只读</strong>：你不能修改它的值</li>
+<li><strong>临时有效</strong>：只在当前动作执行期间存在</li>
+<li><strong>用花括号引用</strong>：<code>{变量名}</code></li>
+</ul>
+
+<h4>常见上下文变量</h4>
+<table>
+<thead><tr><th>变量名</th><th>什么时候有</th><th>里面是什么</th><th>典型用法</th></tr></thead>
+<tbody>
+<tr><td><code>{pkgName}</code></td><td>应用相关事件</td><td>触发事件的应用包名</td><td>判断是哪个应用触发了事件</td></tr>
+<tr><td><code>{activityName}</code></td><td>Activity 事件</td><td>当前 Activity 类名</td><td>判断用户在应用的哪个页面</td></tr>
+<tr><td><code>{title}</code></td><td>通知事件</td><td>通知标题</td><td>转发通知标题</td></tr>
+<tr><td><code>{contentText}</code></td><td>通知事件</td><td>通知内容</td><td>提取验证码、转发消息</td></tr>
+<tr><td><code>{shellOut}</code></td><td>ShellCommand 之后</td><td>Shell 命令的输出结果</td><td>获取系统信息、执行命令后读取结果</td></tr>
+<tr><td><code>{jsRet}</code></td><td>ExecuteJS 之后</td><td>JavaScript 脚本的返回值</td><td>脚本计算结果传给下一步</td></tr>
+<tr><td><code>{mvelRet}</code></td><td>ExecuteMVEL 之后</td><td>MVEL 表达式的返回值</td><td>表达式计算结果传给下一步</td></tr>
+<tr><td><code>{textFieldInput1}</code></td><td>ShowTextFieldDialog 之后</td><td>用户在第一个输入框填的内容</td><td>获取用户输入的关键词、密码等</td></tr>
+<tr><td><code>{textFieldInput2}</code></td><td>ShowTextFieldDialog 之后</td><td>用户在第二个输入框填的内容</td><td>获取用户输入的第二个参数</td></tr>
+<tr><td><code>{foreachData}</code></td><td>ForEach 循环中</td><td>当前循环到的元素</td><td>遍历列表时处理每个元素</td></tr>
+<tr><td><code>{factTag}</code></td><td>触发器匹配后</td><td>匹配到的触发器标签</td><td>判断是哪个触发器触发了指令</td></tr>
+<tr><td><code>{httpResponseBody}</code></td><td>HttpRequest 之后</td><td>HTTP 请求的响应内容</td><td>获取 API 返回的数据</td></tr>
+<tr><td><code>{httpResponseCode}</code></td><td>HttpRequest 之后</td><td>HTTP 响应状态码</td><td>判断请求是否成功（200=成功）</td></tr>
+<tr><td><code>{batteryLevel}</code></td><td>电池事件</td><td>当前电量百分比</td><td>低电量时自动执行操作</td></tr>
+<tr><td><code>{batteryTemperature}</code></td><td>电池事件</td><td>当前电池温度</td><td>温度过高时停止充电</td></tr>
+<tr><td><code>{clipboardContent}</code></td><td>剪贴板事件</td><td>剪贴板当前内容</td><td>自动识别复制的链接</td></tr>
+</tbody>
+</table>
+
+<h4>上下文变量的实际场景</h4>
+<p><strong>场景 1：通知自动转发</strong></p>
+<p>收到微信通知时，自动把通知内容转发到企业微信：</p>
+<pre><code>// {"@type": "type.googleapis.com/NotificationPosted"} (收到通知)
+// 条件: 通知来源是微信
+
+// 动作: 发送 HTTP 请求，用上下文变量填充内容
+{
+  "@type": "type.googleapis.com/HttpRequest",
+  "url": "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=你的KEY",
+  "method": "POST",
+  "headers": [{"key": "Content-Type", "value": "application/json"}],
+  "requestBody": {
+    "@type": "type.googleapis.com/HttpRequestBodyJson",
+    "json": "{"msgtype":"text","text":{"content":"微信通知\n标题: {title}\n内容: {contentText}"}}"
+  }
+}</code></pre>
+<p>系统会自动把 <code>{title}</code> 替换为通知标题，<code>{contentText}</code> 替换为通知内容。</p>
+
+<p><strong>场景 2：Shell 命令结果传递</strong></p>
+<p>获取当前 WiFi 名称，然后显示在 Toast 中：</p>
+<pre><code>// 步骤1: 执行 Shell 命令获取 WiFi 信息
+{"@type": "type.googleapis.com/ShellCommand", "command": "dumpsys wifi | grep 'mWifiInfo' | head -1"}
+// 结果自动存入 {shellOut}
+
+// 步骤2: 用 Toast 显示结果
+{"@type": "type.googleapis.com/ShowToast", "message": "当前WiFi: {shellOut}"}</code></pre>
+
+<p><strong>场景 3：用户输入传递</strong></p>
+<p>弹出输入框让用户输入搜索关键词，然后用 JavaScript 搜索：</p>
+<pre><code>// 步骤1: 弹出输入框
+{
+  "@type": "type.googleapis.com/ShowTextFieldDialog",
+  "title": "搜索",
+  "textFields": [{"placeholder": "输入关键词"}]
+}
+// 用户输入的内容存入 {textFieldInput1}
+
+// 步骤2: 用 JavaScript 搜索（{textFieldInput1} 会自动替换为用户输入的内容）
+{
+  "@type": "type.googleapis.com/ExecuteJS",
+  "expression": "var result = search('{textFieldInput1}'); var jsRet = result;"
+}
+// 结果存入 {jsRet}
+
+// 步骤3: 显示搜索结果
+{"@type": "type.googleapis.com/ShowToast", "message": "搜索结果: {jsRet}"}</code></pre>
+
+<h3 id="44-system-env">4.4 系统环境变量</h3>
+<p>系统环境变量是 ShortX 内置的<strong>实时数据源</strong>，你可以随时读取手机的各种状态信息。对应代码 <code>SystemEnvInit.kt</code>。</p>
+<p><strong>通俗理解：</strong> 如果上下文变量是"系统递给你的快递单"，那系统环境变量就是"你随时可以查看的仪表盘"——电量、时间、网络状态等信息，想要的时候直接读就行。</p>
+<p><strong>核心特点：</strong></p>
+<ul>
+<li><strong>实时获取</strong>：每次读取都会获取最新值</li>
+<li><strong>只读</strong>：你不能修改系统环境变量的值</li>
+<li><strong>用百分号引用</strong>：<code>%变量名%</code></li>
+<li><strong>部分支持参数</strong>：有些变量可以通过 <code>%变量名@参数%</code> 传入参数</li>
+</ul>
+
+<h4>完整列表</h4>
+<table>
+<thead><tr><th>变量名</th><th>i18n 名称</th><th>返回什么</th><th>需要参数</th><th>举例</th></tr></thead>
+<tbody>
+<tr><td><code>%UUID%</code></td><td>UUID</td><td>随机唯一标识符</td><td>否</td><td>"550e8400-e29b-41d4-a716-446655440000"</td></tr>
+<tr><td><code>%BatteryLevel%</code></td><td>电量</td><td>当前电量百分比</td><td>否</td><td>"85"</td></tr>
+<tr><td><code>%BatteryTemperature%</code></td><td>Battery温度</td><td>当前电池温度（摄氏度）</td><td>否</td><td>"35"</td></tr>
+<tr><td><code>%IsCharging%</code></td><td>是否正在充电</td><td>true 或 false</td><td>否</td><td>"true"</td></tr>
+<tr><td><code>%CurrentTimeMillis%</code></td><td>当前时间 ms</td><td>当前时间戳（毫秒）</td><td>否</td><td>"1750000000000"</td></tr>
+<tr><td><code>%CurrentTimeFormated%</code></td><td>当前时间</td><td>格式化的当前时间</td><td>否</td><td>"2025-06-15 14:30"</td></tr>
+<tr><td><code>%ClipboardText%</code></td><td>剪贴板文字</td><td>剪贴板中的文本内容</td><td>否</td><td>"Hello World"</td></tr>
+<tr><td><code>%FrontAppLabel%</code></td><td>前台应用名称</td><td>当前前台应用的名称</td><td>否</td><td>"微信"</td></tr>
+<tr><td><code>%FrontAppPkgName%</code></td><td>前台应用包名</td><td>当前前台应用的包名</td><td>否</td><td>"com.tencent.mm"</td></tr>
+<tr><td><code>%SystemSettings@设置项%</code></td><td>系统设置</td><td>指定系统设置的值</td><td><strong>是</strong></td><td>%SystemSettings@screen_brightness_mode%</td></tr>
+<tr><td><code>%CpuAvailabilityPercent%</code></td><td>cpu可用百分比</td><td>CPU 可用百分比</td><td>否</td><td>"75"</td></tr>
+<tr><td><code>%CpuAvailabilityPercent@核心号%</code></td><td>cpu可用百分比</td><td>指定 CPU 核心的可用百分比</td><td>是</td><td>%CpuAvailabilityPercent@0%</td></tr>
+<tr><td><code>%CpuTemperature%</code></td><td>cpu温度</td><td>CPU 温度（摄氏度）</td><td>否</td><td>"42"</td></tr>
+<tr><td><code>%MemAvailabilityPercent%</code></td><td>内存可用百分比</td><td>可用内存百分比</td><td>否</td><td>"60"</td></tr>
+<tr><td><code>%SwapAvailabilityPercent%</code></td><td>Swap可用百分比</td><td>Swap 可用百分比</td><td>否</td><td>"90"</td></tr>
+<tr><td><code>%NetworkType%</code></td><td>网络类型</td><td>当前网络类型</td><td>否</td><td>"wifi" / "cellular" / "ethernet" / "bluetooth" / "other" / "disconnected"</td></tr>
+<tr><td><code>%WifiSSID%</code></td><td>WiFi 名称</td><td>当前连接的 WiFi 名称</td><td>否</td><td>"MyHomeWiFi"</td></tr>
+<tr><td><code>%IsConnected%</code></td><td>是否已联网</td><td>true 或 false</td><td>否</td><td>"true"</td></tr>
+<tr><td><code>%RingerMode%</code></td><td>铃声模式</td><td>当前铃声模式</td><td>否</td><td>"normal" / "vibrate" / "silent"</td></tr>
+<tr><td><code>%DndMode%</code></td><td>免打扰模式</td><td>当前免打扰模式</td><td>否</td><td>"all" / "priority" / "none" / "alarms" / "off"</td></tr>
+<tr><td><code>%MediaVolume%</code></td><td>媒体音量</td><td>当前媒体音量值</td><td>否</td><td>"15"</td></tr>
+<tr><td><code>%ScreenBrightness%</code></td><td>屏幕亮度</td><td>当前屏幕亮度值</td><td>否</td><td>"128"</td></tr>
+<tr><td><code>%DeviceUpTime%</code></td><td>设备运行时长</td><td>上次开机以来的秒数</td><td>否</td><td>"86400"（即 24 小时）</td></tr>
+<tr><td><code>%DeviceModel%</code></td><td>设备型号</td><td>手机型号</td><td>否</td><td>"Pixel 7"</td></tr>
+<tr><td><code>%AndroidVersion%</code></td><td>Android 版本</td><td>Android 系统版本</td><td>否</td><td>"14"</td></tr>
+<tr><td><code>%RandomInt%</code></td><td>随机数字</td><td>0-99 的随机整数</td><td>否</td><td>"42"</td></tr>
+<tr><td><code>%RandomInt@范围%</code></td><td>随机数字</td><td>指定范围的随机整数</td><td><strong>是</strong></td><td>%RandomInt@1-100%</td></tr>
+<tr><td><code>%LastRebootTime%</code></td><td>上次开机时间</td><td>上次开机的近似时间戳（毫秒）</td><td>否</td><td>"1749900000000"</td></tr>
+</tbody>
+</table>
+
+<h4>引用语法</h4>
+<p><strong>基本语法：</strong> <code>%变量名%</code></p>
+<p><strong>带参数语法：</strong> <code>%变量名@参数%</code></p>
+<p>注意：系统环境变量用<strong>百分号</strong> <code>%</code> 包裹，而不是花括号 <code>{}</code>。</p>
+
+<h4>实际场景</h4>
+<p><strong>场景 1：电量低于 20% 时发送提醒</strong></p>
+<pre><code>// 条件: 电量低于 20%
+BatteryPercent(value=20, op=IntLessThan)
+
+// 动作: 发送通知提醒
+{"@type": "type.googleapis.com/PostNotification", "title": "低电量提醒", "message": "当前电量: %BatteryLevel%，请尽快充电"
+)</code></pre>
+
+<p><strong>场景 2：连接 WiFi 时自动记录 WiFi 名称</strong></p>
+<pre><code>// {"@type": "type.googleapis.com/WifiConnectedTo"}
+// 动作: 把 WiFi 名称写入全局变量
+{"@type": "type.googleapis.com/WriteGlobalVar", "varName": "当前WiFi", "valueAsString": "%WifiSSID%", "op": "WriteGlobalVarOp_Override"
+)</code></pre>
+
+<p><strong>场景 3：根据时间自动切换铃声模式</strong></p>
+<pre><code>// {"@type": "type.googleapis.com/Alarm"} (定时 22:00)
+// 条件: 当前时间是晚上 10 点
+// 动作: 切换到静音模式
+{"@type": "type.googleapis.com/SetRingerMode", "mode": "silent"}
+
+// {"@type": "type.googleapis.com/Alarm"} (定时 08:00)
+// 动作: 切换回正常模式
+{"@type": "type.googleapis.com/SetRingerMode", "mode": "normal"}</code></pre>
+
+<p><strong>场景 4：随机数生成（抽奖/随机选择）</strong></p>
+<pre><code>// 生成 1-100 的随机数
+{"@type": "type.googleapis.com/ShellCommand", "command": "echo '随机数: %RandomInt@1-100%'"}
+
+// 生成 1-6 的随机骰子
+{"@type": "type.googleapis.com/ShellCommand", "command": "echo '骰子: %RandomInt@1-6%'"}</code></pre>
+
+<p><strong>场景 5：读取系统设置值</strong></p>
+<pre><code>// 读取屏幕自动旋转设置
+{"@type": "type.googleapis.com/ShellCommand", "command": "echo '自动旋转: %SystemSettings@accelerometer_rotation%'"}
+
+// 读取屏幕超时时间
+{"@type": "type.googleapis.com/ShellCommand", "command": "echo '屏幕超时: %SystemSettings@screen_off_timeout%'"}</code></pre>
+
+<h3 id="45">4.5 变量引用语法总结</h3>
+<p>ShortX 有三种变量类型，每种的引用方式不同：</p>
+
+<table>
+<thead><tr><th>变量类型</th><th>引用语法</th><th>在哪里能用</th><th>举例</th></tr></thead>
+<tbody>
+<tr><td><strong>上下文变量</strong></td><td><code>{变量名}</code></td><td>几乎所有地方</td><td><code>{title}</code>、<code>{shellOut}</code>、<code>{pkgName}</code></td></tr>
+<tr><td><strong>全局变量</strong></td><td><code>globalVarOf$变量名</code></td><td>Shell 命令、MVEL 表达式</td><td><code>globalVarOf$WiFi状态</code></td></tr>
+<tr><td><strong>局部变量</strong></td><td><code>localVarOf$变量名</code></td><td>Shell 命令、MVEL 表达式</td><td><code>localVarOf$搜索结果</code></td></tr>
+</tbody>
+</table>
+
+<p><strong>注意：</strong> <code>{textFieldInput1}</code>、<code>{foreachData}</code>、<code>{foreachIndex}</code> 等也是<strong>上下文变量</strong>，只是由特定动作在执行时自动填充到上下文中。它们和 <code>{title}</code>、<code>{shellOut}</code> 一样，都用 <code>{变量名}</code> 语法引用。</p>
+
+<h4>上下文变量的来源</h4>
+<p>上下文变量由不同的动作/触发器在执行时自动填充。以下是常见的"谁填充了什么"：</p>
+<table>
+<thead><tr><th>触发器/动作</th><th>填充的上下文变量</th><th>变量值</th></tr></thead>
+<tbody>
+<tr><td>NotificationPosted</td><td><code>{title}</code>、<code>{contentText}</code>、<code>{pkgName}</code></td><td>通知标题、内容、来源应用</td></tr>
+<tr><td>AppBecomeFg / AppBecomeBg</td><td><code>{pkgName}</code>、<code>{appLabel}</code></td><td>应用包名、应用名称</td></tr>
+<tr><td>ActivityStarted</td><td><code>{pkgName}</code>、<code>{activityName}</code>、<code>{componentName}</code></td><td>包名、Activity 名、组件名</td></tr>
+<tr><td>ShellCommand</td><td><code>{shellOut}</code></td><td>命令输出结果</td></tr>
+<tr><td>ExecuteJS</td><td><code>{jsRet}</code></td><td>JS 脚本返回值</td></tr>
+<tr><td>ExecuteMVEL</td><td><code>{mvelRet}</code></td><td>MVEL 表达式返回值</td></tr>
+<tr><td>ShowTextFieldDialog</td><td><code>{textFieldInput1}</code>、<code>{textFieldInput2}</code>...</td><td>用户在第 N 个输入框填的内容</td></tr>
+<tr><td>ForEach</td><td><code>{foreachData}</code>、<code>{foreachIndex}</code></td><td>当前循环元素、当前循环索引</td></tr>
+<tr><td>HttpRequest</td><td><code>{httpResponseBody}</code>、<code>{httpResponseCode}</code></td><td>HTTP 响应内容、状态码</td></tr>
+<tr><td>BatteryLevelChanged</td><td><code>{batteryLevel}</code></td><td>当前电量百分比</td></tr>
+<tr><td>ClipboardContentChanged</td><td><code>{clipboardContent}</code></td><td>剪贴板内容</td></tr>
+<tr><td>BTConnectedTo</td><td><code>{btDeviceAlias}</code>、<code>{btDeviceAddress}</code></td><td>蓝牙设备别名、地址</td></tr>
+<tr><td>WifiConnectedTo</td><td><code>{ssid}</code></td><td>WiFi 名称</td></tr>
+<tr><td>CallStateChanged</td><td><code>{callState}</code>、<code>{incomingNumber}</code></td><td>通话状态、来电号码</td></tr>
+<tr><td>EdgeGesture</td><td><code>{eventX}</code>、<code>{eventY}</code></td><td>触摸坐标</td></tr>
+<tr><td>触发器匹配</td><td><code>{factTag}</code></td><td>匹配到的触发器标签</td></tr>
+<tr><td>AdvancedKeyEvent</td><td><code>{keyCode}</code>、<code>{pressTimes}</code></td><td>按键码、按压次数</td></tr>
+<tr><td>Logcat</td><td><code>{line}</code></td><td>匹配到的日志行</td></tr>
+<tr><td>IncomingShare</td><td><code>{sharedText}</code>、<code>{sharedUri}</code></td><td>分享的文本、URI</td></tr>
+<tr><td>BrowserIntercept</td><td><code>{url}</code>、<code>{host}</code>、<code>{scheme}</code></td><td>拦截的 URL 信息</td></tr>
+</tbody>
+</table>
+
+<h4>在不同场景中的用法</h4>
+<p><strong>在动作字段中（如 ShowToast、HttpRequest 等）：</strong> 直接用 <code>{变量名}</code></p>
+<pre><code>{"@type": "type.googleapis.com/ShowToast", "message": "WiFi名称: {ssid}"}</code></pre>
+
+<p><strong>在 Shell 命令中：</strong> 用 <code>globalVarOf$变量名</code> 或 <code>localVarOf$变量名</code>（上下文变量也可以直接用 <code>{变量名}</code>）</p>
+<pre><code>{"@type": "type.googleapis.com/ShellCommand", "command": "echo '当前电量: ' + {batteryLevel}"}</code></pre>
+<pre><code>{"@type": "type.googleapis.com/ShellCommand", "command": "echo 'WiFi状态: ' + globalVarOf$WiFi状态"}</code></pre>
+
+<p><strong>在 JavaScript 中：</strong> 直接用变量名（系统会自动注入所有上下文变量和全局/局部变量）</p>
+<pre><code>ExecuteJS(expression="var pkg = '{pkgName}'; var jsRet = '当前应用: ' + pkg;")</code></pre>
+
+<p><strong>在 MVEL 表达式中：</strong> 用 <code>{变量名}</code></p>
+<pre><code>ExecuteMVEL(expression="'电量: ' + {batteryLevel} + '%'")</code></pre>
+
+<h4>三种变量的选择指南</h4>
+<table>
+<thead><tr><th>你需要</th><th>用什么</th><th>为什么</th></tr></thead>
+<tbody>
+<tr><td>跨指令共享数据</td><td>全局变量</td><td>所有指令都能读写，永久保存</td></tr>
+<tr><td>临时存储中间结果</td><td>局部变量</td><td>指令结束自动清理，不污染全局</td></tr>
+<tr><td>获取系统/事件/动作产生的数据</td><td>上下文变量</td><td>系统/动作自动填充，不需要手动创建</td></tr>
+<tr><td>记录状态（开/关）</td><td>全局变量 BoolVar</td><td>布尔值天然适合状态记录</td></tr>
+<tr><td>计数</td><td>全局变量 Int64Var</td><td>数字类型支持加减操作</td></tr>
+<tr><td>保存历史记录</td><td>全局变量 StringListVar</td><td>列表类型支持增删查</td></tr>
+</tbody>
+</table>
+
+<h4>自定义上下文变量名 (customContextDataKey)</h4>
+<p>几乎所有的触发器和动作都有一个 <code>customContextDataKey</code> 字段，允许你<strong>重命名</strong>输出的上下文变量。对应代码 <code>CustomContextDataKey.kt</code>。</p>
+<p><strong>通俗理解：</strong> 系统默认用固定的变量名（如 <code>{shellOut}</code>），但你可以给它取一个更有意义的名字（如 <code>{命令结果}</code>），这样在后续动作中更容易理解。</p>
+<p><strong>原理：</strong> 每个动作执行后，会调用 <code>customContextDataKey.forKey(原始变量名)</code> 检查是否有自定义映射。如果有，就用自定义名；如果没有，就用原始名。</p>
+
+<p><strong>配置方式：</strong> 在动作的 JSON 中添加 <code>customContextDataKey</code> 字段：</p>
+<pre><code>{
+  "@type": "type.googleapis.com/ShellCommand",
+  "command": "dumpsys battery | grep level",
+  "customContextDataKey": {
+    "keys": [
+      {"first": "shellOut", "second": "电量原始数据"}
+    ]
+  }
+}
+// 原本输出到 {shellOut}，现在输出到 {电量原始数据}</code></pre>
+
+<p><strong>支持自定义的触发器/动作：</strong></p>
+<table>
+<thead><tr><th>动作</th><th>可自定义的变量</th><th>示例</th></tr></thead>
+<tbody>
+<tr><td>ShellCommand</td><td><code>shellOut</code>、<code>shellErr</code>、<code>shellCode</code></td><td>把命令输出重命名为"查询结果"</td></tr>
+<tr><td>ExecuteJS</td><td><code>jsRet</code></td><td>把 JS 返回值重命名为"计算结果"</td></tr>
+<tr><td>ExecuteMVEL</td><td><code>mvelRet</code></td><td>把 MVEL 返回值重命名为"判断结果"</td></tr>
+<tr><td>HttpRequest</td><td><code>httpRequestRet</code></td><td>把 HTTP 响应重命名为"API数据"</td></tr>
+<tr><td>ReadClipboard</td><td><code>clipboardContent</code></td><td>把剪贴板内容重命名为"复制的文本"</td></tr>
+<tr><td>GetTextFromScreenNode</td><td><code>textOfTheView</code></td><td>把屏幕文字重命名为"当前按钮文字"</td></tr>
+<tr><td>GetCurrentLocationInfo</td><td><code>latitude</code>、<code>longitude</code>、<code>provider</code>、<code>accuracy</code></td><td>把经纬度重命名为"当前位置"</td></tr>
+<tr><td>GetCurrentLocationAddress</td><td><code>addressLine</code>、<code>locality</code> 等 10 个</td><td>把地址重命名为"用户地址"</td></tr>
+<tr><td>GetAppInfo</td><td><code>appLabel</code>、<code>versionCode</code>、<code>versionName</code>、<code>isRunning</code></td><td>把应用信息重命名为"目标应用"</td></tr>
+<tr><td>ParseQRCode</td><td><code>qrCodeText</code></td><td>把二维码内容重命名为"扫码结果"</td></tr>
+<tr><td>OcrDetect</td><td><code>ocrResult</code></td><td>把 OCR 结果重命名为"识别文字"</td></tr>
+<tr><td>AreaScreenshot</td><td><code>screenshotFilePath</code>、<code>screenshotFileUri</code></td><td>把截图路径重命名为"截图文件"</td></tr>
+<tr><td>TakePhoto</td><td><code>photoFilePath</code>、<code>photoFileUri</code></td><td>把照片路径重命名为"拍照结果"</td></tr>
+<tr><td>GenerateQRCode</td><td><code>qrCodeFilePath</code>、<code>qrCodeFileUri</code></td><td>把二维码路径重命名为"生成的二维码"</td></tr>
+<tr><td>FindImagePosition</td><td><code>pointX</code>、<code>pointY</code>、<code>isImageFound</code>、<code>findImageJson</code></td><td>把图片位置重命名为"目标坐标"</td></tr>
+<tr><td>FindPointsByColor</td><td><code>pointX</code>、<code>pointY</code>、<code>isColorFound</code>、<code>findPointsByColorJson</code></td><td>把颜色位置重命名为"红点坐标"</td></tr>
+<tr><td>MatchRegex</td><td><code>isMatch</code>、<code>matchResult</code></td><td>把匹配结果重命名为"正则命中"</td></tr>
+<tr><td>ReplaceRegex</td><td><code>replaceResult</code></td><td>把替换结果重命名为"处理后文本"</td></tr>
+<tr><td>TextProcessing</td><td><code>textProcessResult</code></td><td>把处理结果重命名为"清理后文本"</td></tr>
+<tr><td>ExportBackup</td><td><code>backupFilePath</code></td><td>把备份路径重命名为"备份文件"</td></tr>
+<tr><td>DownloadFile</td><td><code>isDownloadSuccess</code>、<code>downloadFileUri</code>、<code>downloadFilePath</code></td><td>把下载结果重命名为"下载状态"</td></tr>
+<tr><td>WebDavList</td><td><code>webdavPaths</code>、<code>webdavNames</code></td><td>把文件列表重命名为"网盘文件"</td></tr>
+<tr><td>WebDavGet</td><td><code>webdavGetPath</code></td><td>把下载路径重命名为"同步文件"</td></tr>
+<tr><td>ShowListDialog</td><td><code>selectedListItem</code></td><td>把选择结果重命名为"用户选择"</td></tr>
+<tr><td>ShowChoiceDialog</td><td><code>choices</code></td><td>把选择结果重命名为"用户选项"</td></tr>
+<tr><td>GetScreenOnTime</td><td><code>screenOnTime</code></td><td>把亮屏时间重命名为"使用时长"</td></tr>
+<tr><td>WebSocketConnect</td><td><code>wsMessage</code>、<code>wsEvent</code>、<code>wsReason</code></td><td>把消息重命名为"服务器推送"</td></tr>
+</tbody>
+</table>
+
+<p><strong>实际场景：</strong></p>
+<p>在同一条指令中多次执行 ShellCommand 时，每次输出都会覆盖 <code>{shellOut}</code>。通过自定义变量名，可以让每次输出存到不同的变量中：</p>
+<pre><code>// 第一次：获取电量
+{
+  "@type": "type.googleapis.com/ShellCommand",
+  "command": "dumpsys battery | grep level",
+  "customContextDataKey": {"keys": [{"first": "shellOut", "second": "电量数据"}]}
+}
+// 输出到 {电量数据}
+
+// 第二次：获取温度
+{
+  "@type": "type.googleapis.com/ShellCommand",
+  "command": "dumpsys battery | grep temperature",
+  "customContextDataKey": {"keys": [{"first": "shellOut", "second": "温度数据"}]}
+}
+// 输出到 {温度数据}
+
+// 两个变量互不干扰，可以同时使用
+{"@type": "type.googleapis.com/ShowToast", "message": "电量: {电量数据}, 温度: {温度数据}"}</code></pre>
+
+<h4>函数返回值写入上下文变量</h4>
+<p>函数（Function）可以通过 <code>resultContextDataKey</code> 字段指定返回值写入的上下文变量名。对应代码 <code>Functions.proto</code> 中的 <code>Function.resultContextDataKey</code>。</p>
+<p><strong>配置方式：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/ExecuteFunction",
+  "functionId": "get-weather",
+  "resultContextDataKey": "天气结果"
+}
+// 函数执行后，返回值会写入 {天气结果}</code></pre>
+<p><strong>如果留空</strong>，返回值不会写入任何上下文变量（但仍然可以通过 <code>SetFunctionReturnValue</code> 在函数内部设置返回值）。</p>
+
+<h2 id="5-fact"><span class="h2-num">5</span>触发器 (Fact) 完整参考</h2>
+<p>触发器定义了<strong>什么时候</strong>触发自动指令。每个触发器对应一类系统事件，当事件发生时，系统会检查是否有匹配的自动指令。</p>
+
+<h3 id="51">5.1 应用生命周期</h3>
+
+<h4 id="51-appfg">AppBecomeFg — 应用进入前台</h4>
+<p>当一个应用从后台切换到前台（成为屏幕顶部可见应用）时触发。</p>
+<p><strong>上下文变量：</strong></p>
+<table><thead><tr><th>变量名</th><th>说明</th></tr></thead><tbody><tr><td><code>{"pkgName"}</code></td><td>应用包名</td></tr><tr><td><code>{"userId"}</code></td><td>用户 ID</td></tr><tr><td><code>{"appLabel"}</code></td><td>应用名称</td></tr></tbody></table>
+<p><strong>关键参数：</strong> <code>apps</code>（指定应用包名）、<code>pkgSets</code>（应用集合）</p>
+<p><strong>使用场景：</strong> 打开微信时自动开启 WiFi；打开导航应用时自动打开定位。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/AppBecomeFg",
+  "apps": [{"pkgName": "com.example.app"}],
+  "pkgSets": []
+}</code></pre>
+<pre><code>// 示例：微信进入前台时开启 WiFi
+{"@type": "type.googleapis.com/AppBecomeFg"}, apps=[{pkgName:"com.tencent.mm"}]
+{"@type": "type.googleapis.com/SetWifiEnabled", "enable": true}</code></pre>
+
+<h4 id="51-appbg">AppBecomeBg — 应用进入后台</h4>
+<p>当一个应用从前台切换到后台时触发。</p>
+<p><strong>关键参数：</strong> <code>apps</code>、<code>pkgSets</code></p>
+<p><strong>上下文变量：</strong> <code>{pkgName}</code>、<code>{appLabel}</code></p>
+<p><strong>使用场景：</strong> 微信进入后台时自动关闭 WiFi 省电；退出游戏时自动清理内存。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/AppBecomeBg",
+  "apps": [{"pkgName": "com.example.app"}],
+  "pkgSets": []
+}</code></pre>
+
+<h4 id="51-activity">ActivityStarted — Activity 启动</h4>
+<p>当一个 Activity 被恢复（带到前台）时触发，比 AppBecomeFg 更精确——可以精确到具体的页面。</p>
+<p><strong>关键参数：</strong> <code>components</code>（指定包名+Activity类名）</p>
+<p><strong>上下文变量：</strong> <code>{pkgName}</code>、<code>{activityName}</code>、<code>{appLabel}</code>、<code>{componentName}</code></p>
+<p><strong>使用场景：</strong> 打开微信扫一扫页面时自动开启定位；打开支付宝付款页面时自动调高亮度。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/ActivityStarted",
+  "components": {"pkg": {"pkgName": "com.example.app"}, "className": "com.example.MainActivity"}
+}</code></pre>
+
+<h4 id="51-taskremoved">TaskRemoved — 任务被移除（划卡）</h4>
+<p>当用户在最近任务列表中划掉一个应用时触发。</p>
+<p><strong>关键参数：</strong> <code>apps</code>、<code>pkgSets</code></p>
+<p><strong>上下文变量：</strong> <code>{pkgName}</code>、<code>{appLabel}</code>、<code>{taskId}</code></p>
+<p><strong>使用场景：</strong> 划掉非微信/QQ 的应用时自动杀进程（"划卡即停"）。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/TaskRemoved",
+  "apps": [{"pkgName": "com.example.app"}],
+  "pkgSets": []
+}</code></pre>
+
+<h4 id="51-userpresent">UserPresent — 用户解锁</h4>
+<p>当用户解锁设备时触发（ACTION_USER_PRESENT）。首次解锁后还会额外触发 <code>UserPresentAtTheFirstTime</code>。</p>
+<p><strong>使用场景：</strong> 解锁后自动播放音乐；解锁后显示今日天气。</p>
+
+<h3 id="52">5.2 通知</h3>
+
+<h4 id="52-posted">NotificationPosted — 通知发布</h4>
+<p>当系统中任何应用发布新通知时触发。支持按标题、内容、来源应用等过滤。</p>
+<p><strong>上下文变量：</strong></p>
+<table><thead><tr><th>变量名</th><th>说明</th></tr></thead><tbody><tr><td><code>{"userId"}</code></td><td>用户 ID</td></tr><tr><td><code>{"pkgName"}</code></td><td>通知来源应用包名</td></tr><tr><td><code>{"title"}</code></td><td>通知标题</td></tr><tr><td><code>{"contentText"}</code></td><td>通知内容</td></tr><tr><td><code>{"notificationTag"}</code></td><td>通知标签</td></tr></tbody></table>
+<p><strong>关键参数：</strong> <code>record</code>（通知过滤器：title/contentText/apps/pkgSets/notificationChannel/ongoing 等）</p>
+<p><strong>使用场景：</strong> 收到验证码短信时自动提取；转发微信通知到企业微信；过滤垃圾通知。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/NotificationPosted",
+  "record": {"title": "通知标题", "contentText": "通知内容", "apps": [{"pkgName": "com.example.app"}]}
+}</code></pre>
+<pre><code>// 示例：提取短信验证码
+{"@type": "type.googleapis.com/NotificationPosted"}, record={apps:[{pkgName:"com.android.mms"}]}
+{"@type": "type.googleapis.com/ExecuteJS", expression="var code = '{contentText}'.match(/\\d{6}/)[0]; var jsRet = code;")
+动作: {"@type": "type.googleapis.com/ShowToast", "message": "验证码: {jsRet}"}</code></pre>
+
+<h4 id="52-updated">NotificationUpdated — 通知更新</h4>
+<p>当已有通知被更新（重新发布且内容变化）时触发。</p>
+<p><strong>上下文变量：</strong></p>
+<table><thead><tr><th>变量名</th><th>说明</th></tr></thead><tbody><tr><td><code>{"userId"}</code></td><td>用户 ID</td></tr><tr><td><code>{"pkgName"}</code></td><td>通知来源应用包名</td></tr><tr><td><code>{"title"}</code></td><td>通知标题</td></tr><tr><td><code>{"contentText"}</code></td><td>通知内容</td></tr><tr><td><code>{"notificationTag"}</code></td><td>通知标签</td></tr></tbody></table>
+<p><strong>关键参数：</strong> <code>old</code>（旧通知过滤器）、<code>new</code>（新通知过滤器）</p>
+<p><strong>使用场景：</strong> 监听下载进度通知的变化，实时显示下载百分比。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/NotificationUpdated",
+  "old": {"title": "通知标题", "contentText": "通知内容", "apps": [{"pkgName": "com.example.app"}]},
+  "new": {"title": "通知标题", "contentText": "通知内容", "apps": [{"pkgName": "com.example.app"}]}
+}</code></pre>
+
+<h4 id="52-removed">NotificationRemoved — 通知移除</h4>
+<p>当通知被移除时触发（用户滑动取消或应用取消）。</p>
+<table><thead><tr><th>变量名</th><th>说明</th></tr></thead><tbody><tr><td><code>{"userId"}</code></td><td>用户 ID</td></tr><tr><td><code>{"pkgName"}</code></td><td>通知来源应用包名</td></tr><tr><td><code>{"title"}</code></td><td>通知标题</td></tr><tr><td><code>{"contentText"}</code></td><td>通知内容</td></tr><tr><td><code>{"notificationTag"}</code></td><td>通知标签</td></tr></tbody></table>
+<p><strong>关键参数：</strong> <code>record</code>（通知过滤器）、<code>byUser</code>（true=用户滑动，false=应用取消）</p>
+<p><strong>使用场景：</strong> 用户划掉外卖通知时自动标记订单已完成。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/NotificationRemoved",
+  "record": {"title": "通知标题", "contentText": "通知内容", "apps": [{"pkgName": "com.example.app"}]},
+  "byUser": false
+}</code></pre>
+
+<h3 id="53">5.3 系统状态</h3>
+
+<h4 id="53-sysready">SystemReady — 系统就绪</h4>
+<p>系统完成启动后触发。这是最早触发的事件之一，其他触发器在 SystemReady 之前不会生效。</p>
+<p><strong>使用场景：</strong> 开机后自动执行初始化操作。</p>
+
+<h4 id="53-screenon">ScreenOn — 亮屏</h4>
+<p>设备屏幕点亮时触发。</p>
+<p><strong>使用场景：</strong> 亮屏时自动调整亮度；亮屏时显示今日日程。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/ScreenOn"
+}</code></pre>
+
+<h4 id="53-screenoff">ScreenOff — 息屏</h4>
+<p>设备屏幕熄灭时触发。</p>
+<p><strong>使用场景：</strong> 息屏后自动开启省电模式；息屏后开始录音。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/ScreenOff"
+}</code></pre>
+
+<h4 id="53-syssettings">SystemSettingsChanged — 系统设置变更</h4>
+<p>当指定的系统设置项值变化时触发。</p>
+<p><strong>关键参数：</strong> <code>urlAndExpectedValueRegex</code>（设置项名称+值的正则匹配）</p>
+<p><strong>使用场景：</strong> 监听屏幕超时时间变化；监听开发者选项变化。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/SystemSettingsChanged",
+  "urlAndExpectedValueRegex": {},
+  "matchOptions": "RegexMatchOptions_Match"
+}</code></pre>
+
+<h4 id="53-logcat">Logcat — 日志匹配</h4>
+<p>当系统 logcat 输出的某一行匹配指定正则表达式时触发。</p>
+<p><strong>上下文变量：</strong></p>
+<table><thead><tr><th>变量名</th><th>说明</th></tr></thead><tbody><tr><td><code>{"line"}</code></td><td>匹配到的日志行</td></tr></tbody></table>
+<p><strong>关键参数：</strong> <code>regex</code>（正则表达式）、<code>regexMatchOptions</code>（Match/ContainsMatchIn）</p>
+<p><strong>使用场景：</strong> 监听应用崩溃日志；监听特定服务的输出。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/Logcat",
+  "regex": "示例值",
+  "regexMatchOptions": "RegexMatchOptions_Match"
+}</code></pre>
+
+<h4 id="53-globalvar">GlobalVarChanged — 全局变量变更</h4>
+<p>当任何全局变量被创建或更新时触发。</p>
+<p><strong>关键参数：</strong> <code>gvId</code>（变量 ID）</p>
+<p><strong>使用场景：</strong> 当电量变量变化时同步更新状态栏显示。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/GlobalVarChanged",
+  "gvId": "示例值"
+}</code></pre>
+
+<h3 id="54">5.4 连接状态</h3>
+
+<h4 id="54-wifistatus">WifiStatusChanged — WiFi 状态变化</h4>
+<p>当 WiFi 开关被打开或关闭时触发。</p>
+<p><strong>关键参数：</strong> <code>ooa</code>（On=仅开、Off=仅关、Any=任意变化）</p>
+<p><strong>使用场景：</strong> WiFi 打开时自动连接已知网络；WiFi 关闭时切换到移动数据。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/WifiStatusChanged",
+  "ooa": "On"
+}</code></pre>
+
+<h4 id="54-wificonnected">WifiConnectedTo — 连接到指定 WiFi</h4>
+<p>当设备连接到特定 WiFi 网络（SSID 变化）时触发。</p>
+<p><strong>上下文变量：</strong></p>
+<table><thead><tr><th>变量名</th><th>说明</th></tr></thead><tbody><tr><td><code>{"ssid"}</code></td><td>连接的 WiFi 名称</td></tr><tr><td><code>{"isWifiEnabled"}</code></td><td>WiFi 是否开启</td></tr><tr><td><code>{"wifiStatusLabel"}</code></td><td>WiFi 状态标签</td></tr></tbody></table>
+<p><strong>关键参数：</strong> <code>ssidList</code>（要匹配的 WiFi 名称列表，<code>*</code> 表示任意）</p>
+<p><strong>使用场景：</strong> 连接到公司 WiFi 时自动开启工作模式；连接到家庭 WiFi 时开启智能家居。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/WifiConnectedTo",
+  "ssidList": []
+}</code></pre>
+
+<h4 id="54-btstatus">BTStatusChanged — 蓝牙状态变化</h4>
+<p>当蓝牙开关被打开或关闭时触发。</p>
+<p><strong>关键参数：</strong> <code>ooa</code>（On/Off/Any）</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/BTStatusChanged",
+  "ooa": "On"
+}</code></pre>
+
+<h4 id="54-btconnected">BTConnectedTo — 连接到指定蓝牙设备</h4>
+<p>当蓝牙设备连接（ACL 链路建立）时触发。</p>
+<p><strong>关键参数：</strong> <code>device</code>（设备别名列表，<code>*</code> 表示任意）</p>
+<p><strong>上下文变量：</strong> <code>{btDeviceAlias}</code>（设备别名）、<code>{btDeviceAddress}</code>（设备地址）、<code>{btDeviceBatteryLevel}</code>（设备电量）</p>
+<p><strong>使用场景：</strong> 连接到车载蓝牙时自动启动导航；连接到耳机时自动播放音乐。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/BTConnectedTo",
+  "device": []
+}</code></pre>
+
+<h4 id="54-vpn">VPNConnected / VPNDisconnected</h4>
+<p>VPN 连接建立或断开时触发。通过 NetworkCallback 检测。</p>
+<p><strong>使用场景：</strong> VPN 连接成功后显示提示；VPN 断开后自动重连。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/VPNConnected"
+}</code></pre>
+
+<h4 id="54-call">CallStateChanged — 通话状态变化</h4>
+<p>电话通话状态变化时触发（响铃/接听/挂断）。</p>
+<p><strong>上下文变量：</strong></p>
+<table><thead><tr><th>变量名</th><th>说明</th></tr></thead><tbody><tr><td><code>{"callState"}</code></td><td>通话状态（Ringing/OffHook/Idle）</td></tr><tr><td><code>{"incomingNumber"}</code></td><td>来电号码</td></tr></tbody></table>
+<p><strong>关键参数：</strong> <code>callState</code>（Ringing/OffHook/Idle）、<code>incomingNumber</code>（来电号码）</p>
+<p><strong>使用场景：</strong> 来电时自动降低媒体音量；挂断电话后自动回复短信。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/CallStateChanged",
+  "callState": "CallStateIdle",
+  "incomingNumber": "示例值"
+}</code></pre>
+
+<h3 id="55">5.5 传感器</h3>
+
+<h4 id="55-light">LightSensor — 光线传感器</h4>
+<p>当环境光强度变化时触发（连续触发）。</p>
+<p><strong>上下文变量：</strong></p>
+<table><thead><tr><th>变量名</th><th>说明</th></tr></thead><tbody><tr><td><code>{"lightIntensity"}</code></td><td>光照强度（lux）</td></tr></tbody></table>
+<p><strong>关键参数：</strong> <code>constraints</code>（值约束条件）、<code>trend</code>（Any/Increase/Decrease）</p>
+<p><strong>使用场景：</strong> 环境变暗时自动开启深色模式；光线充足时降低屏幕亮度。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/LightSensor",
+  "constraints": [{"op": "GreaterThan", "payload": {"value": "10"}}],
+  "value": 0.0,
+  "trend": "SensorValueTrend_Any"
+}</code></pre>
+
+<h4 id="55-sound">Sound — 声音传感器</h4>
+<p>每秒采样一次环境声音分贝值。使用麦克风录音并计算 RMS 转换为分贝。</p>
+<p><strong>关键参数：</strong> <code>constraints</code>（值约束）、<code>trend</code></p>
+<p><strong>上下文变量：</strong> <code>{decibels}</code>（当前分贝值）</p>
+<p><strong>使用场景：</strong> 环境太吵时自动开启勿扰；检测到说话声时自动录音。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/Sound",
+  "constraints": [{"op": "GreaterThan", "payload": {"value": "10"}}],
+  "value": 0.0,
+  "trend": "SensorValueTrend_Any"
+}</code></pre>
+
+<h4 id="55-shake">ShakeDevice — 摇晃设备</h4>
+<p>当设备被物理摇晃时触发（加速度超过阈值，500ms 防抖）。</p>
+<p><strong>使用场景：</strong> 摇晃手机切换歌曲；摇晃手机手电筒闪烁。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/ShakeDevice"
+}</code></pre>
+
+<h4 id="55-rotate">ScreenRotate — 屏幕旋转</h4>
+<p>当物理设备方向变化时触发（基于加速度传感器）。</p>
+<p><strong>关键参数：</strong> <code>degree</code>（0/90/180/270）</p>
+<p><strong>使用场景：</strong> 横屏时自动开启沉浸模式；竖屏时恢复正常布局。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/ScreenRotate",
+  "degree": "ScreenRotateDegree_0"
+}</code></pre>
+
+<h4 id="55-headset">HeadsetPlug — 耳机插拔</h4>
+<p>有线耳机插入或拔出时触发。</p>
+<p><strong>关键参数：</strong> <code>isPlug</code>（true=插入，false=拔出）</p>
+<p><strong>使用场景：</strong> 插入耳机时自动播放音乐；拔出耳机时暂停播放。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/HeadsetPlug",
+  "isPlug": false
+}</code></pre>
+
+<h3 id="56">5.6 手势</h3>
+
+<h4 id="56-edge">EdgeGesture — 边缘手势</h4>
+<p>在屏幕边缘（左/右/上/下，各分上中下三区）执行手势时触发。支持单击、双击、长按、滑动。</p>
+<p><strong>上下文变量：</strong></p>
+<table><thead><tr><th>变量名</th><th>说明</th></tr></thead><tbody><tr><td><code>{"eventX"}</code></td><td>触摸 X 坐标</td></tr><tr><td><code>{"eventY"}</code></td><td>触摸 Y 坐标</td></tr></tbody></table>
+<p><strong>关键参数：</strong> <code>edge</code>（16 个边缘位置）、<code>gesture</code>（手势类型）、<code>isIntercept</code>（是否拦截原手势）、<code>apps</code>（限制应用）、<code>childSteps</code>（多步骤手势）</p>
+<p><strong>使用场景：</strong> 左侧边缘右滑返回；右侧边缘左滑打开侧边栏；底部边缘上滑切换应用。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/EdgeGesture",
+  "edge": "LeftTop",
+  "gesture": "DoubleTap",
+  "apps": [{"pkgName": "com.example.app"}],
+  "pkgSets": [],
+  "customRect": {"left": 0, "top": 0, "right": 100, "bottom": 100},
+  "downX": 0,
+  "downY": 0,
+  "isTriggerCustom": false,
+  "childSteps": [{"type": "SwipeLeft"}]
+}</code></pre>
+
+<h4 id="56-key">KeyEvent / AdvancedKeyEvent — 按键事件</h4>
+<p><strong>KeyEvent：</strong> 物理按键松开时触发（简单按键码匹配）。</p>
+<p><strong>上下文变量：</strong></p>
+<table><thead><tr><th>变量名</th><th>说明</th></tr></thead><tbody><tr><td><code>{"keyCode"}</code></td><td>按键码</td></tr><tr><td><code>{"pressTimes"}</code></td><td>按压次数（1/2/3）</td></tr></tbody></table>
+<p><strong>AdvancedKeyEvent：</strong> 支持手势识别——单击、长按、双击、三击，支持拦截模式。</p>
+<p><strong>关键参数：</strong> <code>keyCode</code>（按键码）、<code>gesture</code>（KeyPress/KeyLongPress/KeyMultiplePress/KeyTriplePress）、<code>isInterceptMode</code>（拦截模式）</p>
+<p><strong>使用场景：</strong> 双击音量加打开手电筒；长按电源键显示自定义电源菜单；三击音量减截屏。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/KeyEvent",
+  "keyCode": 0
+}</code></pre>
+
+<h3 id="57">5.7 时间与调度</h3>
+
+<h4 id="57-alarm">Alarm — 定时触发</h4>
+<p>在指定时间触发，支持重复（每周某几天）和工作日过滤。</p>
+<p><strong>关键参数：</strong> <code>triggerAt</code>（时:分）、<code>repeat</code>（重复星期）、<code>workdayFilter</code>（工作日/节假日过滤）</p>
+<p><strong>使用场景：</strong> 每天早上 7 点播报天气；工作日 8:30 自动打卡。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/Alarm",
+  "triggerAt": {"hour": 8, "minutes": 30},
+  "repeat": {"days": ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"]},
+  "workdayFilter": {"dayType": "WorkdayOnly"}
+}</code></pre>
+
+<h4 id="57-random">RandomInPeriod — 时间段内随机触发</h4>
+<p>在指定时间段内随机选择一个时间触发。</p>
+<p><strong>关键参数：</strong> <code>start</code>、<code>end</code>（时间段）、<code>repeat</code>、<code>workdayFilter</code></p>
+<p><strong>使用场景：</strong> 在 9:00-10:00 之间随机发一条消息，看起来更自然。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/RandomInPeriod",
+  "start": {"hour": 8, "minutes": 30},
+  "end": {"hour": 8, "minutes": 30},
+  "repeat": {"days": ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"]},
+  "workdayFilter": {"dayType": "WorkdayOnly"}
+}</code></pre>
+
+<h4 id="57-fixed">FixedInPeriod — 时间段内固定触发</h4>
+<p>在指定时间段内按固定次数或固定间隔触发。</p>
+<p><strong>关键参数：</strong> <code>start</code>、<code>end</code>、<code>fixedBy</code>（FixedByTimes=按次数 / FixedByInterval=按间隔）</p>
+<p><strong>使用场景：</strong> 每小时提醒一次喝水；每天定时 3 次检查邮件。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/FixedInPeriod",
+  "start": {"hour": 8, "minutes": 30},
+  "end": {"hour": 8, "minutes": 30},
+  "repeat": {"days": ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"]},
+  "workdayFilter": {"dayType": "WorkdayOnly"}
+}</code></pre>
+
+<h4 id="57-sunrise">SunRiseSet — 日出日落</h4>
+<p>在日出或日落时触发（基于设备地理位置计算）。</p>
+<p><strong>关键参数：</strong> <code>rise</code>（SunRise=日出 / SunSet=日落）</p>
+<p><strong>使用场景：</strong> 日落时自动开启夜灯模式；日出时关闭自动亮度。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/SunRiseSet",
+  "rise": "SunRise_Rise"
+}</code></pre>
+
+<h3 id="58">5.8 广播与自定义事件</h3>
+
+<h4 id="58-broadcast">Broadcast — 广播事件</h4>
+<p>当系统收到指定的 Android 广播时触发。</p>
+<p><strong>上下文变量：</strong></p>
+<table><thead><tr><th>变量名</th><th>说明</th></tr></thead><tbody><tr><td><code>{"intent"}</code></td><td>广播 Intent 对象，可用 MVEL 访问 extras</td></tr></tbody></table>
+<p><strong>关键参数：</strong> <code>actions</code>（要监听的广播 action 列表）、<code>dataSchema</code>（可选数据 URI）</p>
+<p><strong>使用场景：</strong> 监听第三方应用的自定义广播；监听系统开机完成广播。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/Broadcast",
+  "actions": [],
+  "dataSchema": "示例值"
+}</code></pre>
+
+<h4 id="58-deeplink">DeepLinkCall — Deep Link 调用</h4>
+<p>当通过 <code>shortx://</code> URL 触发 ShortX 的 Deep Link 时触发。</p>
+<p><strong>关键参数：</strong> <code>deepLinkTag</code>（Deep Link 标识符）</p>
+<p><strong>使用场景：</strong> 从其他应用或快捷方式触发 ShortX 自动指令。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/DeepLinkCall",
+  "deepLinkTag": "示例值"
+}</code></pre>
+
+<h4 id="58-incoming">IncomingShare — 收到分享内容</h4>
+<p>当通过 Android 分享菜单分享内容到 ShortX 时触发。</p>
+<p><strong>上下文变量：</strong></p>
+<table><thead><tr><th>变量名</th><th>说明</th></tr></thead><tbody><tr><td><code>{"sharedText"}</code></td><td>分享的文本</td></tr><tr><td><code>{"sharedUri"}</code></td><td>分享的 URI</td></tr><tr><td><code>{"sharedMimeType"}</code></td><td>MIME 类型</td></tr><tr><td><code>{"sourceAppPkg"}</code></td><td>来源应用包名</td></tr></tbody></table>
+<p><strong>关键参数：</strong> <code>mimeType</code>（MIME 类型）、<code>sourceAppPkg</code>（来源应用）</p>
+<p><strong>使用场景：</strong> 分享链接到 ShortX 时自动解析并打开；分享文本时自动翻译。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/IncomingShare",
+  "mimeType": "示例值",
+  "sourceAppPkg": "示例值"
+}</code></pre>
+
+<h4 id="58-browser">BrowserIntercept — 浏览器拦截</h4>
+<p>当 URL 从浏览器或其他应用中被拦截时触发（在打开新浏览器之前）。</p>
+<p><strong>上下文变量：</strong></p>
+<table><thead><tr><th>变量名</th><th>说明</th></tr></thead><tbody><tr><td><code>{"url"}</code></td><td>完整 URL</td></tr><tr><td><code>{"host"}</code></td><td>域名</td></tr><tr><td><code>{"scheme"}</code></td><td>协议（http/https）</td></tr><tr><td><code>{"path"}</code></td><td>路径</td></tr><tr><td><code>{"query"}</code></td><td>查询参数</td></tr><tr><td><code>{"sourceAppPkg"}</code></td><td>来源应用包名</td></tr></tbody></table>
+<p><strong>关键参数：</strong> <code>openUrlAfterTrigger</code>（触发后是否自动打开 URL）、<code>openUrlBrowserPkg</code>（目标浏览器）</p>
+<p><strong>使用场景：</strong> 拦截特定链接并用指定浏览器打开；拦截后自动清理链接参数。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/BrowserIntercept",
+  "openUrlAfterTrigger": false,
+  "openUrlBrowserPkg": "示例值"
+}</code></pre>
+
+<h3 id="59">5.9 电源与充电</h3>
+
+<h4 id="59-battery">BatteryLevelChanged — 电量变化</h4>
+<p>当电池电量百分比变化时触发。</p>
+<p><strong>关键参数：</strong> <code>level</code>（0=任意变化，具体值=仅在该百分比触发）</p>
+<p><strong>上下文变量：</strong> <code>{batteryLevel}</code>（当前电量）</p>
+<p><strong>使用场景：</strong> 电量低于 20% 时提醒充电；电量达到 80% 时停止充电。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/BatteryLevelChanged",
+  "level": 0
+}</code></pre>
+
+<h4 id="59-charger">ChargerPlug / ChargerUnplug — 充电器插拔</h4>
+<p>充电器插入或拔出时触发。</p>
+<p><strong>使用场景：</strong> 插入充电器时显示预计充满时间；拔出充电器时切换到省电模式。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/ChargerPlug"
+}</code></pre>
+
+<h3 id="510">5.10 Method Hook — 方法钩子</h3>
+
+<h4 id="510-methodhook">MethodHook — Xposed 方法钩子</h4>
+<p>当目标应用中被 hook 的 Java 方法被调用时触发。需要 Xposed/LSPosed 框架。</p>
+<p><strong>上下文变量：</strong></p>
+<table><thead><tr><th>变量名</th><th>说明</th></tr></thead><tbody><tr><td><code>{"（动态）"}</code></td><td>由 expressions[].contextKey 定义的变量</td></tr></tbody></table>
+<p><strong>关键参数：</strong> <code>packageName</code>（目标应用）、<code>className</code>（类名）、<code>methodName</code>（方法名）、<code>beforeMethod</code>（true=方法前/false=方法后）、<code>expressions</code>（MVEL 表达式列表）、<code>lifecycle</code>（InitZygote/LoadedPackage）、<code>constraint</code>（参数约束）</p>
+<p><strong>上下文变量：</strong> 动态生成——由 <code>expressions[].contextKey</code> 定义</p>
+<p><strong>使用场景：</strong> Hook 微信发送消息方法，记录聊天内容；Hook 支付方法，记录交易金额。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/MethodHook",
+  "packageName": "示例值",
+  "className": "示例值",
+  "methodName": "示例值",
+  "beforeMethod": false,
+  "expressions": [{"expressionMVEL": "args[0]", "contextKey": "hookArg0"}],
+  "lifecycle": "InitZygote"
+}</code></pre>
+
+<h3 id="511">5.11 其他触发器</h3>
+
+<h4 id="511-clipboard">ClipboardContentChanged — 剪贴板变化</h4>
+<p>当系统剪贴板内容变化时触发（1 秒内去重）。</p>
+<p><strong>关键参数：</strong> <code>content</code>（文本或正则匹配）、<code>matchOptions</code></p>
+<p><strong>上下文变量：</strong> <code>{clipboardContent}</code></p>
+<p><strong>使用场景：</strong> 复制链接时自动打开浏览器；复制验证码时自动填入输入框。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/ClipboardContentChanged",
+  "content": "示例值",
+  "matchOptions": "RegexMatchOptions_Match"
+}</code></pre>
+
+<h4 id="511-screensensor">LightSensor / ProximitySensor / AccelerometerSensor</h4>
+<p><strong>LightSensor：</strong> 光线传感器值变化时触发，上下文变量 <code>{lightIntensity}</code>。</p>
+<p><strong>ProximitySensor：</strong> 距离传感器状态变化时触发（靠近/远离）。</p>
+<p><strong>AccelerometerSensor：</strong> 加速度传感器值变化时触发，上下文变量 <code>{valueX/Y/Z}</code>。</p>
+<h2 id="6-condition"><span class="h2-num">6</span>条件 (Condition) 完整参考</h2>
+<p>条件定义了触发后<strong>是否执行</strong>动作。只有条件满足时，动作才会执行。所有条件都支持 <code>isInvert</code>（取反）和 <code>isDisabled</code>（禁用）。</p>
+
+<h3 id="61">6.1 应用状态条件</h3>
+
+<h4 id="61-currentpkg">CurrentPkgList — 当前前台应用</h4>
+<p>检查当前前台应用是否匹配指定的应用列表。</p>
+<p><strong>关键参数：</strong> <code>pkgs</code>（应用列表）、<code>pkgSets</code>（应用集合）、<code>op</code>（ALL/ANY/NONE）</p>
+<p><strong>使用场景：</strong> 仅在微信中执行某些操作；不在游戏中执行省电操作。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/CurrentPkgList",
+  "pkgs": [{"pkgName": "com.example.app"}],
+  "pkgSets": [],
+  "op": "ALL"
+}</code></pre>
+
+<h4 id="61-currentactivity">CurrentActivity — 当前 Activity</h4>
+<p>检查当前 Activity 是否匹配指定的组件名（比 CurrentPkgList 更精确）。</p>
+<p><strong>关键参数：</strong> <code>activities</code>（Activity 组件列表）、<code>op</code></p>
+<p><strong>使用场景：</strong> 仅在微信扫一扫页面执行操作。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/CurrentActivity",
+  "activities": {"pkg": {"pkgName": "com.example.app"}, "className": "com.example.MainActivity"},
+  "op": "ALL"
+}</code></pre>
+
+<h4 id="61-apprunning">AppIsRunning / AppIsNotRunning — 应用是否运行</h4>
+<p>检查指定应用是否有运行中的进程。</p>
+<p><strong>关键参数：</strong> <code>pkgs</code>、<code>pkgSets</code>、<code>op</code></p>
+<p><strong>使用场景：</strong> 如果音乐播放器没在运行就不调整音量；如果后台服务挂了就重启。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/AppIsRunning",
+  "pkgs": [{"pkgName": "com.example.app"}],
+  "pkgSets": [],
+  "op": "ALL"
+}</code></pre>
+
+<h4 id="61-apptask">AppHasTask — 应用有任务</h4>
+<p>检查指定应用是否在最近任务列表中（是否曾经打开过）。</p>
+<p><strong>使用场景：</strong> 如果应用从未打开过就执行首次引导。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/AppHasTask",
+  "pkgs": [{"pkgName": "com.example.app"}],
+  "pkgSets": [],
+  "op": "ALL"
+}</code></pre>
+
+<h4 id="61-appfocus">AppHasWindowFocus / AppHasAudioFocus</h4>
+<p><strong>AppHasWindowFocus：</strong> 检查应用是否有窗口焦点（适用于多窗口、对话框场景）。</p>
+<p><strong>AppHasAudioFocus：</strong> 检查应用是否持有音频焦点（正在播放音频）。</p>
+<p><strong>使用场景：</strong> 如果视频应用有音频焦点就降低其他应用音量。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/AppHasAudioFocus",
+  "pkgs": [{"pkgName": "com.example.app"}],
+  "pkgSets": [],
+  "op": "ALL"
+}</code></pre>
+
+<h4 id="61-appnotification">AppHasNotification — 应用有通知</h4>
+<p>检查指定应用是否有活跃通知。匹配的通知数据会写入上下文变量。</p>
+<p><strong>使用场景：</strong> 如果外卖应用有通知就显示在状态栏。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/AppHasNotification",
+  "pkgs": [{"pkgName": "com.example.app"}],
+  "pkgSets": [],
+  "op": "ALL"
+}</code></pre>
+
+<h3 id="62">6.2 系统状态条件</h3>
+
+<h4 id="62-screen">ScreenIsOn / ScreenStayAwake</h4>
+<p><strong>ScreenIsOn：</strong> 屏幕是否亮着。</p>
+<p><strong>ScreenStayAwake：</strong> 是否启用了"充电时保持唤醒"开发者选项。</p>
+<p><strong>使用场景：</strong> 仅在屏幕亮着时执行 UI 操作；仅在充电常亮时执行长时间任务。</p>
+
+<h4 id="62-vpn">VPNIsConnected — VPN 是否连接</h4>
+<p>检查 VPN 是否处于连接状态。</p>
+<p><strong>使用场景：</strong> VPN 连接时才执行需要翻墙的操作。</p>
+
+<h4 id="62-charge">ChargeState / PlugState — 充电状态</h4>
+<p><strong>ChargeState：</strong> 检查是否正在充电。</p>
+<p><strong>PlugState：</strong> 检查电源类型（USB/AC/无线/未插入/充电中）。</p>
+<p><strong>使用场景：</strong> 仅在 AC 充电器连接时执行快充操作；USB 连接时限制数据同步速度。</p>
+
+<h4 id="62-battery">BatteryPercent — 电量百分比</h4>
+<p>将当前电量与阈值比较（&gt;、&gt;=、&lt;、&lt;=、==）。</p>
+<p><strong>关键参数：</strong> <code>value</code>（阈值）、<code>op</code>（比较操作符）</p>
+<p><strong>使用场景：</strong> 电量低于 20% 时开启省电模式；电量高于 80% 时停止充电。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/BatteryPercent",
+  "value": 0,
+  "op": "IntGreaterThan"
+}</code></pre>
+
+<h4 id="62-memory">AvailableMemory — 可用内存</h4>
+<p>将当前可用内存（MB）与阈值比较。</p>
+<p><strong>使用场景：</strong> 内存不足 500MB 时清理后台应用。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/AvailableMemory",
+  "valueMb": 0,
+  "op": "IntGreaterThan"
+}</code></pre>
+
+<h4 id="62-keyguard">KeyguardIsLocked — 锁屏是否锁定</h4>
+<p>检查设备是否处于锁屏状态。</p>
+<p><strong>使用场景：</strong> 锁屏时显示通知；解锁时隐藏敏感信息。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/KeyguardIsLocked"
+}</code></pre>
+
+<h4 id="62-call">IsInCall / IsRinging — 通话状态</h4>
+<p><strong>IsInCall：</strong> 是否正在通话中。</p>
+<p><strong>IsRinging：</strong> 是否正在响铃（来电）。</p>
+<p><strong>使用场景：</strong> 通话中静音通知；响铃时自动回复短信。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/IsInCall"
+}</code></pre>
+
+<h4 id="62-apm">RequireAPMMode — 飞行模式</h4>
+<p>检查飞行模式是否开启。</p>
+<p><strong>使用场景：</strong> 飞行模式下不执行网络操作。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/RequireAPMMode",
+  "isAPMEnable": false
+}</code></pre>
+
+<h4 id="62-ringer">RequireRingerMode — 铃声模式</h4>
+<p>检查当前铃声模式（静音/振动/正常）。</p>
+<p><strong>使用场景：</strong> 静音模式下不播放提示音。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/RequireRingerMode",
+  "mode": "silent"
+}</code></pre>
+
+<h3 id="63">6.3 变量评估条件</h3>
+
+<h4 id="63-evaglobal">EvaluateGlobalVar — 评估全局变量</h4>
+<p>将全局变量的值与期望值比较。支持 13 种比较操作：大于、小于、等于、包含、为空、已设置等。</p>
+<p><strong>关键参数：</strong> <code>varName</code>（变量名）、<code>op</code>（比较操作符）、<code>payload</code>（期望值）</p>
+<p><strong>使用场景：</strong> 如果"蓝牙连接次数"大于 10 就重置；如果"WiFi状态"包含"Home"就自动连接。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/EvaluateGlobalVar",
+  "op": "GreaterThan",
+  "varName": "示例值",
+  "payload": {}
+}</code></pre>
+
+<h4 id="63-evalcontext">EvaluateContextVar — 评估上下文变量</h4>
+<p>将上下文变量的值与期望值比较（与 EvaluateGlobalVar 相同的操作符）。</p>
+<p><strong>使用场景：</strong> 如果通知标题包含"验证码"就自动提取。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/EvaluateContextVar",
+  "op": "GreaterThan",
+  "varName": "示例值",
+  "payload": {}
+}</code></pre>
+
+<h4 id="63-facttag">RequireFactTag — 判断触发器标签</h4>
+<p>检查触发器的 tag 字段是否匹配指定值。用于区分同一触发器的不同实例。</p>
+<p><strong>使用场景：</strong> VPN 应用的触发器 tag="开启"时执行启动操作，tag="关闭"时执行停止操作。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/RequireFactTag"
+}</code></pre>
+
+<h3 id="64">6.4 连接条件</h3>
+
+<h4 id="64-wifi">RequireWifiConnected / RequireWifiDisconnected</h4>
+<p><strong>RequireWifiConnected：</strong> 检查是否连接到 WiFi，可指定 SSID（<code>*</code> 表示任意）。</p>
+<p><strong>RequireWifiDisconnected：</strong> 检查 WiFi 是否断开。</p>
+<p><strong>使用场景：</strong> 仅在家庭 WiFi 下同步大文件；WiFi 断开时切换到移动数据。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/RequireWifiConnected",
+  "requiredSSID": "示例值"
+}</code></pre>
+
+<h4 id="64-bt">RequireBTConnected / RequireBTDisconnected / RequireBTDeviceFound</h4>
+<p><strong>RequireBTConnected：</strong> 检查指定蓝牙设备是否已连接（<code>*</code> 表示任意）。</p>
+<p><strong>RequireBTDisconnected：</strong> 检查是否没有蓝牙设备连接。</p>
+<p><strong>RequireBTDeviceFound：</strong> 执行 BLE 扫描，检查指定设备是否在范围内（支持超时）。</p>
+<p><strong>使用场景：</strong> 车载蓝牙连接时启动导航；BLE 信标在范围内时触发到达自动化。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/RequireBTConnected",
+  "device": "示例值"
+}</code></pre>
+
+<h4 id="64-signal">ConnectedWifiSignal — WiFi 信号强度</h4>
+<p>将当前 WiFi 信号强度与阈值比较。</p>
+<p><strong>使用场景：</strong> WiFi 信号弱于 2 级时切换到移动数据。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/ConnectedWifiSignal",
+  "level": 0,
+  "op": "IntGreaterThan"
+}</code></pre>
+
+<h3 id="65">6.5 时间条件</h3>
+
+<h4 id="65-timerange">TimeInRange — 时间范围</h4>
+<p>检查当前时间是否在指定的时间范围内。</p>
+<p><strong>关键参数：</strong> <code>range</code>（开始时间-结束时间）</p>
+<p><strong>使用场景：</strong> 仅在 22:00-07:00 执行夜间模式；仅在工作时间 9:00-18:00 执行工作相关操作。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/TimeInRange",
+  "range": {}
+}</code></pre>
+
+<h4 id="65-calendar">CalendarDayMatch — 日历类型匹配</h4>
+<p>检查今天是工作日、节假日、周末还是调休工作日。</p>
+<p><strong>关键参数：</strong> <code>dayType</code>（AnyDay/WorkdayOnly/HolidayOnly/WeekendOnly/TransferWorkdayOnly）</p>
+<p><strong>使用场景：</strong> 仅在工作日执行打卡提醒；节假日自动切换到休闲模式。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/CalendarDayMatch",
+  "dayType": "AnyDay"
+}</code></pre>
+
+<h4 id="65-requiredelay">RequireDelay — 延迟条件</h4>
+<p>等待指定时间后才继续执行（支持协程延迟和闹钟调度）。</p>
+<p><strong>关键参数：</strong> <code>timeString</code>（延迟时间，支持变量）、<code>timeUnit</code>、<code>useAlarm</code></p>
+<p><strong>使用场景：</strong> 屏幕亮起后等待 5 秒再检查条件；延迟 30 分钟后执行操作。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/RequireDelay",
+  "timeString": "示例值",
+  "useAlarm": false,
+  "timeUnit": "TimeUnit_MS"
+}</code></pre>
+
+<h4 id="65-thextime">TheXXTimeToday — 第 N 次触发</h4>
+<p>检查某个事件今天是第几次发生。</p>
+<p><strong>关键参数：</strong> <code>what</code>（事件标识）、<code>time</code>（次数）、<code>op</code>（比较操作符）、<code>scope</code>（Today/ThisWeek/ThisMonth）</p>
+<p><strong>使用场景：</strong> 今天第 3 次打开抖音时提醒休息；本周第 5 次叫外卖时提醒做饭。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/TheXXTimeToday",
+  "what": "示例值",
+  "time": 0,
+  "op": "IntGreaterThan",
+  "scope": "Today"
+}</code></pre>
+
+<h3 id="66">6.6 代码条件</h3>
+
+<h4 id="66-mvel">MatchMVEL — MVEL 表达式</h4>
+<p>用 MVEL 表达式评估复杂条件，返回 true/false。</p>
+<p><strong>关键参数：</strong> <code>expression</code>（MVEL 表达式）</p>
+<p><strong>使用场景：</strong> 组合多个条件的复杂逻辑，如"电量>50 且 WiFi 已连接 且 时间在 9-17 点"。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/MatchMVEL",
+  "expression": "示例值"
+}</code></pre>
+
+<h4 id="66-js">MatchJS — JavaScript 表达式</h4>
+<p>用 JavaScript 评估条件，返回 "true" 或 "false"。</p>
+<p><strong>关键参数：</strong> <code>expression</code>（JS 表达式）</p>
+<p><strong>使用场景：</strong> 需要字符串操作、数组处理等复杂逻辑时使用。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/MatchJS",
+  "expression": "示例值"
+}</code></pre>
+
+<h3 id="67">6.7 其他条件</h3>
+
+<h4 id="67-node">HasNodeOnScreen — 屏幕上有指定节点</h4>
+<p>通过无障碍服务在屏幕上查找匹配的 UI 节点。</p>
+<p><strong>关键参数：</strong> <code>packageName</code>、<code>componentName</code>、<code>matchers</code>（节点匹配器）、<code>detectTimeout</code></p>
+<p><strong>使用场景：</strong> 如果屏幕上有"确认"按钮就自动点击；等待对话框出现后再操作。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/HasNodeOnScreen",
+  "packageName": "示例值",
+  "componentName": "示例值",
+  "detectTimeout": 0
+}</code></pre>
+
+<h4 id="67-textnode">TextFromScreenNodeMatches — 屏幕节点文本匹配</h4>
+<p>读取指定 UI 节点的文本内容，检查是否匹配正则。</p>
+<p><strong>使用场景：</strong> 如果状态栏显示"录制中"就停止录制。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/TextFromScreenNodeMatches",
+  "nodeId": "示例值",
+  "regex": "示例值",
+  "matchOptions": "RegexMatchOptions_Match"
+}</code></pre>
+
+<h4 id="67-color">HasFoundPointsByColor — 按颜色查找像素</h4>
+<p>截图并搜索指定颜色的像素点。</p>
+<p><strong>使用场景：</strong> 如果屏幕特定位置有红色通知圆点就截图。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/HasFoundPointsByColor",
+  "config": {"color": -65536, "threshold": 10}
+}</code></pre>
+
+<h4 id="67-service">ServiceIsRunning / ProcessIsRunning</h4>
+<p><strong>ServiceIsRunning：</strong> 检查 Android 服务是否运行。</p>
+<p><strong>ProcessIsRunning：</strong> 检查指定进程是否运行。</p>
+<p><strong>使用场景：</strong> 如果后台服务挂了就重启。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/ServiceIsRunning",
+  "services": {"pkg": {"pkgName": "com.example.app"}, "className": "com.example.MainActivity"},
+  "op": "ALL"
+}</code></pre>
+
+<h4 id="67-isrule">IsRuleEnabled — 规则开关状态</h4>
+<p>检查指定自动指令是否处于启用状态。</p>
+<p><strong>使用场景：</strong> 如果规则 A 已启用，就执行依赖操作。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/IsRuleEnabled",
+  "isEnabled": false,
+  "ruleId": "示例值"
+}</code></pre>
+
+<h4 id="67-headset">IsHeadsetPlug — 耳机是否插入</h4>
+<p>检查有线耳机是否已插入。</p>
+<p><strong>使用场景：</strong> 有耳机时音频走耳机，没耳机时走扬声器。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/IsHeadsetPlug",
+  "isPlug": false
+}</code></pre>
+
+<h4 id="67-screenrotate">RequireScreenRotate / RequireWindowRotation</h4>
+<p><strong>RequireScreenRotate：</strong> 检查屏幕旋转策略设置。</p>
+<p><strong>RequireWindowRotation：</strong> 检查物理窗口旋转角度。</p>
+<p><strong>使用场景：</strong> 横屏时调整浮窗位置。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/RequireScreenRotate",
+  "degree": "ScreenRotateDegree_0"
+}</code></pre>
+
+<h4 id="67-ime">RequireIMEVisibility — 输入法可见性</h4>
+<p>检查输入法键盘是否显示。</p>
+<p><strong>使用场景：</strong> 键盘显示时调整 UI 布局。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/RequireIMEVisibility",
+  "isShown": false
+}</code></pre>
+
+<h4 id="67-tile">RequireTileState — 磁贴状态</h4>
+<p>检查快速设置磁贴的状态（Active/InActive/Unavailable）。</p>
+<p><strong>使用场景：</strong> WiFi 磁贴激活时切换蓝牙。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/RequireTileState",
+  "state": "QSTileState_Unavailable",
+  "tileSpec": "示例值"
+}</code></pre>
+
+<h4 id="67-notificationpanel">RequireNotificationPanelExpanded — 通知面板</h4>
+<p>检查通知面板是否展开。</p>
+<p><strong>使用场景：</strong> 面板展开时显示快捷操作。</p>
+<h2 id="7-action"><span class="h2-num">7</span>动作 (Action) 完整参考</h2>
+<p>动作定义了触发且条件满足后<strong>执行什么操作</strong>。每个动作对应一个具体的行为。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/RequireNotificationPanelExpanded",
+  "isExpand": false
+}</code></pre>
+
+<h3 id="71">7.1 流程控制</h3>
+
+<h4 id="71-ifthenelse">IfThenElse — 条件分支</h4>
+<p>根据条件判断执行不同的动作分支（类似"如果...那么...否则..."）。</p>
+<p><strong>关键参数：</strong> <code>_if</code>（条件列表）、<code>_ifCondOp</code>（条件组合方式）、<code>_ifActions</code>（条件成立时的动作）、<code>_elseActions</code>（条件不成立时的动作）</p>
+<p><strong>使用场景：</strong> 如果电量低于 20% 就显示警告，否则显示确认。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/IfThenElse",
+  "_ifCondOp": "ALL",
+  "_ifCondOpPayload": {"expression": "c1.call() && c2.call()"},
+  "_ifActionAsyncMode": "ActionAsyncMode_Sync",
+  "_elseActionAsyncMode": "ActionAsyncMode_Sync"
+}</code></pre>
+<pre><code>// 示例：根据 WiFi 状态显示不同提示
+{
+  "@type": "type.googleapis.com/IfThenElse",
+  "If": [{"@type": "type.googleapis.com/RequireWifiConnected", "requiredSSID": "*"}],
+  "IfActions": [{"@type": "type.googleapis.com/ShowToast", "message": "WiFi 已连接"}],
+  "ElseActions": [{"@type": "type.googleapis.com/ShowToast", "message": "WiFi 未连接"}]
+}</code></pre>
+
+<h4 id="71-switchcase">SwitchCase — 多分支选择</h4>
+<p>根据条件依次匹配，执行第一个匹配的分支。支持默认分支。</p>
+<p><strong>关键参数：</strong> <code>case</code>（分支列表，每个分支含条件+动作+isBreak）、<code>deft</code>（默认动作）</p>
+<p><strong>使用场景：</strong> 根据当前铃声模式分别执行不同操作。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/SwitchCase",
+  "case": [],
+  "deft": {}
+}</code></pre>
+
+<h4 id="71-foreach">ForEach — 循环</h4>
+<p>将字符串按分隔符拆分为列表，对每个元素执行子动作。当前元素通过 <code>{foreachData}</code> 引用。</p>
+<p><strong>上下文变量：</strong></p>
+<table><thead><tr><th>变量名</th><th>说明</th></tr></thead><tbody><tr><td><code>{"foreachIndex"}</code></td><td>当前循环索引（从 0 开始）</td></tr><tr><td><code>{"foreachData"}</code></td><td>当前循环元素的值</td></tr></tbody></table>
+<p><strong>关键参数：</strong> <code>data</code>（要遍历的字符串/变量）、<code>delimiter</code>（分隔符）、<code>actions</code>（子动作）</p>
+<p><strong>使用场景：</strong> 遍历逗号分隔的包名列表，逐个停止应用。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/ForEach",
+  "data": "示例值",
+  "delimiter": [],
+  "actionAsyncMode": "ActionAsyncMode_Sync"
+}</code></pre>
+
+<h4 id="71-foreachpkg">ForEachPkgSet — 遍历应用集合</h4>
+<p>遍历指定应用集合中的每个应用，对每个应用执行子动作。与 ForEach 不同，这里遍历的是应用包名集合，且自动提供应用信息。</p>
+<p><strong>上下文变量：</strong></p>
+<table><thead><tr><th>变量名</th><th>说明</th></tr></thead><tbody><tr><td><code>{loopAppPkgName}</code></td><td>当前循环应用的包名</td></tr><tr><td><code>{loopAppLabel}</code></td><td>当前循环应用的名称</td></tr><tr><td><code>{loopAppUserId}</code></td><td>当前循环应用的用户 ID</td></tr></tbody></table>
+<p><strong>注意：</strong> 这些变量的 key 是硬编码的，<strong>不支持</strong> <code>customContextDataKey</code> 重命名。</p>
+<p><strong>关键参数：</strong> <code>pkgSet</code>（应用集合名称）、<code>action</code>（子动作列表）</p>
+<p><strong>使用场景：</strong> 遍历"社交应用"集合，逐个检查是否有通知；遍历"游戏"集合，逐个清理缓存。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/ForEachPkgSet",
+  "pkgSet": "示例值"
+}</code></pre>
+<pre><code>// 示例：遍历社交应用集合，显示每个应用名称
+{
+  "@type": "type.googleapis.com/ForEachPkgSet",
+  "pkgSet": "社交应用",
+  "action": [
+    {"@type": "type.googleapis.com/ShowToast", "message": "当前应用: {loopAppLabel} ({loopAppPkgName})"}
+  ]
+}</code></pre>
+
+<h4 id="71-whileloop">WhileLoop — 当循环</h4>
+<p>当条件为真时重复执行动作，支持延迟和最大次数限制。</p>
+<p><strong>关键参数：</strong> <code>conditions</code>（继续条件）、<code>delay</code>（迭代间隔毫秒）、<code>repeatTimes</code>（0=无限）</p>
+<p><strong>使用场景：</strong> 每 5 秒检查一次通知，点击它，最多 20 次。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/WhileLoop",
+  "condOp": "ALL",
+  "condOpPayload": {"expression": "c1.call() && c2.call()"},
+  "delay": 0,
+  "repeatTimes": 0,
+  "actionAsyncMode": "ActionAsyncMode_Sync"
+}</code></pre>
+
+<h4 id="71-break">BreakActionExecute — 中断执行</h4>
+<p>中断当前/父级/根级的动作执行链。</p>
+<p><strong>关键参数：</strong> <code>scope</code>（Current/Parent/Root）</p>
+<p><strong>使用场景：</strong> 在 WhileLoop 中满足条件时跳出循环。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/BreakActionExecute",
+  "scope": "BreakActionExecuteScope_Current"
+}</code></pre>
+
+<h4 id="71-wait">WaitUtilConditionMatch — 等待条件满足</h4>
+<p>每 300ms 轮询一次，直到条件满足或超时。支持退出条件提前终止。</p>
+<p><strong>关键参数：</strong> <code>condition</code>（目标条件）、<code>timeoutStr</code>（超时时间）、<code>quitEnabled</code>/<code>quitFacts</code>/<code>quitCondition</code>（退出机制）</p>
+<p><strong>使用场景：</strong> 等待屏幕解锁（最多 10 秒），如果来电话则中止。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/WaitUtilConditionMatch",
+  "conditionOp": "ALL",
+  "condOpPayload": {"expression": "c1.call() && c2.call()"},
+  "timeout": 0,
+  "quitConditionOp": "ALL",
+  "quitCondOpPayload": {"expression": "c1.call() && c2.call()"},
+  "quitEnabled": false,
+  "timeoutStr": "示例值"
+}</code></pre>
+
+<h4 id="71-delay">Delay — 延迟</h4>
+<p>暂停执行指定时间后继续。</p>
+<p><strong>关键参数：</strong> <code>timeString</code>（延迟时间）、<code>timeUnit</code>（MS/S/M/H/D）、<code>showCD</code>（显示倒计时）</p>
+<p><strong>使用场景：</strong> 等待 3 秒后再点击下一个按钮。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/Delay",
+  "time": 0,
+  "timeString": "示例值",
+  "useAlarm": false,
+  "showCD": false,
+  "timeUnit": "TimeUnit_MS"
+}</code></pre>
+
+<h4 id="71-stopall">StopAllActions — 停止所有动作</h4>
+<p>取消当前自动指令中所有正在运行的动作。</p>
+<p><strong>使用场景：</strong> 摇晃手机时立即取消所有自动化。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/StopAllActions"
+}</code></pre>
+
+<h3 id="72">7.2 应用管理</h3>
+
+<h4 id="72-launch">LaunchApp / LaunchAppByPkg — 启动应用</h4>
+<p><strong>LaunchApp：</strong> 通过应用信息启动。</p>
+<p><strong>LaunchAppByPkg：</strong> 通过包名+用户ID启动（支持多用户）。</p>
+<p><strong>使用场景：</strong> 双击音量加启动相机；自动启动指定应用。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/LaunchApp",
+  "appPkg": [{"pkgName": "com.example.app"}]
+}</code></pre>
+
+<h4 id="72-stop">StopApp / StopAppByPkg — 停止应用</h4>
+<p>强制停止一个或多个应用。</p>
+<p><strong>使用场景：</strong> 专注模式下停止所有社交应用；划卡时自动杀进程。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/StopApp",
+  "appPkg": [{"pkgName": "com.example.app"}],
+  "pkgSets": []
+}</code></pre>
+
+<h4 id="72-setenabled">SetAppEnabled / SetAppSuspend — 启用/挂起应用</h4>
+<p><strong>SetAppEnabled：</strong> 启用或禁用应用（等同于"停用"）。</p>
+<p><strong>SetAppSuspend：</strong> 挂起或恢复应用（应用进入挂起状态无法启动）。</p>
+<p><strong>使用场景：</strong> 工作时间禁用游戏应用；驾驶时挂起社交应用。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/SetAppEnabled",
+  "appPkg": [{"pkgName": "com.example.app"}],
+  "pkgSets": [],
+  "enable": false
+}</code></pre>
+
+<h4 id="72-removetasks">RemoveTasks — 移除最近任务</h4>
+<p>清除指定应用的最近任务记录。</p>
+<p><strong>使用场景：</strong> 关闭私密标签后清除浏览器最近任务。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/RemoveTasks",
+  "appPkg": [{"pkgName": "com.example.app"}],
+  "pkgSets": []
+}</code></pre>
+
+<h4 id="72-closeactivity">CloseActivity — 关闭 Activity</h4>
+<p>关闭当前焦点 Activity 或指定组件的 Activity。</p>
+<p><strong>使用场景：</strong> 定时器到期后关闭当前页面。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/CloseActivity",
+  "mode": "CloseActivityMode_Focused",
+  "component": {"pkg": {"pkgName": "com.example.app"}, "className": "com.example.MainActivity"}
+}</code></pre>
+
+<h4 id="72-kill">KillProcessByName — 杀死进程</h4>
+<p>按 Linux 进程名杀死系统进程。</p>
+<p><strong>使用场景：</strong> 杀死卡死的后台服务进程。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/KillProcessByName",
+  "processes": []
+}</code></pre>
+
+<h4 id="72-startprev">StartPreviousApp / StartNextApp / StartLastApp</h4>
+<p><strong>StartPreviousApp：</strong> 启动上一个应用（后退栈）。</p>
+<p><strong>StartNextApp：</strong> 启动下一个应用（前进栈）。</p>
+<p><strong>StartLastApp：</strong> 在最近两个应用之间切换。</p>
+<p><strong>使用场景：</strong> 手势快速切换最近两个应用。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/StartPreviousApp"
+}</code></pre>
+
+<h3 id="73">7.3 系统开关</h3>
+
+<h4 id="73-wifi">SetWifiEnabled / ToggleWifi — WiFi 开关</h4>
+<p><strong>SetWifiEnabled：</strong> 明确开启或关闭 WiFi。</p>
+<p><strong>ToggleWifi：</strong> 切换 WiFi 状态（开→关，关→开）。</p>
+<p><strong>使用场景：</strong> 离开家时关闭 WiFi；快捷开关切换 WiFi。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/SetWifiEnabled",
+  "enable": false
+}</code></pre>
+
+<h4 id="73-bt">SetBTEnabled / ToggleBT — 蓝牙开关</h4>
+<p>开启/关闭/切换蓝牙状态。</p>
+<p><strong>使用场景：</strong> 早上 8 点自动开启蓝牙连接车载设备。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/SetBTEnabled",
+  "enable": false
+}</code></pre>
+
+<h4 id="73-location">SetLocationEnabled / ToggleLocation — 定位开关</h4>
+<p>开启/关闭/切换定位服务。</p>
+<p><strong>使用场景：</strong> 夜间关闭定位保护隐私；摇晃手机切换 GPS。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/SetLocationEnabled",
+  "enable": false
+}</code></pre>
+
+<h4 id="73-dnd">SetDNDEnabled / ToggleDND — 勿扰模式</h4>
+<p>开启/关闭/切换勿扰模式。</p>
+<p><strong>使用场景：</strong> 会议期间自动开启勿扰。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/SetDNDEnabled",
+  "enable": false
+}</code></pre>
+
+<h4 id="73-flashlight">SetFlashLightEnabled — 手电筒开关</h4>
+<p>开启或关闭手电筒。</p>
+<p><strong>使用场景：</strong> 夜间收到特定通知时自动开启手电筒。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/SetFlashLightEnabled",
+  "enable": false
+}</code></pre>
+
+<h4 id="73-screentimeout">SetScreenTimeout — 屏幕超时</h4>
+<p>设置屏幕自动锁定超时时间。</p>
+<p><strong>使用场景：</strong> 看视频时将超时设为 10 分钟。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/SetScreenTimeout",
+  "timeoutMillis": 0
+}</code></pre>
+
+<h4 id="73-ringer">SetRingerMode — 铃声模式</h4>
+<p>设置铃声模式（静音/振动/正常/切换模式）。</p>
+<p><strong>使用场景：</strong> 工作时间自动切换到振动模式。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/SetRingerMode",
+  "mode": "silent"
+}</code></pre>
+
+<h4 id="73-5g">Toggle5G — 5G 开关</h4>
+<p>开启/关闭/切换 5G 网络（指定 SIM 卡槽）。</p>
+<p><strong>使用场景：</strong> 电量低于 30% 时关闭 5G 省电。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/Toggle5G",
+  "onOff": "OnOffToggle_On",
+  "slotId": 0
+}</code></pre>
+
+<h4 id="73-apm">SetAPMModeEnabled — 飞行模式</h4>
+<p>开启或关闭飞行模式。</p>
+<p><strong>使用场景：</strong> 睡觉时开启飞行模式。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/SetAPMModeEnabled",
+  "isEnable": false
+}</code></pre>
+
+<h4 id="73-master">SetMasterSync — 主同步开关</h4>
+<p>开启或关闭系统主同步。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/SetMasterSync",
+  "sync": "OnOffToggle_On"
+}</code></pre>
+
+<h4 id="73-slot">ToggleSlot / SwitchMobileDataSlot — SIM 卡槽</h4>
+<p><strong>ToggleSlot：</strong> 开关指定 SIM 卡槽。</p>
+<p><strong>SwitchMobileDataSlot：</strong> 切换默认数据卡槽。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/ToggleSlot",
+  "state": "OnOffToggle_On",
+  "slotId": 0
+}</code></pre>
+
+<h4 id="73-connectwifi">ConnectWifi / DisconnectCurrentWifi</h4>
+<p><strong>ConnectWifi：</strong> 连接到指定 SSID 的 WiFi。</p>
+<p><strong>DisconnectCurrentWifi：</strong> 断开当前 WiFi 连接。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/ConnectWifi",
+  "ssid": "示例值"
+}</code></pre>
+
+<h4 id="73-clicktile">ClickTile — 点击磁贴</h4>
+<p>模拟点击快速设置面板中的磁贴（支持长按）。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/ClickTile",
+  "tile": {},
+  "isLongClick": false
+}</code></pre>
+
+<h3 id="74">7.4 通知操作</h3>
+
+<h4 id="74-post">PostNotification — 发送通知</h4>
+<p>发送一条系统通知，支持标题、内容、图标、按钮、声音、震动，以及点击/按钮动作。</p>
+<p><strong>关键参数：</strong> <code>title</code>、<code>message</code>、<code>smallIcon</code>、<code>button</code>（动作按钮列表）、<code>clickAction</code>、<code>isImportant</code></p>
+<p><strong>使用场景：</strong> 发送天气通知；发送验证码通知带自动填写按钮。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/PostNotification",
+  "title": "示例值",
+  "message": "示例值",
+  "isImportant": false,
+  "largeIcon": "示例值",
+  "smallIcon": "示例值",
+  "vibrate": false,
+  "sound": false,
+  "button": [{"id": "btn1", "label": "确认", "action": []}],
+  "overrideAppName": "示例值",
+  "onGoing": false,
+  "extras": [],
+  "contextAndVars": {}
+}</code></pre>
+
+<h4 id="74-remove">RemoveNotification — 移除通知</h4>
+<p>按匹配条件移除指定通知。</p>
+<p><strong>使用场景：</strong> 用户点击浮窗按钮后移除对应通知。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/RemoveNotification",
+  "notification": {"title": "通知标题", "contentText": "通知内容", "apps": [{"pkgName": "com.example.app"}]}
+}</code></pre>
+
+<h4 id="74-click">ClickNotification — 点击通知</h4>
+<p>程序化点击通知（触发其 PendingIntent）。</p>
+<p><strong>使用场景：</strong> 收到消息通知时自动点击打开聊天。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/ClickNotification",
+  "notification": {"title": "通知标题", "contentText": "通知内容", "apps": [{"pkgName": "com.example.app"}]}
+}</code></pre>
+
+<h4 id="74-ppn">ShowPPN / RemovePPN — 弹出通知</h4>
+<p><strong>ShowPPN：</strong> 显示带定时消失的弹出覆盖通知。</p>
+<p><strong>RemovePPN：</strong> 移除弹出通知。</p>
+<p><strong>使用场景：</strong> 每小时显示 5 秒站立提醒。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/ShowPPN",
+  "title": "示例值",
+  "message": "示例值",
+  "icon": "示例值",
+  "vibrate": false,
+  "sound": false,
+  "button": [{"id": "btn1", "label": "确认", "action": []}],
+  "displayTimeSeconds": 0
+}</code></pre>
+
+<h3 id="75">7.5 UI 交互</h3>
+
+<h4 id="75-toast">ShowToast — 显示 Toast</h4>
+<p>显示短暂的 Toast 消息，支持变量插值。</p>
+<p><strong>使用场景：</strong> 显示当前电量、WiFi 名称等信息。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/ShowToast",
+  "message": "示例值"
+}</code></pre>
+
+<h4 id="75-alert">ShowAlertDialog — 显示对话框</h4>
+<p>显示带最多 3 个按钮的对话框，每个按钮可触发不同的子动作。</p>
+<p><strong>关键参数：</strong> <code>title</code>、<code>message</code>、<code>positive/negative/neutral</code>（按钮文字+动作）</p>
+<p><strong>使用场景：</strong> "确认清除数据？" 带"是/否"按钮。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/ShowAlertDialog",
+  "positive": "示例值",
+  "negative": "示例值",
+  "neutral": "示例值",
+  "title": "示例值",
+  "message": "示例值",
+  "cancelable": false,
+  "style": {}
+}</code></pre>
+
+<h4 id="75-menu">ShowMenuDialog — 菜单对话框</h4>
+<p>显示带菜单项列表的对话框，每项可触发动作。</p>
+<p><strong>使用场景：</strong> 显示"选择操作"菜单：刷新/设置/退出。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/ShowMenuDialog",
+  "items": [{"title": "选项1", "clickActions": []}],
+  "title": "示例值",
+  "message": "示例值",
+  "cancelable": false,
+  "style": {}
+}</code></pre>
+
+<h4 id="75-textfield">ShowTextFieldDialog — 文本输入框</h4>
+<p>显示带输入框的对话框，用户输入的内容存入上下文变量。</p>
+<p><strong>上下文变量：</strong></p>
+<table><thead><tr><th>变量名</th><th>说明</th></tr></thead><tbody><tr><td><code>{textFieldInput1}</code></td><td>第一个输入框的值</td></tr><tr><td><code>{textFieldInput2}</code></td><td>第二个输入框的值</td></tr><tr><td><code>{textFieldInputN}</code></td><td>第 N 个输入框的值（N 从 1 开始）</td></tr></tbody></table>
+<p><strong>注意：</strong> 这些变量的 key 是硬编码的（<code>textFieldInput + 序号</code>），<strong>不支持</strong> <code>customContextDataKey</code> 重命名。</p>
+<p><strong>关键参数：</strong> <code>title</code>（标题）、<code>textFields</code>（输入框列表，每项含 <code>placeholder</code> 占位符和 <code>value</code> 默认值）、<code>cancelable</code>（是否可取消）</p>
+<p><strong>使用场景：</strong> 让用户输入搜索关键词；输入密码；输入 API Key。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/ShowTextFieldDialog",
+  "title": "示例值",
+  "message": "示例值",
+  "cancelable": false,
+  "textFields": [{"placeholder": "请输入内容"}],
+  "style": {}
+}</code></pre>
+<pre><code>// 示例：让用户输入搜索关键词
+{
+  "@type": "type.googleapis.com/ShowTextFieldDialog",
+  "title": "搜索",
+  "textFields": [
+    {"placeholder": "输入关键词"},
+    {"placeholder": "可选：过滤条件", "value": "默认值"}
+  ]
+}
+// 用户输入后:
+// {textFieldInput1} = 用户输入的关键词
+// {textFieldInput2} = 用户输入的过滤条件（或默认值）</code></pre>
+
+<h4 id="75-list">ShowListDialog — 列表对话框</h4>
+<p>显示单选/多选列表，数据来自变量或分隔字符串。支持 <code>customContextDataKey</code> 重命名。</p>
+<p><strong>上下文变量：</strong></p>
+<table><thead><tr><th>变量名</th><th>说明</th></tr></thead><tbody><tr><td><code>{selectedListItem}</code></td><td>用户选择的列表项（字符串列表）</td></tr></tbody></table>
+<p><strong>关键参数：</strong> <code>title</code>、<code>data</code>（数据源，变量名或分隔字符串）、<code>delimiter</code>（分隔符）、<code>isMultipleChoice</code>（是否多选）、<code>dataType</code>（String/Json）</p>
+<p><strong>使用场景：</strong> 显示书签列表让用户选择；显示文件列表让用户删除。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/ShowListDialog",
+  "title": "示例值",
+  "message": "示例值",
+  "cancelable": false,
+  "data": "示例值",
+  "isMultipleChoice": false,
+  "delimiter": [],
+  "needConfirmAction": false,
+  "dataType": "ShowListDialogDataType_String",
+  "style": {}
+}</code></pre>
+<pre><code>// 示例：显示应用列表让用户选择
+{"@type": "type.googleapis.com/ShellCommand", "command": "pm list packages -3 | cut -d: -f2"}
+// 输出存入 {shellOut}
+
+ShowListDialog(
+  title="选择应用",
+  data="{shellOut}",
+  delimiter=["\n"]
+)
+// 用户选择后:
+// {selectedListItem} = ["com.example.app"]</code></pre>
+
+<h4 id="75-choice">ShowChoiceDialog — 选择对话框</h4>
+<p>显示预定义选项的单选/多选对话框。支持 <code>customContextDataKey</code> 重命名。</p>
+<p><strong>上下文变量：</strong></p>
+<table><thead><tr><th>变量名</th><th>说明</th></tr></thead><tbody><tr><td><code>{choices}</code></td><td>用户选择的选项值（字符串列表）</td></tr></tbody></table>
+<p><strong>关键参数：</strong> <code>title</code>、<code>choices</code>（选项列表，每项含 <code>label</code> 显示文字和 <code>value</code> 值）、<code>isMultipleChoice</code></p>
+<p><strong>使用场景：</strong> 让用户选择铃声模式；选择要清理的应用类型。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/ShowChoiceDialog",
+  "title": "示例值",
+  "message": "示例值",
+  "cancelable": false,
+  "choices": [{"label": "选项1", "value": "value1"}],
+  "isMultipleChoice": false,
+  "style": {}
+}</code></pre>
+
+<h4 id="75-danmu">ShowDanmu — 弹幕</h4>
+<p>显示浮动弹幕（滚动文字覆盖层）。</p>
+<p><strong>使用场景：</strong> 屏幕上滚动显示低电量警告。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/ShowDanmu",
+  "text": "示例值",
+  "icon": "示例值"
+}</code></pre>
+
+<h4 id="75-chip">ShowStatusBarChip — 状态栏 Chip</h4>
+<p>在状态栏显示小标签，支持点击/长按动作。</p>
+<p><strong>使用场景：</strong> 显示"录制中"标签，点击停止录制。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/ShowStatusBarChip",
+  "text": "示例值",
+  "icon": "示例值"
+}</code></pre>
+
+<h4 id="75-overlay">ShowOverlayButton — 悬浮窗按钮</h4>
+<p>显示可自定义布局的悬浮窗按钮组，支持拖拽、主题、动画。</p>
+<p><strong>使用场景：</strong> 显示 WiFi/手电筒/应用启动的快捷操作面板。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/ShowOverlayButton",
+  "buttonSettings": [{"icon": "settings", "text": "按钮", "tapActions": []}],
+  "autoCollapse": false,
+  "orientation": {},
+  "maxHeightInDp": 0,
+  "maxWidthInDp": 0,
+  "backgroundAlpha": 0.0,
+  "backgroundColor": "示例值",
+  "buttonMinWidth": 0,
+  "enableGlobalDrag": false,
+  "overlayPaddingH": 0,
+  "overlayPaddingV": 0,
+  "disableAutoEdge": false,
+  "closeOnTouchOutside": false,
+  "closeOnAction": false,
+  "themeMode": "UiThemeMode_System"
+}</code></pre>
+
+<h4 id="75-float">ShowFloatWindow — 悬浮球</h4>
+<p>显示悬浮球控制面板。</p>
+<p><strong>使用场景：</strong> 显示媒体播放控制悬浮球。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/ShowFloatWindow",
+  "buttonSettings": [{"icon": "settings", "text": "按钮", "tapActions": []}],
+  "panelRadiusScale": 0.0,
+  "themeMode": "UiThemeMode_System"
+}</code></pre>
+
+<h4 id="75-sidebar">ShowSideBar / ShowActionSidebar — 侧边栏</h4>
+<p><strong>ShowSideBar：</strong> 显示边缘滑动侧边栏。</p>
+<p><strong>ShowActionSidebar：</strong> 显示高度可定制的动作侧边栏（支持位置、样式、按钮分组）。</p>
+<p><strong>使用场景：</strong> 右侧边缘显示常用应用快捷方式。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/ShowSideBar",
+  "buttonSettings": [{"icon": "settings", "text": "按钮", "tapActions": []}],
+  "themeMode": "UiThemeMode_System"
+}</code></pre>
+
+<h4 id="75-image">DisplayImage — 显示图片</h4>
+<p>全屏显示图片（URL 或文件），支持缩放模式。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/DisplayImage",
+  "imageUrl": "示例值",
+  "scaleType": "IMAGE_SCALE_TYPE_FIT_CENTER",
+  "themeMode": "UiThemeMode_System"
+}</code></pre>
+
+<h4 id="75-biometric">BiometricVerify — 生物识别验证</h4>
+<p>弹出指纹/面容验证。验证成功执行 <code>allowActions</code>，失败执行 <code>denyActions</code>。</p>
+<p><strong>使用场景：</strong> 执行敏感操作前要求指纹验证。</p>
+
+<h3 id="76">7.6 变量操作</h3>
+
+<p>详见 <a href="#4">第 4 章 变量系统</a>。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/BiometricVerify",
+  "title": "示例值",
+  "subTitle": "示例值",
+  "themeMode": "UiThemeMode_System"
+}</code></pre>
+
+<h3 id="77">7.7 脚本执行</h3>
+
+<h4 id="77-js">ExecuteJS — 执行 JavaScript</h4>
+<p>使用 Rhino 引擎执行 JS 脚本。支持线程切换（Default/IO/UI）。返回值通过 <code>{jsRet}</code> 获取。</p>
+<p><strong>上下文变量：</strong></p>
+<table><thead><tr><th>变量名</th><th>说明</th></tr></thead><tbody><tr><td><code>{"jsRet"}</code></td><td>JS 脚本返回值</td></tr></tbody></table>
+<p><strong>关键参数：</strong> <code>expression</code>（JS 代码）、<code>context</code>（Default/IO/UI）</p>
+<p><strong>使用场景：</strong> 读取文件内容；解析 JSON 数据；创建自定义 UI。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/ExecuteJS",
+  "expression": "示例值",
+  "context": "CoroutineContext_Default"
+}</code></pre>
+
+<h4 id="77-mvel">ExecuteMVEL — 执行 MVEL 表达式</h4>
+<p>执行 MVEL 表达式（不支持线程切换）。返回值通过 <code>{mvelRet}</code> 获取。</p>
+<table><thead><tr><th>变量名</th><th>说明</th></tr></thead><tbody><tr><td><code>{"mvelRet"}</code></td><td>MVEL 表达式返回值</td></tr></tbody></table>
+<p><strong>使用场景：</strong> 简单的表达式计算；调用 Java API。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/ExecuteMVEL",
+  "expression": "示例值",
+  "context": "CoroutineContext_Default"
+}</code></pre>
+
+<h4 id="77-shell">ShellCommand — 执行 Shell 命令</h4>
+<p>以 root 权限执行 Shell 命令。输出通过 <code>{shellOut}</code> 获取。</p>
+<table><thead><tr><th>变量名</th><th>说明</th></tr></thead><tbody><tr><td><code>{"shellOut"}</code></td><td>命令输出结果</td></tr><tr><td><code>{"shellErr"}</code></td><td>命令错误信息</td></tr><tr><td><code>{"shellCode"}</code></td><td>命令退出码</td></tr></tbody></table>
+<p><strong>关键参数：</strong> <code>command</code>（命令）、<code>singleShot</code>（单次执行）</p>
+<p><strong>使用场景：</strong> 获取系统信息；修改系统设置；安装/卸载应用。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/ShellCommand",
+  "command": "示例值",
+  "singleShot": false
+}</code></pre>
+
+<h3 id="78">7.8 网络与通信</h3>
+
+<h4 id="78-http">HttpRequest — HTTP 请求</h4>
+<p>发送 HTTP 请求并处理响应。支持自定义 URL、方法、请求头、请求体、Cookie 持久化、SSL 信任，以及<strong>响应内容自定义解析</strong>为上下文变量。对应代码 <code>HttpRequest.kt</code>。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/HttpRequest",
+  "url": "示例值",
+  "method": "GET",
+  "headers": [{"key": "Content-Type", "value": "application/json"}],
+  "withCookieJar": false,
+  "trustAllCerts": false,
+  "executeInAppProcess": false
+}</code></pre>
+
+<h4>参数详解</h4>
+<table>
+<thead><tr><th>参数</th><th>类型</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td><code>url</code></td><td>字符串</td><td>请求 URL，支持变量插值（如 <code>globalVarOf$apiUrl</code>）</td></tr>
+<tr><td><code>method</code></td><td>枚举</td><td>请求方法：<code>GET</code> / <code>POST</code> / <code>PUT</code> / <code>PATCH</code> / <code>DELETE</code> / <code>HEAD</code></td></tr>
+<tr><td><code>headers</code></td><td>列表</td><td>请求头列表，每项包含 <code>key</code> 和 <code>value</code>，支持变量插值</td></tr>
+<tr><td><code>requestBody</code></td><td>Any</td><td>请求体，支持三种类型（见下方）</td></tr>
+<tr><td><code>adapter</code></td><td>Any</td><td>响应解析适配器，决定如何解析响应并输出上下文变量（见下方详解）</td></tr>
+<tr><td><code>withCookieJar</code></td><td>布尔</td><td>是否启用 Cookie 持久化（自动保存/发送 Cookie）</td></tr>
+<tr><td><code>trustAllCerts</code></td><td>布尔</td><td>是否信任所有 SSL 证书（跳过证书验证）</td></tr>
+<tr><td><code>executeInAppProcess</code></td><td>布尔</td><td>是否在应用进程中执行（默认在 system_server 中执行）</td></tr>
+</tbody>
+</table>
+
+<h4>请求体类型 (requestBody)</h4>
+<table>
+<thead><tr><th>类型</th><th>说明</th><th>字段</th></tr></thead>
+<tbody>
+<tr><td><code>HttpRequestBodyJson</code></td><td>JSON 请求体</td><td><code>json</code>（JSON 字符串，支持变量插值）</td></tr>
+<tr><td><code>HttpRequestBodyForm</code></td><td>表单请求体</td><td><code>items</code>（键值对列表）</td></tr>
+<tr><td>（不设置）</td><td>无请求体</td><td>适用于 GET/HEAD 请求</td></tr>
+</tbody>
+</table>
+
+<h4>响应解析适配器 (adapter) — 核心功能</h4>
+<p>适配器决定了 HTTP 响应如何被解析，以及输出哪些上下文变量。对应代码 <code>HttpRequest.kt</code> 中的 <code>handleResponseBody</code> 方法。</p>
+
+<table>
+<thead><tr><th>适配器类型</th><th>说明</th><th>输出变量</th></tr></thead>
+<tbody>
+<tr><td><code>HttpRequestRawAdapter</code></td><td>原始适配器（默认）：直接返回响应体原文</td><td><code>{httpRequestRet}</code>（响应体字符串）</td></tr>
+<tr><td><code>HttpRequestJsonMapAdapter</code></td><td>JSON 解析适配器：用 MVEL 表达式从 JSON 响应中提取字段</td><td><code>{httpRequestRet1}</code>、<code>{httpRequestRet2}</code>...（每个表达式一个变量）</td></tr>
+<tr><td><code>HttpRequestHeaderBodyJsonMapAdapter</code></td><td>Header+Body 解析适配器：同时解析响应头和 JSON 响应体</td><td><code>{httpRequestRet1}</code>、<code>{httpRequestRet2}</code>...（可访问 headers 和 body）</td></tr>
+</tbody>
+</table>
+
+<h4>HttpRequestJsonMapAdapter 详解</h4>
+<p>当响应是 JSON 格式时，可以用 MVEL 表达式从 JSON 中提取任意字段。每个表达式的结果会存入对应的上下文变量。</p>
+<p><strong>原理（代码第 180-203 行）：</strong></p>
+<ol>
+<li>将响应体解析为 JSON 对象</li>
+<li>对每个 expression 执行 MVEL 表达式，JSON 对象作为变量传入</li>
+<li>每个表达式的结果存入 <code>{httpRequestRetN}</code>（N 从 1 开始）</li>
+</ol>
+<p><strong>示例：解析天气 API 响应</strong></p>
+<pre><code>// 响应 JSON: {"temperature": 25, "humidity": 60, "city": "北京"}
+// 配置 adapter:
+{
+  "@type": "type.googleapis.com/HttpRequestJsonMapAdapter",
+  "expressions": ["temperature", "city", "humidity"]
+}
+// 输出:
+// {httpRequestRet1} = "25"
+// {httpRequestRet2} = "北京"
+// {httpRequestRet3} = "60"</code></pre>
+
+<h4>HttpRequestHeaderBodyJsonMapAdapter 详解</h4>
+<p>同时解析响应头和 JSON 响应体。MVEL 表达式中可以访问 <code>headers</code> 和 <code>body</code> 两个变量。</p>
+<p><strong>原理（代码第 204-235 行）：</strong></p>
+<ol>
+<li>将响应体解析为 JSON 对象（<code>body</code>）</li>
+<li>将响应头解析为 Map（<code>headers</code>，特殊字符如 <code>-</code> 和空格会被替换为 <code>_</code>）</li>
+<li>对每个 expression 执行 MVEL 表达式，<code>headers</code> 和 <code>body</code> 作为变量传入</li>
+</ol>
+<p><strong>示例：同时获取响应头和响应体</strong></p>
+<pre><code>// 配置 adapter:
+{
+  "@type": "type.googleapis.com/HttpRequestHeaderBodyJsonMapAdapter",
+  "expressions": ["body.token", "headers.Content_Type"]
+}
+// 输出:
+// {httpRequestRet1} = "abc123"（JSON 中的 token 字段）
+// {httpRequestRet2} = "application/json"（响应头 Content-Type）</code></pre>
+
+<p><strong>注意：</strong> 响应头中的 <code>-</code> 和空格会被替换为 <code>_</code>，例如 <code>Content-Type</code> 变为 <code>Content_Type</code>。</p>
+
+<h4>上下文变量</h4>
+<table>
+<thead><tr><th>变量名</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td><code>{httpRequestRet}</code></td><td>原始适配器：完整响应体字符串</td></tr>
+<tr><td><code>{httpRequestRet1}</code></td><td>JSON 适配器：第 1 个表达式的解析结果</td></tr>
+<tr><td><code>{httpRequestRet2}</code></td><td>JSON 适配器：第 2 个表达式的解析结果</td></tr>
+<tr><td><code>{httpRequestRetN}</code></td><td>JSON 适配器：第 N 个表达式的解析结果</td></tr>
+</tbody>
+</table>
+
+<h4>完整示例</h4>
+<p><strong>示例 1：GET 请求获取天气（原始响应）</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/HttpRequest",
+  "url": "https://api.example.com/weather?city=beijing",
+  "method": "GET",
+  "adapter": {
+    "@type": "type.googleapis.com/HttpRequestRawAdapter"
+  }
+}
+// {httpRequestRet} = 完整的 JSON 响应字符串</code></pre>
+
+<p><strong>示例 2：GET 请求解析 JSON 字段</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/HttpRequest",
+  "url": "https://api.example.com/weather?city=beijing",
+  "method": "GET",
+  "adapter": {
+    "@type": "type.googleapis.com/HttpRequestJsonMapAdapter",
+    "expressions": ["temperature", "city", "weather"]
+  }
+}
+// {httpRequestRet1} = 温度
+// {httpRequestRet2} = 城市名
+// {httpRequestRet3} = 天气状况
+// 后续动作可以用 {"@type": "type.googleapis.com/ShowToast", "message": "天气: {httpRequestRet1}°C, {httpRequestRet3}"}</code></pre>
+
+<p><strong>示例 3：POST 请求发送 JSON 数据</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/HttpRequest",
+  "url": "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=YOUR_KEY",
+  "method": "POST",
+  "headers": [
+    {"key": "Content-Type", "value": "application/json"}
+  ],
+  "requestBody": {
+    "@type": "type.googleapis.com/HttpRequestBodyJson",
+    "json": "{\"msgtype\":\"text\",\"text\":{\"content\":\"电量: {batteryLevel}%\"}}"
+  },
+  "adapter": {
+    "@type": "type.googleapis.com/HttpRequestJsonMapAdapter",
+    "expressions": ["errcode", "errmsg"]
+  }
+}
+// {httpRequestRet1} = 0（成功）
+// {httpRequestRet2} = "ok"</code></pre>
+
+<p><strong>示例 4：带 Cookie 的请求</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/HttpRequest",
+  "url": "https://example.com/api/userinfo",
+  "method": "GET",
+  "withCookieJar": true,
+  "adapter": {
+    "@type": "type.googleapis.com/HttpRequestJsonMapAdapter",
+    "expressions": ["name", "email"]
+  }
+}
+// Cookie 会自动保存和发送，适合需要登录的网站</code></pre>
+
+<p><strong>使用场景：</strong></p>
+<ul>
+<li>调用天气/新闻/股票等公开 API 获取数据</li>
+<li>发送 Webhook 通知（企业微信/钉钉/Telegram Bot）</li>
+<li>上传数据到服务器</li>
+<li>需要登录的网站自动签到（配合 Cookie 持久化）</li>
+<li>解析 API 响应提取关键字段用于后续自动化</li>
+</ul>
+
+<h4 id="78-ws">WebSocketConnect / WebSocketSend</h4>
+<p><strong>WebSocketConnect：</strong> 建立 WebSocket 连接，支持 onOpen/onMessage/onClosed/onFailure 回调。</p>
+<p><strong>上下文变量：</strong></p>
+<table><thead><tr><th>变量名</th><th>说明</th></tr></thead><tbody><tr><td><code>{"wsMessage"}</code></td><td>收到的 WebSocket 消息</td></tr><tr><td><code>{"wsReason"}</code></td><td>事件原因</td></tr><tr><td><code>{"wsEvent"}</code></td><td>事件类型（WS_OPEN/WS_MESSAGE/WS_CLOSED/WS_FAILURE）</td></tr></tbody></table>
+<p><strong>WebSocketSend：</strong> 通过已有连接发送消息。</p>
+<p><strong>使用场景：</strong> 实时接收服务器推送；双向通信。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/WebSocketConnect",
+  "url": "示例值"
+}</code></pre>
+
+<h4 id="78-download">DownloadFile — 下载文件</h4>
+<p>从 URL 下载文件到本地存储。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/DownloadFile",
+  "subject": {"title": "下载", "url": "https://example.com/file.zip", "fileName": "file.zip"}
+}</code></pre>
+
+<h4 id="78-sms">SendSMS — 发送短信</h4>
+<p>通过指定 SIM 卡槽发送短信。</p>
+<p><strong>使用场景：</strong> 电量低于 5% 时短信通知紧急联系人。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/SendSMS",
+  "slotId": 0,
+  "message": "示例值",
+  "to": "示例值"
+}</code></pre>
+
+<h3 id="79">7.9 媒体与音频</h3>
+
+<h4 id="79-record">AudioRecording — 录音</h4>
+<p>从麦克风/内部音频开始录音。</p>
+<p><strong>使用场景：</strong> 检测到特定语音命令时自动录音。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/AudioRecording",
+  "src": "Mic",
+  "fileNamePrefix": "示例值"
+}</code></pre>
+
+<h4 id="79-playback">MediaPlayback — 媒体播放控制</h4>
+<p>控制媒体播放（播放/暂停/下一首/上一首/快进/快退/停止）。</p>
+<p><strong>使用场景：</strong> 摇晃手机暂停音乐；蓝牙连接自动播放。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/MediaPlayback",
+  "action": "MediaPlaybackAction_Play"
+}</code></pre>
+
+<h4 id="79-tts">TTS — 文字转语音</h4>
+<p>朗读指定文本。</p>
+<p><strong>使用场景：</strong> 连接耳机时朗读通知标题。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/TTS",
+  "text": "示例值"
+}</code></pre>
+
+<h4 id="79-photo">TakePhoto — 拍照</h4>
+<p>使用相机拍照并保存到指定路径。</p>
+<p><strong>上下文变量：</strong></p>
+<table><thead><tr><th>变量名</th><th>说明</th></tr></thead><tbody><tr><td><code>{"photoFilePath"}</code></td><td>照片文件路径</td></tr><tr><td><code>{"photoFileUri"}</code></td><td>照片文件 URI</td></tr></tbody></table>
+<p><strong>使用场景：</strong> 门铃触发时自动拍照。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/TakePhoto",
+  "targetFilePath": "示例值"
+}</code></pre>
+
+<h3 id="710">7.10 屏幕与显示</h3>
+
+<h4 id="710-screenshot">TakeScreenshot — 截图</h4>
+<p>截取当前屏幕。</p>
+<table><thead><tr><th>变量名</th><th>说明</th></tr></thead><tbody><tr><td><code>{"screenshotFilePath"}</code></td><td>截图文件路径</td></tr><tr><td><code>{"screenshotFileUri"}</code></td><td>截图文件 URI</td></tr></tbody></table>
+<p><strong>使用场景：</strong> 特定应用启动时自动截图。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/TakeScreenshot"
+}</code></pre>
+
+<h4 id="710-selectarea">SelectScreenArea — 选择屏幕区域</h4>
+<p>让用户在屏幕上框选一个矩形区域，返回区域的坐标信息。支持 <code>customContextDataKey</code> 重命名。</p>
+<p><strong>上下文变量：</strong></p>
+<table><thead><tr><th>变量名</th><th>说明</th></tr></thead><tbody><tr><td><code>{rectLeft}</code></td><td>区域左边界 X 坐标</td></tr><tr><td><code>{rectTop}</code></td><td>区域上边界 Y 坐标</td></tr><tr><td><code>{rectRight}</code></td><td>区域右边界 X 坐标</td></tr><tr><td><code>{rectBottom}</code></td><td>区域下边界 Y 坐标</td></tr><tr><td><code>{rectFlattenToString}</code></td><td>区域坐标字符串（left,top,right,bottom）</td></tr></tbody></table>
+<p><strong>使用场景：</strong> 让用户选择屏幕上的一个区域，然后对该区域进行 OCR 识别或截图。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/SelectScreenArea",
+  "themeMode": "UiThemeMode_System"
+}</code></pre>
+<pre><code>// 示例：让用户选择区域，然后 OCR 识别
+// 步骤1: 让用户选择屏幕区域
+{"@type": "type.googleapis.com/SelectScreenArea"}
+// 用户框选后: {rectLeft}=100, {rectTop}=200, {rectRight}=500, {rectBottom}=400
+
+// 步骤2: 截取区域
+{"@type": "type.googleapis.com/AreaScreenshot"}
+
+// 步骤3: OCR 识别
+{"@type": "type.googleapis.com/OcrDetect",
+  "rectSrc": {"@type": "type.googleapis.com/RectSourceFullScreen"},
+  "threads": 4}</code></pre>
+
+<h4 id="710-flash">ScreenFlash — 屏幕闪烁</h4>
+<p>屏幕以指定颜色闪烁指定次数。</p>
+<p><strong>使用场景：</strong> 收到紧急通知时屏幕红色闪烁 3 次。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/ScreenFlash",
+  "colorInt": "示例值",
+  "times": "示例值"
+}</code></pre>
+
+<h4 id="710-wallpaper">SetWallpaper — 设置壁纸</h4>
+<p>从文件或 URI 设置壁纸。</p>
+<p><strong>使用场景：</strong> 每天从 API 下载新壁纸并设置。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/SetWallpaper",
+  "fileUrl": "示例值",
+  "crop": false
+}</code></pre>
+
+<h4 id="710-wakeup">WakeupScreen / SleepScreen / LockDeviceNow</h4>
+<p><strong>WakeupScreen：</strong> 唤醒屏幕。</p>
+<p><strong>SleepScreen：</strong> 息屏。</p>
+<p><strong>LockDeviceNow：</strong> 立即锁屏。</p>
+<p><strong>使用场景：</strong> 高优先级通知到来时唤醒屏幕；检测到恐慌手势时立即锁屏。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/WakeupScreen"
+}</code></pre>
+
+<h3 id="711">7.11 输入与手势</h3>
+
+<h4 id="711-inputtext">InputText — 输入文本</h4>
+<p>通过无障碍服务在当前焦点输入框中输入文本。</p>
+<p><strong>使用场景：</strong> 自动填写搜索框。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/InputText",
+  "text": "示例值"
+}</code></pre>
+
+<h4 id="711-tap">InputTap / InputSwipe — 点击/滑动</h4>
+<p><strong>InputTap：</strong> 模拟点击指定坐标。</p>
+<p><strong>InputSwipe：</strong> 模拟从 A 点滑动到 B 点。</p>
+<p><strong>使用场景：</strong> 自动点击弹窗按钮；自动滑动翻页。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/InputTap",
+  "x": 0,
+  "y": 0,
+  "xs": "示例值",
+  "ys": "示例值"
+}</code></pre>
+
+<h4 id="711-findview">FindAndClickViewByText — 查找并点击视图</h4>
+<p>通过文本（精确/正则）查找 UI 元素并点击。支持超时和区域过滤。</p>
+<p><strong>上下文变量：</strong></p>
+<table><thead><tr><th>变量名</th><th>说明</th></tr></thead><tbody><tr><td><code>{"matchedViewText"}</code></td><td>匹配到的视图文本</td></tr><tr><td><code>{"matchedViewId"}</code></td><td>匹配到的视图 ID</td></tr><tr><td><code>{"sourceNodeId"}</code></td><td>无障碍节点 ID</td></tr><tr><td><code>{"windowId"}</code></td><td>窗口 ID</td></tr></tbody></table>
+<p><strong>使用场景：</strong> 5 秒内找到并点击"同意"按钮。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/FindAndClickViewByText",
+  "text": "示例值",
+  "isRegex": false,
+  "timeout": 0,
+  "rect": {"left": 0, "top": 0, "right": 100, "bottom": 100},
+  "method": "FTM_UI_AUTO"
+}</code></pre>
+
+<h4 id="711-keycode">InjectKeyCode — 注入按键</h4>
+<p>注入系统按键事件（Home/Back/音量等），支持长按和双击。</p>
+<p><strong>使用场景：</strong> 按 Home 键返回桌面；双击音量加截屏。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/InjectKeyCode",
+  "keyCode": 0,
+  "longpress": false,
+  "doublepress": false
+}</code></pre>
+
+<h4 id="711-gesture">StartGestureRecording / InjectGestureRecording — 手势录制与回放</h4>
+<p><strong>StartGestureRecording：</strong> 开始录制触摸手势。</p>
+<p><strong>InjectGestureRecording：</strong> 回放录制的手势（支持速度调节）。</p>
+<p><strong>使用场景：</strong> 录制复杂操作序列并自动回放。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/StartGestureRecording"
+}</code></pre>
+
+<h3 id="712">7.12 定位与导航</h3>
+
+<h4 id="712-location">GetCurrentLocationInfo / GetCurrentLocationAddress</h4>
+<p><strong>GetCurrentLocationInfo：</strong> 获取经纬度、精度等位置信息。</p>
+<p><strong>上下文变量：</strong></p>
+<table><thead><tr><th>变量名</th><th>说明</th></tr></thead><tbody><tr><td><code>{"latitude"}</code></td><td>纬度</td></tr><tr><td><code>{"longitude"}</code></td><td>经度</td></tr><tr><td><code>{"provider"}</code></td><td>定位来源</td></tr><tr><td><code>{"accuracy"}</code></td><td>精度（米）</td></tr></tbody></table>
+<p><strong>GetCurrentLocationAddress：</strong> 获取可读地址（逆地理编码）。</p>
+<p><strong>使用场景：</strong> 获取当前位置用于导航。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/GetCurrentLocationInfo",
+  "providerPreference": "CurrentLocationProviderPreference_Auto",
+  "timeoutMillis": 0
+}</code></pre>
+
+<h4 id="712-nav">MapNav — 地图导航</h4>
+<p>启动百度地图或高德地图进行导航。</p>
+<p><strong>关键参数：</strong> <code>loc</code>（经纬度）、<code>poi</code>（地点名）、<code>app</code>（百度/高德）、<code>navType</code>（驾车/打车）</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/MapNav",
+  "loc": {"latitude": "39.9", "longitude": "116.4"},
+  "poi": "示例值",
+  "app": "Baidu",
+  "navType": "NavType_Car"
+}</code></pre>
+
+<h3 id="713">7.13 二维码与图像</h3>
+
+<h4 id="713-qr">ParseQRCode / GenerateQRCode</h4>
+<p><strong>ParseQRCode：</strong> 解析图片中的二维码。</p>
+<table><thead><tr><th>变量名</th><th>说明</th></tr></thead><tbody><tr><td><code>{"qrCodeText"}</code></td><td>二维码解码文本</td></tr></tbody></table>
+<p><strong>GenerateQRCode：</strong> 从文本生成二维码图片。</p>
+<p><strong>使用场景：</strong> 解析截图中的二维码获取链接。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/ParseQRCode",
+  "imagePath": "示例值"
+}</code></pre>
+
+<h4 id="713-ocr">OcrDetect — OCR 文字识别</h4>
+<p>对屏幕区域/图片进行 OCR 识别，返回文字或 JSON。</p>
+<table><thead><tr><th>变量名</th><th>说明</th></tr></thead><tbody><tr><td><code>{"ocrResult"}</code></td><td>识别到的文字</td></tr></tbody></table>
+<p><strong>使用场景：</strong> 识别屏幕上的验证码并自动填入。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/OcrDetect",
+  "threads": 0,
+  "useSlim": false,
+  "separator": "示例值",
+  "output_type": "OcrDetectOutputType_Json"
+}</code></pre>
+
+<h3 id="714">7.14 其他</h3>
+
+<h4 id="714-vibrate">Vibrate — 震动</h4>
+<p>触发设备震动。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/Vibrate",
+  "vib1": 0,
+  "vib2": 0,
+  "vib3": 0
+}</code></pre>
+
+<h4 id="714-volume">AdjustVolume / SetVolume</h4>
+<p><strong>AdjustVolume：</strong> 调节音量（增大/减小/静音/取消静音/切换静音）。</p>
+<p><strong>SetVolume：</strong> 设置指定类型的音量值。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/AdjustVolume",
+  "direction": "ADJUST_SAME",
+  "showUI": false
+}</code></pre>
+
+<h4 id="714-setrule">SetRuleEnabled — 开关自动指令</h4>
+<p>启用或禁用指定的自动指令。</p>
+<p><strong>使用场景：</strong> 根据时间自动启用/禁用不同规则。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/SetRuleEnabled",
+  "ruleId": "示例值",
+  "isEnable": false
+}</code></pre>
+
+<h4 id="714-function">ExecuteFunction / SetFunctionReturnValue</h4>
+<p><strong>ExecuteFunction：</strong> 调用已定义的函数。</p>
+<p><strong>上下文变量：</strong></p>
+<table><thead><tr><th>变量名</th><th>说明</th></tr></thead><tbody><tr><td><code>{"funcReturnValue"}</code></td><td>函数返回值</td></tr></tbody></table>
+<p><strong>SetFunctionReturnValue：</strong> 设置函数返回值。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/ExecuteFunction",
+  "functionId": "示例值",
+  "funcParameterInputs": [{"name": "参数名", "value": "值"}]
+}</code></pre>
+
+<h4 id="714-fromda">FromDA — 调用一键指令</h4>
+<p>在自动指令中调用一键指令。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/FromDA",
+  "daId": "示例值",
+  "funcParameterInputs": [{"name": "参数名", "value": "值"}]
+}</code></pre>
+
+<h4 id="714-text">TextProcessing / MatchRegex / ReplaceRegex</h4>
+<p><strong>TextProcessing：</strong> 文本处理（截断/去空格/转拼音）。</p>
+<table><thead><tr><th>变量名</th><th>说明</th></tr></thead><tbody><tr><td><code>{"textProcessResult"}</code></td><td>处理后的文本</td></tr><tr><td><code>{"isMatch"}</code></td><td>正则是否匹配</td></tr><tr><td><code>{"matchResult"}</code></td><td>匹配结果</td></tr><tr><td><code>{"replaceResult"}</code></td><td>替换后的文本</td></tr></tbody></table>
+<p><strong>MatchRegex：</strong> 正则匹配检查。</p>
+<p><strong>ReplaceRegex：</strong> 正则替换。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/TextProcessing",
+  "text": "示例值"
+}</code></pre>
+
+<h4 id="714-share">ShareContent — 分享内容</h4>
+<p>通过 Android 分享菜单分享文本或文件。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/ShareContent",
+  "text": "示例值",
+  "filePath": "示例值",
+  "mimeType": "示例值",
+  "chooserTitle": "示例值"
+}</code></pre>
+
+<h4 id="714-openurl">OpenUrl — 打开 URL</h4>
+<p>在浏览器中打开 URL。</p>
+<h2 id="8-quit">8. 退出指令 (Quit)</h2>
+<p>退出指令是指在触发器触发并且满足条件时，退出当前的指令，结束该指令的所有未完成的动作。</p>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "@type": "type.googleapis.com/OpenUrl",
+  "url": "示例值",
+  "browserPkg": "示例值"
+}</code></pre>
+<h3 id="rulequit">自动指令退出 (RuleQuit)</h3>
+<p>当触发器事件不匹配自动指令的正常触发器时，系统会检查退出逻辑：</p>
+<pre><code>正常触发器不匹配 → 检查 quit.isEnabled → 匹配退出触发器 → 检查退出条件 → 取消运行中的任务 → 执行退出动作
+</code></pre>
+<p><strong>退出字段：</strong></p>
+<table>
+<thead><tr><th>字段</th><th>说明</th></tr></thead>
+<tbody><tr><td><code>quit.isEnabled</code></td><td>是否启用退出指令</td></tr><tr><td><code>quit.facts</code></td><td>退出触发器列表</td></tr><tr><td><code>quit.conditions</code></td><td>退出条件列表</td></tr><tr><td><code>quit.condOp</code></td><td>退出条件组合方式</td></tr><tr><td><code>quit.actions</code></td><td>退出动作列表</td></tr><tr><td><code>quit.evaluatePolicy</code></td><td>退出评估策略</td></tr></tbody>
+</table>
+| <code>quit.actionAsyncMode</code> 
+<p><strong>退出评估策略 (Quit_EvaluatePolicy)：</strong></p>
+<table>
+<thead><tr><th>策略</th><th>说明</th></tr></thead>
+<tbody><tr><td><code>Always</code></td><td>总是评估退出逻辑</td></tr><tr><td><code>Only_When_Is_Running</code></td><td>仅当有运行中的任务时评估</td></tr></tbody>
+</table>
+| <code>Once</code> 
+<p><strong>实际应用场景：</strong><br />
+- VPN 应用进入前台时开启 VPN，退出前台时关闭 VPN<br />
+- 应用进入前台时播放音乐，退出时暂停</p>
+<h3 id="directactionquit">一键指令退出 (DirectActionQuit)</h3>
+<p>一键指令也支持退出指令，结构与自动指令退出相同。</p>
+
+<h2 id="9-hook">9. 钩子机制 (Hook)</h2>
+<p>钩子允许在自动指令/一键指令的生命周期事件中执行额外动作。对应 UI 中的"被启用时"、"被禁用时"、"被删除时"、"被停止时"、"更新时"。</p>
+<h3 id="rulehook">自动指令钩子 (RuleHook)</h3>
+<table>
+<thead>
+<tr>
+<th>钩子</th>
+<th>i18n 名称</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>actionsOnEnabled</code></td>
+<td>被启用时</td>
+<td>自动指令被启用时执行</td>
+</tr>
+<tr>
+<td><code>actionsOnDisabled</code></td>
+<td>被禁用时</td>
+<td>自动指令被禁用时执行</td>
+</tr>
+<tr>
+<td><code>actionsOnDeleted</code></td>
+<td>被删除时</td>
+<td>自动指令被删除时执行</td>
+</tr>
+<tr>
+<td><code>actionsOnUpdated</code></td>
+<td>更新时</td>
+<td>自动指令被更新时执行</td>
+</tr>
+<tr>
+<td><code>actionsOnStop</code></td>
+<td>被停止时</td>
+<td>自动指令停止时执行</td>
+</tr>
+</tbody>
+</table>
+<p><strong>示例：自动指令启用时初始化目录</strong></p>
+<pre><code class="language-json">{
+  &quot;hook&quot;: {
+    &quot;actionsOnEnabled&quot;: [
+      {
+        &quot;@type&quot;: &quot;type.googleapis.com/ShellCommand&quot;,
+        &quot;command&quot;: &quot;mkdir -p /data/system/shortx_xxx/data/Notification_filter&quot;
+      }
+    ]
+  }
+}
+</code></pre>
+<h3 id="directactionhook">一键指令钩子 (DirectActionHook)</h3>
+<table>
+<thead>
+<tr>
+<th>钩子</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>actionsOnStart</code></td>
+<td>指令启动时执行</td>
+</tr>
+<tr>
+<td><code>actionsOnStop</code></td>
+<td>指令停止时执行</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="10-function">10. 函数 (Function)</h2>
+<p>函数是可复用的动作序列，支持参数和返回值。</p>
+<p><strong>函数结构：</strong></p>
+<table>
+<thead><tr><th>字段</th><th>说明</th></tr></thead>
+<tbody><tr><td><code>id</code></td><td>函数 ID</td></tr><tr><td><code>name</code></td><td>函数名称</td></tr><tr><td><code>returnType</code></td><td>返回类型（当前固定为 string）</td></tr><tr><td><code>parameters</code></td><td>参数列表</td></tr><tr><td><code>actions</code></td><td>动作列表</td></tr></tbody>
+</table>
+| <code>resultContextDataKey</code> 
+<p><strong>参数 (FuncParameter)：</strong></p>
+<table>
+<thead><tr><th>字段</th><th>说明</th></tr></thead>
+<tbody><tr><td><code>name</code></td><td>参数名</td></tr><tr><td><code>defaultValue</code></td><td>默认值</td></tr><tr><td><code>isRequired</code></td><td>是否必填</td></tr></tbody>
+</table>
+| <code>comments</code> 
+<p><strong>执行函数：</strong></p>
+<pre><code class="language-json">{
+  &quot;@type&quot;: &quot;type.googleapis.com/ExecuteFunction&quot;,
+  &quot;functionId&quot;: &quot;function-xxx&quot;,
+  &quot;funcParameterInputs&quot;: [
+    {&quot;name&quot;: &quot;param1&quot;, &quot;value&quot;: &quot;value1&quot;}
+  ]
+}
+</code></pre>
+<p><strong>设置返回值：</strong></p>
+<pre><code class="language-json">{
+  &quot;@type&quot;: &quot;type.googleapis.com/SetFunctionReturnValue&quot;,
+  &quot;value&quot;: &quot;返回结果&quot;
+}
+</code></pre>
+
+<h2 id="11">11. 脚本引擎</h2>
+<h3 id="111-javascript-executejs">11.1 JavaScript (ExecuteJS)</h3>
+<p>使用 Rhino JavaScript 引擎执行脚本。</p>
+<p><strong>线程切换：</strong> ExecuteJS 支持通过 <code>context</code> 字段指定执行线程：</p>
+<table>
+<thead>
+<tr>
+<th>上下文</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Default</code></td>
+<td>默认协程线程池</td>
+</tr>
+<tr>
+<td><code>IO</code></td>
+<td>IO 线程池（适合网络/文件操作）</td>
+</tr>
+<tr>
+<td><code>UI</code></td>
+<td>专用 UI Handler 线程（适合创建浮窗、View 操作）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Proto 定义：</strong></p>
+<pre><code>{
+  "id": "函数唯一ID",
+  "name": "函数名称",
+  "returnType": "string",
+  "parameters": [
+    {"name": "参数名", "defaultValue": "默认值", "isRequired": false, "comments": "说明"}
+  ],
+  "actions": [
+    {"@type": "type.googleapis.com/ShowToast", "message": "{参数名}"}
+  ],
+  "resultContextDataKey": "返回值写入的上下文变量名"
+}</code></pre>
+<p><strong>示例：在 UI 线程创建浮窗</strong></p>
+<pre><code class="language-json">{
+  &quot;@type&quot;: &quot;type.googleapis.com/ExecuteJS&quot;,
+  &quot;expression&quot;: &quot;importPackage(android.view);\nimportPackage(android.widget);\nnew Handler(Looper.getMainLooper()).post(new Runnable({ run: function() { /* UI 操作 */ } }));&quot;,
+  &quot;context&quot;: &quot;CoroutineContext_UI&quot;
+}
+</code></pre>
+<p><strong>可用 Java 类（自动导入）：</strong><br />
+- <code>java.io.*</code> - 文件操作<br />
+- <code>java.net.*</code> - 网络操作<br />
+- <code>org.json.*</code> - JSON 操作<br />
+- <code>android.*</code> - Android API</p>
+<p><strong>返回值：</strong> 设置 <code>jsRet</code> 变量</p>
+<pre><code class="language-javascript">var jsRet = &quot;Hello World&quot;;
+</code></pre>
+<p><strong>访问上下文变量：</strong></p>
+<pre><code class="language-javascript">var pkgName = {pkgName};  // 直接引用
+var title = &quot;{title}&quot;;    // 字符串引用
+</code></pre>
+<p><strong>访问全局变量：</strong></p>
+<pre><code class="language-javascript">var val = globalVarOf$变量名;
+</code></pre>
+<p><strong>示例：读取文件</strong></p>
+<pre><code class="language-javascript">importClass(java.io.File);
+importClass(java.io.BufferedReader);
+importClass(java.io.FileReader);
+
+var file = new File(&quot;/path/to/file&quot;);
+var reader = new BufferedReader(new FileReader(file));
+var line;
+var content = &quot;&quot;;
+while ((line = reader.readLine()) != null) {
+    content += line + &quot;\n&quot;;
+}
+reader.close();
+var jsRet = content;
+</code></pre>
+<h3 id="112-mvel-executemvel">11.2 MVEL (ExecuteMVEL)</h3>
+<p>使用 MVEL 表达式引擎，适合简单的表达式计算和逻辑判断。</p>
+<blockquote>
+<p><strong>注意：</strong> MVEL 当前实现在调用线程上同步执行，不支持通过 <code>context</code> 字段切换线程。如需在 UI 线程操作，应使用 ExecuteJS 并设置 <code>context: CoroutineContext_UI</code>。</p>
+</blockquote>
+<p><strong>示例：</strong></p>
+<pre><code class="language-mvel">'Hello ' + {title}
+</code></pre>
+<p><strong>MVEL 可用 API（通过 ScriptShortXApi）：</strong><br />
+- <code>shortx.setClipboard(text)</code> - 设置剪贴板<br />
+- <code>shortx.getClipboard()</code> - 获取剪贴板<br />
+- <code>shortx.showToast(message)</code> - 显示 Toast<br />
+- <code>shortx.shell(command)</code> - 执行 Shell 命令<br />
+- <code>shortx.httpGet(url)</code> - HTTP GET<br />
+- <code>shortx.httpPost(url, body)</code> - HTTP POST<br />
+- <code>shortx.readGlobalVar(name)</code> - 读取全局变量<br />
+- <code>shortx.writeGlobalVar(name, value)</code> - 写入全局变量<br />
+- <code>shortx.batteryLevel()</code> - 获取电量<br />
+- <code>shortx.batteryTemperature()</code> - 获取电池温度<br />
+- <code>shortx.screenOn()</code> - 屏幕是否亮着<br />
+- <code>shortx.wifiConnected()</code> - WiFi 是否连接<br />
+- <code>shortx.btEnabled()</code> - 蓝牙是否开启</p>
+
+<h2 id="12">12. 高级功能</h2>
+<h3 id="121-method-hook">12.1 方法钩子 (Method Hook)</h3>
+<p>通过 Xposed 框架 hook 应用或系统方法。</p>
+<p><strong>MethodHook 触发器字段：</strong></p>
+<table>
+<thead><tr><th>字段</th><th>说明</th></tr></thead>
+<tbody><tr><td><code>packageName</code></td><td>目标应用包名</td></tr><tr><td><code>className</code></td><td>目标类名</td></tr><tr><td><code>methodName</code></td><td>目标方法名</td></tr><tr><td><code>beforeMethod</code></td><td>true=方法前, false=方法后</td></tr><tr><td><code>expressions</code></td><td>MVEL 表达式列表</td></tr><tr><td><code>lifecycle</code></td><td>生命周期（InitZygote/LoadedPackage）</td></tr></tbody>
+</table>
+| <code>constraint</code> 
+<p><strong>约束类型：</strong><br />
+- <code>MethodHookConstraintParamsCount</code> - 参数数量<br />
+- <code>MethodHookConstraintParamsType</code> - 参数类型<br />
+- <code>MethodHookConstraintReturnType</code> - 返回类型</p>
+<h3 id="122-edge-gesture">12.2 边缘手势 (Edge Gesture)</h3>
+<p>在屏幕边缘添加手势触发。</p>
+<p><strong>EdgeGesture 字段：</strong></p>
+<table>
+<thead><tr><th>字段</th><th>说明</th></tr></thead>
+<tbody><tr><td><code>edge</code></td><td>边缘位置</td></tr><tr><td><code>gesture</code></td><td>手势类型</td></tr><tr><td><code>isIntercept</code></td><td>是否拦截原手势</td></tr><tr><td><code>apps</code></td><td>限制应用</td></tr><tr><td><code>pkgSets</code></td><td>限制应用集合</td></tr><tr><td><code>childSteps</code></td><td>多步骤手势</td></tr><tr><td><code>enableGestureHint</code></td><td>显示手势提示</td></tr><tr><td><code>enableGestureHaptic</code></td><td>触觉反馈</td></tr></tbody>
+</table>
+| <code>customRect</code> 
+<h3 id="123">12.3 浮窗与侧边栏</h3>
+<p><strong>浮窗按钮设置 (OverlayButtonSetting)：</strong></p>
+<pre><code class="language-json">{
+  &quot;icon&quot;: &quot;icon-name&quot;,
+  &quot;text&quot;: &quot;按钮文本&quot;,
+  &quot;tapActions&quot;: [点击动作],
+  &quot;longPressActions&quot;: [长按动作]
+}
+</code></pre>
+<p><strong>动作侧边栏 (ShowActionSidebar)：</strong></p>
+<pre><code class="language-json">{
+  &quot;@type&quot;: &quot;type.googleapis.com/ShowActionSidebar&quot;,
+  &quot;buttons&quot;: [
+    {
+      &quot;icon&quot;: &quot;icon-name&quot;,
+      &quot;text&quot;: &quot;按钮文本&quot;,
+      &quot;tapActions&quot;: [动作列表],
+      &quot;longPressActions&quot;: [动作列表]
+    }
+  ],
+  &quot;position&quot;: &quot;ActionSidebarPosition_Right&quot;,
+  &quot;tag&quot;: &quot;sidebar-1&quot;
+}
+</code></pre>
+<h3 id="124-qs-tile">12.4 磁贴 (QS Tile)</h3>
+<p>ShortX 提供 9 个自定义磁贴，可以在快速设置面板中使用。</p>
+<p><strong>磁贴编号：</strong> Tile1 ~ Tile9</p>
+<p><strong>使用方式：</strong><br />
+1. 在快速设置面板添加 ShortX 磁贴<br />
+2. 在自动指令中使用 <code>OnQSTileClick</code> 作为触发器<br />
+3. 在动作中使用 <code>ClickTile</code> 点击磁贴</p>
+<h3 id="125-status-bar-chip">12.5 状态栏芯片 (Status Bar Chip)</h3>
+<p>在状态栏显示自定义芯片。</p>
+<pre><code class="language-json">{
+  &quot;@type&quot;: &quot;type.googleapis.com/ShowStatusBarChip&quot;,
+  &quot;text&quot;: &quot;芯片文本&quot;,
+  &quot;icon&quot;: &quot;icon-name&quot;,
+  &quot;clickAction&quot;: [点击动作],
+  &quot;longClickAction&quot;: [长按动作]
+}
+</code></pre>
+<h3 id="126">12.6 流体云组件</h3>
+<p>流体云是类似灵动岛的交互组件，可以显示实时信息。</p>
+<p><strong>常用模式：</strong><br />
+1. 监听剪贴板变化 → 显示链接流体云<br />
+2. 监听验证码通知 → 显示验证码流体云<br />
+3. 监听 Activity → 显示应用快捷操作</p>
+
+<h2 id="13">13. 导入与导出</h2>
+<h3 id="_2">导入指令</h3>
+<p>ShortX 支持导入 <code>.txt</code> 格式的指令文件。</p>
+<p><strong>指令文件格式：</strong></p>
+<pre><code>{JSON 内容}
+###------###
+{&quot;type&quot;:&quot;rule&quot;} 或 {&quot;type&quot;:&quot;da&quot;}
+</code></pre>
+<p><strong>导入方式：</strong><br />
+1. 从 Telegram 群组下载指令文件<br />
+2. 在 ShortX 中选择导入<br />
+3. 选择文件或粘贴内容</p>
+<h3 id="_3">导出备份</h3>
+<pre><code class="language-json">{
+  &quot;@type&quot;: &quot;type.googleapis.com/ExportBackup&quot;,
+  &quot;destDir&quot;: &quot;/sdcard/Download/&quot;
+}
+</code></pre>
+<h3 id="webdav">WebDAV 备份</h3>
+<p>支持通过 WebDAV 协议备份到 NAS 或云盘。</p>
+
+<h2 id="14">14. 常见使用场景</h2>
+<h3 id="1-vpn">场景 1：应用前台自动开关 VPN</h3>
+<p><strong>触发器：</strong> <code>AppBecomeFg</code>（VPN 应用进入前台）<br />
+<strong>条件：</strong> VPN 未连接<br />
+<strong>动作：</strong> 启动 VPN 服务</p>
+<p><strong>退出触发器：</strong> <code>AppBecomeBg</code>（VPN 应用进入后台）<br />
+<strong>退出条件：</strong> VPN 已连接，且没有其他 VPN 应用在前台<br />
+<strong>退出动作：</strong> 停止 VPN 服务</p>
+<h3 id="2_1">场景 2：通知过滤</h3>
+<p><strong>触发器：</strong> <code>NotificationPosted</code>（通知发布）<br />
+<strong>条件：</strong> 通知来自指定应用<br />
+<strong>动作：</strong><br />
+1. 如果是训练模式 → 显示通知，带"垃圾"/"正常"按钮<br />
+2. 如果是运行模式 → 执行 JS 脚本判断是否垃圾通知<br />
+3. 如果是垃圾通知 → 移除通知并记录</p>
+<h3 id="3wifi">场景 3：蓝牙/WiFi 自动切换</h3>
+<p><strong>触发器：</strong> <code>BTConnectedTo</code>（连接到指定蓝牙设备）<br />
+<strong>条件：</strong> 无<br />
+<strong>动作：</strong> 连接到指定 WiFi，显示 Toast</p>
+<h3 id="4_1">场景 4：充电控制</h3>
+<p><strong>触发器：</strong> <code>ChargerPlug</code>（插入充电器）<br />
+<strong>条件：</strong> 电量 &gt;= 80%<br />
+<strong>动作：</strong> 停止充电（通过 Shell 命令）</p>
+<h3 id="5">场景 5：剪贴板搜索</h3>
+<p><strong>一键指令动作：</strong><br />
+1. <code>ShellCommand</code> - 获取剪贴板文件路径<br />
+2. <code>ShowTextFieldDialog</code> - 输入搜索关键词<br />
+3. <code>ExecuteJS</code> - 搜索剪贴板内容并显示浮窗</p>
+<h3 id="6">场景 6：数据备份到云端</h3>
+<p><strong>一键指令动作：</strong><br />
+1. <code>CreateLocalVar</code> - 初始化变量<br />
+2. <code>WriteLocalVar</code> - 写入配置<br />
+3. <code>ShellCommand</code> - 执行 curl 上传<br />
+4. <code>HttpRequest</code> - 企业微信推送通知</p>
+
+<h2 id="16"><span class="h2-num">16</span>指令文件示例</h2>
+<p>以下是各种类型的指令文件完整示例，AI 工具可以参考这些结构生成指令文件。</p>
+
+<h3 id="16-file-format">16.1 文件格式说明</h3>
+<p>ShortX 指令文件是 <code>.txt</code> 格式，由三部分组成：</p>
+<pre><code>{JSON 内容}
+###------###
+{"type":"rule"} 或 {"type":"da"}</code></pre>
+<p><strong>第一部分：</strong> 指令的 JSON 数据（Rule 或 DirectAction 的完整 protobuf 定义）</p>
+<p><strong>第二部分：</strong> 分隔符 <code>###------###</code></p>
+<p><strong>第三部分：</strong> 类型标记，<code>{"type":"rule"}</code> 表示自动指令，<code>{"type":"da"}</code> 表示一键指令</p>
+
+<h3 id="16-da-simple">16.2 一键指令示例：蓝牙开关</h3>
+<p>最简单的一键指令：执行 Shell 命令切换蓝牙，然后震动提示。</p>
+<pre><code>{
+  "actions": [{
+    "@type": "type.googleapis.com/ShellCommand",
+    "command": "if [[ $(settings get global bluetooth_on) == \"1\" ]]; then\n  svc bluetooth disable\n  echo \"OFF\"\nelse\n  svc bluetooth enable\n  echo \"ON\"\nfi",
+    "customContextDataKey": {},
+    "id": "A-001"
+  }, {
+    "@type": "type.googleapis.com/Vibrate",
+    "vib1": 100,
+    "customContextDataKey": {},
+    "id": "A-002"
+  }, {
+    "@type": "type.googleapis.com/ShowToast",
+    "message": "蓝牙已切换",
+    "customContextDataKey": {},
+    "id": "A-003"
+  }],
+  "id": "DA-bluetooth-toggle",
+  "title": "蓝牙开关",
+  "description": "切换蓝牙开关状态",
+  "versionCode": "1",
+  "hook": {},
+  "quit": {}
+}
+###------###
+{"type":"da"}</code></pre>
+
+<h3 id="16-da-globalvar">16.3 一键指令示例：WiFi 开关（带状态记忆）</h3>
+<p>使用全局变量记住 WiFi 状态，实现真正的开关切换。</p>
+<pre><code>{
+  "actions": [{
+    "@type": "type.googleapis.com/IfThenElse",
+    "If": [{
+      "@type": "type.googleapis.com/EvaluateGlobalVar",
+      "op": "EqualTo",
+      "varName": "WiFi状态",
+      "payload": {"value": "1"},
+      "customContextDataKey": {},
+      "id": "C-001"
+    }],
+    "IfActions": [{
+      "@type": "type.googleapis.com/WriteGlobalVar",
+      "varName": "WiFi状态",
+      "valueAsString": "0",
+      "customContextDataKey": {},
+      "id": "A-001"
+    }, {
+      "@type": "type.googleapis.com/ShellCommand",
+      "command": "svc wifi enable",
+      "customContextDataKey": {},
+      "id": "A-002"
+    }, {
+      "@type": "type.googleapis.com/ShowToast",
+      "message": "WiFi 已开启",
+      "customContextDataKey": {},
+      "id": "A-003"
+    }],
+    "ElseActions": [{
+      "@type": "type.googleapis.com/WriteGlobalVar",
+      "varName": "WiFi状态",
+      "valueAsString": "1",
+      "customContextDataKey": {},
+      "id": "A-004"
+    }, {
+      "@type": "type.googleapis.com/ShellCommand",
+      "command": "svc wifi disable",
+      "customContextDataKey": {},
+      "id": "A-005"
+    }, {
+      "@type": "type.googleapis.com/ShowToast",
+      "message": "WiFi 已关闭",
+      "customContextDataKey": {},
+      "id": "A-006"
+    }],
+    "customContextDataKey": {},
+    "id": "A-000"
+  }],
+  "id": "DA-wifi-toggle",
+  "title": "WiFi 开关",
+  "description": "切换 WiFi 开关状态，带状态记忆",
+  "versionCode": "1",
+  "hook": {},
+  "quit": {}
+}
+###------###
+{"type":"da"}</code></pre>
+
+<h3 id="16-da-dialog">16.4 一键指令示例：用户输入 + HTTP 请求</h3>
+<p>弹出输入框让用户输入内容，然后发送 HTTP 请求。</p>
+<pre><code>{
+  "actions": [{
+    "@type": "type.googleapis.com/ShowTextFieldDialog",
+    "title": "发送消息",
+    "textFields": [{"placeholder": "输入消息内容"}],
+    "cancelable": true,
+    "customContextDataKey": {},
+    "id": "A-001"
+  }, {
+    "@type": "type.googleapis.com/HttpRequest",
+    "url": "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=YOUR_KEY",
+    "method": "POST",
+    "headers": [{"key": "Content-Type", "value": "application/json"}],
+    "requestBody": {
+      "@type": "type.googleapis.com/HttpRequestBodyJson",
+      "json": "{\"msgtype\":\"text\",\"text\":{\"content\":\"{textFieldInput1}\"}}"
+    },
+    "adapter": {
+      "@type": "type.googleapis.com/HttpRequestJsonMapAdapter",
+      "expressions": ["errcode"]
+    },
+    "customContextDataKey": {},
+    "id": "A-002"
+  }, {
+    "@type": "type.googleapis.com/ShowToast",
+    "message": "消息已发送",
+    "customContextDataKey": {},
+    "id": "A-003"
+  }],
+  "id": "DA-send-message",
+  "title": "发送消息",
+  "description": "输入消息内容并发送到企业微信",
+  "versionCode": "1",
+  "hook": {},
+  "quit": {}
+}
+###------###
+{"type":"da"}</code></pre>
+
+<h3 id="16-rule-appfg">16.5 自动指令示例：应用进入前台时执行操作</h3>
+<p>当指定应用进入前台时，自动执行一系列操作。</p>
+<pre><code>{
+  "facts": [{
+    "@type": "type.googleapis.com/AppBecomeFg",
+    "apps": [{"pkgName": "com.tencent.mm"}],
+    "tag": "微信前台",
+    "customContextDataKey": {},
+    "id": "F-001"
+  }],
+  "conditions": [{
+    "@type": "type.googleapis.com/RequireWifiConnected",
+    "requiredSSID": "*",
+    "customContextDataKey": {},
+    "id": "C-001"
+  }],
+  "actions": [{
+    "@type": "type.googleapis.com/ShowToast",
+    "message": "WiFi 已连接，欢迎使用微信",
+    "customContextDataKey": {},
+    "id": "A-001"
+  }],
+  "id": "RULE-app-fg",
+  "title": "应用前台提示",
+  "description": "微信进入前台时显示提示",
+  "isEnabled": true,
+  "condOp": "ALL",
+  "hook": {},
+  "quit": {},
+  "versionCode": "1"
+}
+###------###
+{"type":"rule"}</code></pre>
+
+<h3 id="16-rule-notification">16.6 自动指令示例：通知过滤</h3>
+<p>监听通知发布事件，根据全局变量判断模式，执行不同操作。</p>
+<pre><code>{
+  "facts": [{
+    "@type": "type.googleapis.com/NotificationPosted",
+    "record": {},
+    "tag": "执行",
+    "customContextDataKey": {},
+    "id": "F-001"
+  }],
+  "conditions": [],
+  "actions": [{
+    "@type": "type.googleapis.com/IfThenElse",
+    "If": [{
+      "@type": "type.googleapis.com/EvaluateGlobalVar",
+      "op": "EqualTo",
+      "varName": "过滤模式",
+      "payload": {"value": "训练"},
+      "customContextDataKey": {},
+      "id": "C-001"
+    }],
+    "IfActions": [{
+      "@type": "type.googleapis.com/PostNotification",
+      "title": "{title}",
+      "message": "{contentText}",
+      "smallIcon": "chat-2-line",
+      "button": [{
+        "id": "btn-spam",
+        "label": "垃圾",
+        "action": [{
+          "@type": "type.googleapis.com/ShowToast",
+          "message": "已标记为垃圾",
+          "customContextDataKey": {},
+          "id": "A-001"
+        }]
+      }, {
+        "id": "btn-normal",
+        "label": "正常",
+        "action": [{
+          "@type": "type.googleapis.com/ShowToast",
+          "message": "已标记为正常",
+          "customContextDataKey": {},
+          "id": "A-002"
+        }]
+      }],
+      "customContextDataKey": {},
+      "id": "A-000"
+    }],
+    "ElseActions": [{
+      "@type": "type.googleapis.com/RemoveNotification",
+      "notification": {"title": "{title}", "contentText": "{contentText}"},
+      "customContextDataKey": {},
+      "id": "A-003"
+    }],
+    "customContextDataKey": {},
+    "id": "A-000"
+  }],
+  "id": "RULE-notification-filter",
+  "title": "通知过滤",
+  "description": "训练模式下标记通知，运行模式下过滤垃圾通知",
+  "isEnabled": true,
+  "hook": {
+    "actionsOnEnabled": [{
+      "@type": "type.googleapis.com/CreateGlobalVar",
+      "globalVar": {"name": "过滤模式", "type": {"@type": "type.googleapis.com/StringVar"}},
+      "customContextDataKey": {},
+      "id": "A-init-1"
+    }, {
+      "@type": "type.googleapis.com/WriteGlobalVar",
+      "varName": "过滤模式",
+      "valueAsString": "训练",
+      "customContextDataKey": {},
+      "id": "A-init-2"
+    }]
+  },
+  "quit": {},
+  "versionCode": "1"
+}
+###------###
+{"type":"rule"}</code></pre>
+
+<h3 id="16-rule-quit">16.7 自动指令示例：带退出机制的指令</h3>
+<p>VPN 应用进入前台时开启 VPN，退出前台时关闭 VPN。</p>
+<pre><code>{
+  "facts": [{
+    "@type": "type.googleapis.com/AppBecomeFg",
+    "pkgSets": ["翻墙"],
+    "tag": "开启",
+    "customContextDataKey": {},
+    "id": "F-001"
+  }, {
+    "@type": "type.googleapis.com/PkgStopRunning",
+    "pkgSets": ["翻墙"],
+    "tag": "关闭",
+    "customContextDataKey": {},
+    "id": "F-002"
+  }],
+  "conditions": [],
+  "actions": [{
+    "@type": "type.googleapis.com/IfThenElse",
+    "If": [{
+      "@type": "type.googleapis.com/RequireFactTag",
+      "tag": "开启",
+      "customContextDataKey": {},
+      "id": "C-001"
+    }, {
+      "@type": "type.googleapis.com/VPNIsConnected",
+      "customContextDataKey": {},
+      "isInvert": true,
+      "id": "C-002"
+    }],
+    "IfActions": [{
+      "@type": "type.googleapis.com/ShellCommand",
+      "command": "am start-foreground-service com.v2ray.ang/com.v2ray.ang.service.V2RayVpnService",
+      "singleShot": true,
+      "customContextDataKey": {},
+      "id": "A-001"
+    }, {
+      "@type": "type.googleapis.com/ShowToast",
+      "message": "已开启 VPN",
+      "customContextDataKey": {},
+      "id": "A-002"
+    }],
+    "customContextDataKey": {},
+    "id": "A-000"
+  }, {
+    "@type": "type.googleapis.com/IfThenElse",
+    "If": [{
+      "@type": "type.googleapis.com/RequireFactTag",
+      "tag": "关闭",
+      "customContextDataKey": {},
+      "id": "C-003"
+    }, {
+      "@type": "type.googleapis.com/VPNIsConnected",
+      "customContextDataKey": {},
+      "id": "C-004"
+    }, {
+      "@type": "type.googleapis.com/AppHasTask",
+      "pkgSets": ["翻墙"],
+      "customContextDataKey": {},
+      "isInvert": true,
+      "id": "C-005"
+    }],
+    "IfActions": [{
+      "@type": "type.googleapis.com/StopApp",
+      "appPkg": [{"pkgName": "com.v2ray.ang"}],
+      "customContextDataKey": {},
+      "id": "A-003"
+    }, {
+      "@type": "type.googleapis.com/ShowToast",
+      "message": "已关闭 VPN",
+      "customContextDataKey": {},
+      "id": "A-004"
+    }],
+    "customContextDataKey": {},
+    "id": "A-005"
+  }],
+  "id": "RULE-vpn-auto",
+  "title": "自动 VPN",
+  "description": "VPN 应用进入前台时开启，退出时关闭",
+  "isEnabled": true,
+  "hook": {},
+  "quit": {},
+  "versionCode": "1"
+}
+###------###
+{"type":"rule"}</code></pre>
+
+<h3 id="16-rule-hook">16.8 自动指令示例：带钩子和参数</h3>
+<p>创建一个带参数的自动指令，启用时初始化环境。</p>
+<pre><code>{
+  "facts": [{
+    "@type": "type.googleapis.com/Alarm",
+    "triggerAt": {"hour": 8, "minutes": 30},
+    "repeat": {"days": ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY"]},
+    "workdayFilter": {"dayType": "WorkdayOnly"},
+    "tag": "早安",
+    "customContextDataKey": {},
+    "id": "F-001"
+  }],
+  "conditions": [],
+  "actions": [{
+    "@type": "type.googleapis.com/TTS",
+    "text": "早上好，今天是工作日",
+    "customContextDataKey": {},
+    "id": "A-001"
+  }],
+  "id": "RULE-good-morning",
+  "title": "工作日早安",
+  "description": "每个工作日早上 8:30 语音播报",
+  "isEnabled": true,
+  "hook": {
+    "actionsOnEnabled": [{
+      "@type": "type.googleapis.com/ShowToast",
+      "message": "早安指令已启用",
+      "customContextDataKey": {},
+      "id": "A-hook-1"
+    }]
+  },
+  "quit": {},
+  "parameters": [],
+  "versionCode": "1"
+}
+###------###
+{"type":"rule"}</code></pre>
+
+<h3 id="16-rule-js">16.9 自动指令示例：JavaScript 脚本</h3>
+<p>使用 JavaScript 读取文件并显示浮窗。</p>
+<pre><code>{
+  "facts": [{
+    "@type": "type.googleapis.com/Broadcast",
+    "actions": ["com.example.MY_ACTION"],
+    "tag": "触发",
+    "customContextDataKey": {},
+    "id": "F-001"
+  }],
+  "conditions": [],
+  "actions": [{
+    "@type": "type.googleapis.com/ShellCommand",
+    "command": "ls /sdcard/Documents/",
+    "customContextDataKey": {"keys": [{"first": "shellOut", "second": "文件列表"}]},
+    "id": "A-001"
+  }, {
+    "@type": "type.googleapis.com/ExecuteJS",
+    "context": "CoroutineContext_UI",
+    "expression": "var files = '{文件列表}'.split('\\n');\nvar jsRet = '找到 ' + files.length + ' 个文件';",
+    "customContextDataKey": {},
+    "id": "A-002"
+  }, {
+    "@type": "type.googleapis.com/ShowToast",
+    "message": "{jsRet}",
+    "customContextDataKey": {},
+    "id": "A-003"
+  }],
+  "id": "RULE-js-example",
+  "title": "JS 脚本示例",
+  "description": "广播触发后用 JS 处理文件列表",
+  "isEnabled": true,
+  "hook": {},
+  "quit": {},
+  "versionCode": "1"
+}
+###------###
+{"type":"rule"}</code></pre>
+
+<h3 id="16-import-export">16.10 指令导入/导出格式</h3>
+<p><strong>导入：</strong> 在 ShortX 中选择"导入指令"，选择 <code>.txt</code> 文件或粘贴内容。</p>
+<p><strong>导出：</strong> 在指令详情页选择"导出"，会生成 <code>.txt</code> 文件。</p>
+<p><strong>JSON 结构对照：</strong></p>
+<table>
+<thead><tr><th>顶层字段</th><th>类型</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td><code>facts</code></td><td>数组</td><td>触发器列表（仅 Rule）</td></tr>
+<tr><td><code>conditions</code></td><td>数组</td><td>条件列表</td></tr>
+<tr><td><code>actions</code></td><td>数组</td><td>动作列表</td></tr>
+<tr><td><code>id</code></td><td>字符串</td><td>唯一标识符</td></tr>
+<tr><td><code>title</code></td><td>字符串</td><td>指令标题</td></tr>
+<tr><td><code>description</code></td><td>字符串</td><td>指令描述</td></tr>
+<tr><td><code>isEnabled</code></td><td>布尔</td><td>是否启用（仅 Rule）</td></tr>
+<tr><td><code>condOp</code></td><td>字符串</td><td>条件组合方式（仅 Rule）</td></tr>
+<tr><td><code>hook</code></td><td>对象</td><td>钩子配置</td></tr>
+<tr><td><code>quit</code></td><td>对象</td><td>退出机制配置</td></tr>
+<tr><td><code>parameters</code></td><td>数组</td><td>可自定义参数</td></tr>
+<tr><td><code>versionCode</code></td><td>字符串</td><td>版本号</td></tr>
+</tbody>
+</table>
+
+<p><strong>每个动作/触发器/条件都有的公共字段：</strong></p>
+<table>
+<thead><tr><th>字段</th><th>类型</th><th>说明</th></tr></thead>
+<tbody>
+<tr><td><code>@type</code></td><td>字符串</td><td>protobuf 类型 URL，如 <code>type.googleapis.com/ShellCommand</code></td></tr>
+<tr><td><code>id</code></td><td>字符串</td><td>唯一标识符，格式为 <code>A-xxx</code>/<code>F-xxx</code>/<code>C-xxx</code></td></tr>
+<tr><td><code>customContextDataKey</code></td><td>对象</td><td>自定义上下文变量名映射</td></tr>
+<tr><td><code>isDisabled</code></td><td>布尔</td><td>是否禁用此条目</td></tr>
+<tr><td><code>note</code></td><td>字符串</td><td>备注</td></tr>
+</tbody>
+</table>
+
+<h2 id="15">15. 调试与排错</h2>
+<h3 id="_4">查看执行记录</h3>
+<p>ShortX 记录了所有触发器发布、条件评估、动作执行的结果。</p>
+<p><strong>查看方式：</strong><br />
+- 在自动指令详情页查看"执行记录"<br />
+- 查看条件评估结果（成功/失败）<br />
+- 查看动作执行结果（成功/失败/错误信息）</p>
+<h3 id="_5">常见问题</h3>
+<p><strong>自动指令不触发：</strong><br />
+1. 检查自动指令是否启用<br />
+2. 检查触发器配置是否正确<br />
+3. 检查是否有 <code>FactPublishInterceptor</code> 过滤<br />
+4. 确认 <code>SystemReady</code> 已发布（开机后需要等待系统就绪）</p>
+<p><strong>动作执行失败：</strong><br />
+1. 检查 <code>actionOnError</code> 设置（Continue/Break）<br />
+2. 查看执行记录中的错误信息<br />
+3. 确认所需权限已授予<br />
+4. 检查 Shell 命令是否需要 Root</p>
+<p><strong>变量引用失败：</strong><br />
+1. 确认变量名拼写正确<br />
+2. 确认使用了正确的引用语法（<code>globalVarOf$</code>/<code>localVarOf$</code>/<code>{}</code>）<br />
+3. 确认变量已创建</p>
+<p><strong>脚本执行错误：</strong><br />
+1. JavaScript 错误会记录在执行日志中<br />
+2. 检查脚本语法<br />
+3. 确认使用了正确的返回变量名（<code>jsRet</code>/<code>mvelRet</code>）</p>
+<h3 id="_6">调试技巧</h3>
+<ol>
+<li><strong>使用 ShowToast 输出调试信息</strong></li>
+</ol>
+<pre><code class="language-json">{
+  &quot;@type&quot;: &quot;type.googleapis.com/ShowToast&quot;,
+  &quot;message&quot;: &quot;调试: {变量名}&quot;
+}
+</code></pre>
+<ol>
+<li><strong>使用 ShowAlertDialog 显示详细信息</strong></li>
+</ol>
+<pre><code class="language-json">{
+  &quot;@type&quot;: &quot;type.googleapis.com/ShowAlertDialog&quot;,
+  &quot;title&quot;: &quot;调试信息&quot;,
+  &quot;message&quot;: &quot;当前包名: {pkgName}&quot;
+}
+</code></pre>
+<ol>
+<li><strong>使用 ShellCommand 输出到日志</strong></li>
+</ol>
+<pre><code class="language-json">{
+  &quot;@type&quot;: &quot;type.googleapis.com/ShellCommand&quot;,
+  &quot;command&quot;: &quot;log -t ShortX '调试信息: $VARIABLE'&quot;
+}
+</code></pre>
+<ol>
+<li><strong>使用 WriteGlobalVar 记录状态</strong></li>
+</ol>
+<pre><code class="language-json">{
+  &quot;@type&quot;: &quot;type.googleapis.com/WriteGlobalVar&quot;,
+  &quot;varName&quot;: &quot;调试日志&quot;,
+  &quot;valueAsString&quot;: &quot;执行时间: {serialNumber}&quot;,
+  &quot;op&quot;: &quot;WriteGlobalVarOp_AppendToLast&quot;
+}
+</code></pre>
+
+<h2 id="aactiononerror">附录 A：ActionOnError 说明</h2>
+<p>每个动作都有 <code>actionOnError</code> 字段，控制出错时的行为：</p>
+<table>
+<thead>
+<tr>
+<th>值</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Continue</code></td>
+<td>继续执行后续动作</td>
+</tr>
+<tr>
+<td><code>Break</code></td>
+<td>停止执行后续动作</td>
+</tr>
+</tbody>
+</table>
+<h2 id="bconflictstrategy">附录 B：ConflictStrategy 说明</h2>
+<p>当自动指令的触发器连续触发时，冲突策略决定如何处理：</p>
+<table>
+<thead>
+<tr>
+<th>策略</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>ExecuteBoth</code></td>
+<td>同时执行新旧任务</td>
+</tr>
+<tr>
+<td><code>ReplaceOld</code></td>
+<td>用新任务替换旧任务</td>
+</tr>
+<tr>
+<td><code>SkipNew</code></td>
+<td>跳过新任务</td>
+</tr>
+</tbody>
+</table>
+<h2 id="casyncmode">附录 C：AsyncMode 说明</h2>
+<p>指令级别的异步模式：</p>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Async</code></td>
+<td>异步执行，不等待完成</td>
+</tr>
+<tr>
+<td><code>Sync</code></td>
+<td>同步执行，使用全局锁</td>
+</tr>
+<tr>
+<td><code>Sync_InRule</code></td>
+<td>同步执行，使用指令级锁</td>
+</tr>
+</tbody>
+</table>
+<h2 id="d">附录 D：图标名称参考</h2>
+<p>ShortX 使用 Material Design 图标名称。常用图标：</p>
+<table>
+<thead>
+<tr>
+<th>名称</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>bluetooth</code></td>
+<td>蓝牙</td>
+</tr>
+<tr>
+<td><code>wifi</code></td>
+<td>WiFi</td>
+</tr>
+<tr>
+<td><code>flashlight</code></td>
+<td>手电筒</td>
+</tr>
+<tr>
+<td><code>location</code></td>
+<td>定位</td>
+</tr>
+<tr>
+<td><code>nfc</code></td>
+<td>NFC</td>
+</tr>
+<tr>
+<td><code>volume</code></td>
+<td>音量</td>
+</tr>
+<tr>
+<td><code>brightness</code></td>
+<td>亮度</td>
+</tr>
+<tr>
+<td><code>settings</code></td>
+<td>设置</td>
+</tr>
+<tr>
+<td><code>notifications</code></td>
+<td>通知</td>
+</tr>
+<tr>
+<td><code>search</code></td>
+<td>搜索</td>
+</tr>
+<tr>
+<td><code>share</code></td>
+<td>分享</td>
+</tr>
+<tr>
+<td><code>delete</code></td>
+<td>删除</td>
+</tr>
+<tr>
+<td><code>edit</code></td>
+<td>编辑</td>
+</tr>
+<tr>
+<td><code>add</code></td>
+<td>添加</td>
+</tr>
+<tr>
+<td><code>close</code></td>
+<td>关闭</td>
+</tr>
+<tr>
+<td><code>check</code></td>
+<td>勾选</td>
+</tr>
+<tr>
+<td><code>error</code></td>
+<td>错误</td>
+</tr>
+<tr>
+<td><code>info</code></td>
+<td>信息</td>
+</tr>
+<tr>
+<td><code>warning</code></td>
+<td>警告</td>
+</tr>
+<tr>
+<td><code>chat-2-line</code></td>
+<td>聊天</td>
+</tr>
+<tr>
+<td><code>code</code></td>
+<td>代码</td>
+</tr>
+<tr>
+<td><code>cloud</code></td>
+<td>云</td>
+</tr>
+<tr>
+<td><code>download</code></td>
+<td>下载</td>
+</tr>
+<tr>
+<td><code>upload</code></td>
+<td>上传</td>
+</tr>
+<tr>
+<td><code>refresh</code></td>
+<td>刷新</td>
+</tr>
+<tr>
+<td><code>sync</code></td>
+<td>同步</td>
+</tr>
+<tr>
+<td><code>play</code></td>
+<td>播放</td>
+</tr>
+<tr>
+<td><code>pause</code></td>
+<td>暂停</td>
+</tr>
+<tr>
+<td><code>stop</code></td>
+<td>停止</td>
+</tr>
+<tr>
+<td><code>skip-next</code></td>
+<td>下一个</td>
+</tr>
+<tr>
+<td><code>skip-previous</code></td>
+<td>上一个</td>
+</tr>
+</tbody>
+</table>
+
+</main>
+
+<script>
+// Sidebar toggle for mobile
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('show');
+  document.body.style.overflow=document.getElementById('sidebar').classList.contains('open')?'hidden':'';
+}
+
+// Back to top button
+(function(){
+  const btn=document.getElementById('backToTop');
+  window.addEventListener('scroll',()=>{
+    if(window.scrollY>400){btn.classList.add('show');}
+    else{btn.classList.remove('show');}
+  });
+})();
+
+// Active sidebar link on scroll + hash
+(function(){
+  const nav=document.getElementById('sidebar-nav');
+  const links=nav.querySelectorAll('a[href^="#"]');
+
+  function setActive(){
+    const hash=location.hash.slice(1);
+    links.forEach(a=>{
+      a.classList.remove('active');
+      if(hash&&a.getAttribute('href')==='#'+hash){
+        a.classList.add('active');
+        // Scroll sidebar to keep active link visible
+        if(window.innerWidth<=900){
+          a.scrollIntoView({block:'nearest',behavior:'smooth'});
+        }
+      }
+    });
+  }
+
+  window.addEventListener('hashchange',()=>{
+    setActive();
+    // Close mobile sidebar
+    if(window.innerWidth<=900){
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('overlay').classList.remove('show');
+      document.body.style.overflow='';
+    }
+  });
+
+  links.forEach(a=>{
+    a.addEventListener('click',()=>{
+      if(window.innerWidth<=900){
+        document.getElementById('sidebar').classList.remove('open');
+        document.getElementById('overlay').classList.remove('show');
+        document.body.style.overflow='';
+      }
+    });
+  });
+
+  setActive();
+})();
+</script>
+</body>
+</html>
