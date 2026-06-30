@@ -83,14 +83,11 @@ class BackupAgent(private val context: Context) : CoreBackupAgent(
 
     suspend fun restore(input: InputStream, token: String?) {
         logger.d("restore: $input")
-        val content = readBackupPackageContent(input)
-        restoreContent(content, token)
-    }
-
-    private suspend fun restoreContent(content: BackupPackageContent, token: String?) {
         withContext(Dispatchers.IO) {
+            val content = readBackupPackageContent(input)
             content.rules.forEach {
                 logger.d("restore, add rule: ${it.title}")
+                // Disable this rule.
                 shortX.addRule(
                     Rule.newBuilder(it).setIsEnabled(false)
                         .addAllExtras(mutableListOf<StringPair>().apply {
@@ -164,124 +161,6 @@ class BackupAgent(private val context: Context) : CoreBackupAgent(
         logger.d("readBackupPackageContent, assetName: $assetName")
         return context.assets.open(assetName).use { input ->
             readBackupPackageContent(input)
-        }
-    }
-
-    suspend fun readBackupPackageContentFromAssetDir(assetDir: String): BackupPackageContent {
-        logger.d("readBackupPackageContentFromAssetDir, dir: $assetDir")
-        return withContext(Dispatchers.IO) {
-            val tmpDir = File(context.cacheDir, "shortx-asset-dir-tmp")
-            tmpDir.deleteRecursively()
-            tmpDir.mkdirs()
-
-            val fileNames = context.assets.list(assetDir) ?: emptyArray()
-            for (name in fileNames) {
-                runCatching {
-                    context.assets.open("$assetDir/$name").use { input ->
-                        File(tmpDir, name).outputStream().use { output ->
-                            input.copyTo(output)
-                        }
-                    }
-                }
-            }
-
-            val content = readBackupPackageContentFromDir(tmpDir)
-            tmpDir.deleteRecursively()
-            content
-        }
-    }
-
-    suspend fun restoreFromAssetDir(assetDir: String, token: String?) {
-        logger.d("restoreFromAssetDir, dir: $assetDir")
-        val content = readBackupPackageContentFromAssetDir(assetDir)
-        restoreContent(content, token)
-    }
-
-    private suspend fun readBackupPackageContentFromDir(dir: File): BackupPackageContent {
-        return withContext(Dispatchers.IO) {
-            val metaFile = File(dir, META_FILE_NAME)
-            assert(metaFile.exists()) { "UNKNOWN BACKUP FILE" }
-
-            val rulePb = File(dir, RULE_FILE_NAME)
-            val ruleStore = BaseRuleSettingsStore(this, rulePb)
-            ruleStore.read()
-            val rules = ruleStore.getAllRules()
-
-            val daPb = File(dir, DA_FILE_NAME)
-            val daStore = BaseDirectActionSettingsStore(this, daPb)
-            daStore.read()
-            val das = daStore.getAllDirectActions()
-
-            val codePb = File(dir, CODE_LIBRARY_FILE_NAME)
-            val codeLibraries = if (codePb.exists()) {
-                val codeStore = BaseCodeLibraryStore(this, codePb)
-                codeStore.read()
-                codeStore.getAllCodeLibraryItems()
-            } else {
-                emptyList()
-            }
-
-            val togglePb = File(dir, TOGGLE_FILE_NAME)
-            val toggleStore = BaseToggleSettingsStore(this, togglePb)
-            toggleStore.read()
-            val toggles = toggleStore.getAllToggles()
-
-            val pkgSetPb = File(dir, PKGSET_FILE_NAME)
-            val pkgSetStore = BasePkgSetsStore(this, pkgSetPb)
-            pkgSetStore.read()
-            val pkgSets = pkgSetStore.getAllPkgSets()
-
-            val gvPb = File(dir, GV_FILE_NAME)
-            val gvStore = BaseGlobalVarStore(this, gvPb)
-            gvStore.read()
-            val gvs = gvStore.getAllGlobalVars().filterNot { it.isSecret }
-
-            val daSetsPb = File(dir, DA_SET_FILE_NAME)
-            val daSetsStore = BaseDirectActionSetsStore(this, daSetsPb)
-            daSetsStore.read()
-            val daSets = daSetsStore.getAllDirectActionSets()
-
-            val ruleSetsPb = File(dir, RULE_SET_FILE_NAME)
-            val ruleSetsStore = BaseRuleSetsStore(this, ruleSetsPb)
-            ruleSetsStore.read()
-            val ruleSets = ruleSetsStore.getAllRuleSets()
-
-            val gesturesPb = File(dir, GESTURE_RECORD_FILE_NAME)
-            val gesturesStore = BaseGestureRecordsStore(this, gesturesPb)
-            gesturesStore.read()
-            val gestures = gesturesStore.getAllGestureRecords()
-
-            val functionsPb = File(dir, FUNCTION_FILE_NAME)
-            val functions = if (functionsPb.exists()) {
-                val functionsStore = BaseFunctionSettingsStore(this, functionsPb)
-                functionsStore.read()
-                functionsStore.getAllFunctions()
-            } else {
-                emptyList()
-            }
-
-            val statusBarTilePb = File(dir, STATUS_BAR_TILE_FILE_NAME)
-            val statusBarTiles = if (statusBarTilePb.exists()) {
-                val statusBarTileStore = BaseStatusBarSettingsStore(this, statusBarTilePb)
-                statusBarTileStore.read()
-                statusBarTileStore.getAllSettings()
-            } else {
-                emptyList()
-            }
-
-            BackupPackageContent(
-                das = das,
-                rules = rules,
-                codeLibraries = codeLibraries,
-                toggles = toggles,
-                pkgSets = pkgSets,
-                gvs = gvs,
-                daSets = daSets,
-                ruleSets = ruleSets,
-                gestures = gestures,
-                functions = functions,
-                statusBarTiles = statusBarTiles
-            )
         }
     }
 
