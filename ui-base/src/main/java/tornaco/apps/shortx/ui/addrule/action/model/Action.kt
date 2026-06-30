@@ -6075,6 +6075,8 @@ sealed interface Action : Parcelable {
         val iconColorArgb: Int = 0xFF1C1B1F.toInt(),
         val scalePercent: Int = 100,
         val arcSpanDegrees: Int = 160,
+        val ringCount: Int = 1,
+        val labelSizeSp: Int = 11,
     ) : Action {
         override fun clone(
             id: String,

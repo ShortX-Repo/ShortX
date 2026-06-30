@@ -101,10 +101,14 @@ private fun Content(vm: ShowPieMenuSelectorViewModel) {
         iconColor = state.iconColorArgb,
         scalePercent = state.scalePercent,
         arcSpanDegrees = state.arcSpanDegrees,
+        ringCount = state.ringCount,
+        labelSizeSp = state.labelSizeSp,
         onPieColorChange = vm::updatePieColor,
         onIconColorChange = vm::updateIconColor,
         onScaleChange = vm::updateScale,
         onArcSpanChange = vm::updateArcSpan,
+        onRingCountChange = vm::updateRingCount,
+        onLabelSizeChange = vm::updateLabelSize,
     )
     StandardSpacer()
 
@@ -129,10 +133,14 @@ private fun PieStyleEditor(
     iconColor: Int,
     scalePercent: Int,
     arcSpanDegrees: Int,
+    ringCount: Int,
+    labelSizeSp: Int,
     onPieColorChange: (Int) -> Unit,
     onIconColorChange: (Int) -> Unit,
     onScaleChange: (Int) -> Unit,
     onArcSpanChange: (Int) -> Unit,
+    onRingCountChange: (Int) -> Unit,
+    onLabelSizeChange: (Int) -> Unit,
 ) {
     val i18N = LocalI18N.current
     ShortXCard(modifier = Modifier.fillMaxWidth()) {
@@ -154,7 +162,25 @@ private fun PieStyleEditor(
                 valueRange = 60f..300f,
                 onValueChange = { onArcSpanChange(it.toInt()) },
             )
-            StandardSpacer()
+            MediumSpacer()
+
+            Text(text = "${i18N.get(key = "ui.action.show.pie.menu.ring.count", fallback = "Rings")}: $ringCount")
+            Slider(
+                value = ringCount.toFloat(),
+                valueRange = 1f..3f,
+                steps = 1,
+                onValueChange = { onRingCountChange(it.toInt()) },
+            )
+            MediumSpacer()
+
+            Text(text = "${i18N.get(key = "ui.action.show.pie.menu.label.size", fallback = "Label size")}: ${labelSizeSp}sp")
+            Slider(
+                value = labelSizeSp.toFloat(),
+                valueRange = 8f..18f,
+                steps = 9,
+                onValueChange = { onLabelSizeChange(it.toInt()) },
+            )
+            MediumSpacer()
 
             ColorStyleButton(
                 label = i18N.get(key = "ui.action.show.pie.menu.pie.color", fallback = "Pie color"),

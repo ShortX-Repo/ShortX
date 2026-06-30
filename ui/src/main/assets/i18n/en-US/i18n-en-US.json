@@ -1784,5 +1784,23 @@
   "ui.code.library.save.success": "Code snippet saved successfully",
   "ui.code.library.save.error": "Failed to save code snippet",
   "ui.code.library.execute.success": "Code executed successfully",
-  "ui.code.library.execute.error": "Failed to execute code: {error}"
+  "ui.code.library.execute.error": "Failed to execute code: {error}",
+
+  "ui.action.show.pie.menu": "PIE Menu",
+  "ui.action.show.pie.menu.desc": "Show a radial arc menu on continuous gesture",
+  "ui.action.show.pie.menu.tip": "Configure menu items with icons, labels and actions. When swiping from the edge, a radial arc menu appears at the touch point — drag to select, release to execute. Supports up to 12 items. Arc direction adapts automatically to the swipe edge.",
+  "ui.action.show.pie.menu.style": "Style",
+  "ui.action.show.pie.menu.scale": "Scale",
+  "ui.action.show.pie.menu.arc.span": "Arc span",
+  "ui.action.show.pie.menu.ring.count": "Rings",
+  "ui.action.show.pie.menu.label.size": "Label size",
+  "ui.action.show.pie.menu.pie.color": "Pie color",
+  "ui.action.show.pie.menu.icon.color": "Icon color",
+  "ui.action.show.pie.menu.add.item": "Add item",
+  "ui.action.show.pie.menu.item.of": "Item {index}",
+  "ui.action.show.pie.menu.item.icon": "Icon",
+  "ui.action.show.pie.menu.item.label": "Label",
+  "ui.action.show.pie.menu.item.action": "Action",
+  "ui.action.show.pie.menu.empty": "Please add at least one menu item",
+  "ui.action.show.pie.menu.too.many": "A maximum of 12 items is supported"
 }

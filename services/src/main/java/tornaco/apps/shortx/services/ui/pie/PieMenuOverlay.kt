@@ -29,6 +29,8 @@ class PieMenuOverlay(private val context: Context) {
         iconColor: Int,
         scalePercent: Int,
         arcSpanDegrees: Float,
+        ringCount: Int,
+        labelSizeSp: Int,
     ) {
         hide()
         val view = PieMenuArcView(
@@ -42,6 +44,8 @@ class PieMenuOverlay(private val context: Context) {
             iconColor = iconColor,
             scalePercent = scalePercent,
             arcSpanDegrees = arcSpanDegrees,
+            ringCount = ringCount,
+            labelSizeSp = labelSizeSp,
         )
         try {
             windowManager.addView(view, createLayoutParams())

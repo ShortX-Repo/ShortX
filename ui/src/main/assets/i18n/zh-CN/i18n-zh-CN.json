@@ -1783,5 +1783,23 @@
   "ui.code.library.save.success": "代码片段保存成功",
   "ui.code.library.save.error": "保存代码片段失败",
   "ui.code.library.execute.success": "代码执行成功",
-  "ui.code.library.execute.error": "代码执行失败：{error}"
+  "ui.code.library.execute.error": "代码执行失败：{error}",
+
+  "ui.action.show.pie.menu": "PIE 菜单",
+  "ui.action.show.pie.menu.desc": "在连续手势中显示弧形快捷菜单",
+  "ui.action.show.pie.menu.tip": "配置菜单项的图标、标签和动作。从屏幕边缘滑动时，触摸点会出现弧形菜单 — 拖动选择，松手执行。最多支持 12 个项目。弧形方向会根据滑动边缘自动调整。",
+  "ui.action.show.pie.menu.style": "样式",
+  "ui.action.show.pie.menu.scale": "缩放",
+  "ui.action.show.pie.menu.arc.span": "弧度范围",
+  "ui.action.show.pie.menu.ring.count": "圈数",
+  "ui.action.show.pie.menu.label.size": "标签字号",
+  "ui.action.show.pie.menu.pie.color": "扇区颜色",
+  "ui.action.show.pie.menu.icon.color": "图标颜色",
+  "ui.action.show.pie.menu.add.item": "添加项目",
+  "ui.action.show.pie.menu.item.of": "项目 {index}",
+  "ui.action.show.pie.menu.item.icon": "图标",
+  "ui.action.show.pie.menu.item.label": "标签",
+  "ui.action.show.pie.menu.item.action": "动作",
+  "ui.action.show.pie.menu.empty": "请至少添加一个菜单项",
+  "ui.action.show.pie.menu.too.many": "最多支持 12 个项目"
 }

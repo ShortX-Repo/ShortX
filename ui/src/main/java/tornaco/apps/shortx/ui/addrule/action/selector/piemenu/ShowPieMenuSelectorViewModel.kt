@@ -59,6 +59,8 @@ data class ShowPieMenuSelectorState(
     val iconColorArgb: Int = 0xFF1C1B1F.toInt(),
     val scalePercent: Int = 100,
     val arcSpanDegrees: Int = 160,
+    val ringCount: Int = 1,
+    val labelSizeSp: Int = 11,
     val id: String = defaultNewActionId(),
     val evaluatingActions: List<String> = emptyList(),
     val validationMessage: String? = null,
@@ -72,6 +74,8 @@ fun ShowPieMenuSelectorState.toAction(): Action.ShowPieMenu {
         iconColorArgb = iconColorArgb,
         scalePercent = scalePercent,
         arcSpanDegrees = arcSpanDegrees,
+        ringCount = ringCount,
+        labelSizeSp = labelSizeSp,
     )
 }
 
@@ -89,6 +93,8 @@ class ShowPieMenuSelectorViewModel @Inject constructor(@ApplicationContext conte
                 iconColorArgb = action.iconColorArgb,
                 scalePercent = action.scalePercent,
                 arcSpanDegrees = action.arcSpanDegrees,
+                ringCount = action.ringCount,
+                labelSizeSp = action.labelSizeSp,
                 evaluatingActions = shortXManager.getEvaluatingActions(),
                 validationMessage = null,
             )
@@ -125,6 +131,14 @@ class ShowPieMenuSelectorViewModel @Inject constructor(@ApplicationContext conte
 
     fun updateArcSpan(degrees: Int) {
         updateState { copy(arcSpanDegrees = degrees) }
+    }
+
+    fun updateRingCount(count: Int) {
+        updateState { copy(ringCount = count.coerceIn(1, 3)) }
+    }
+
+    fun updateLabelSize(size: Int) {
+        updateState { copy(labelSizeSp = size.coerceIn(8, 18)) }
     }
 
     fun validate(): Boolean {

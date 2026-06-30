@@ -2,7 +2,6 @@ package tornaco.apps.shortx.services.gesture.bpok.gesture.handlers
 
 import android.content.Context
 import android.graphics.drawable.BitmapDrawable
-import android.graphics.drawable.ColorDrawable
 import android.graphics.PorterDuff
 import android.graphics.drawable.Drawable
 import com.google.protobuf.Any as ProtoAny
@@ -31,6 +30,8 @@ class PieMenuContinuousHandler(
     private val iconColor: Int,
     private val scalePercent: Int,
     private val arcSpanDegrees: Float,
+    private val ringCount: Int,
+    private val labelSizeSp: Int,
 ) : ContinuousActionHandler {
     private val logger = Logger("PieMenuHandler")
     private val overlay = PieMenuOverlay(context)
@@ -58,6 +59,8 @@ class PieMenuContinuousHandler(
                 iconColor = iconColor,
                 scalePercent = scalePercent,
                 arcSpanDegrees = arcSpanDegrees,
+                ringCount = ringCount,
+                labelSizeSp = labelSizeSp,
             )
         }
         logger.d("onStart: edge=$edge, x=$x, y=$y, items=${items.size}")
@@ -105,10 +108,10 @@ class PieMenuContinuousHandler(
         }
     }
 
-    private fun createItemDrawable(item: PieMenuItem): Drawable {
+    private fun createItemDrawable(item: PieMenuItem): Drawable? {
         val iconDesc = item.iconDescription
         if (iconDesc.isNullOrEmpty()) {
-            return ColorDrawable(0x80FFFFFF.toInt())
+            return null
         }
         return try {
             if (iconDesc.isBase64Image()) {
@@ -116,7 +119,7 @@ class PieMenuContinuousHandler(
                 if (bitmap != null) {
                     BitmapDrawable(context.resources, bitmap)
                 } else {
-                    ColorDrawable(0x80FFFFFF.toInt())
+                    null
                 }
             } else {
                 val resName = remixResName(iconDesc)
@@ -125,15 +128,15 @@ class PieMenuContinuousHandler(
                     if (drawable != null && iconColor != 0) {
                         drawable.mutate().apply { setColorFilter(iconColor, PorterDuff.Mode.SRC_IN) }
                     } else {
-                        drawable ?: ColorDrawable(0x80FFFFFF.toInt())
+                        drawable
                     }
                 } else {
-                    ColorDrawable(0x80FFFFFF.toInt())
+                    null
                 }
             }
         } catch (e: Exception) {
             logger.e(e, "Failed to load icon: $iconDesc")
-            ColorDrawable(0x80FFFFFF.toInt())
+            null
         }
     }
 

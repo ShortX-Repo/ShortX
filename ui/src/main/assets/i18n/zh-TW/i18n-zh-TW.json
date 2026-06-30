@@ -1743,5 +1743,23 @@
   "ui.fact.edge.gesture.haptic": "回饋震動",
   "ui.fact.edge.gesture.haptic.disabled": "震動回饋已關閉",
   "ui.fact.edge.gesture.disable.when.ime": "輸入法顯示時禁用",
-  "ui.fact.edge.gesture.disable.when.ime.description": "開啟後，當輸入法顯示時，此邊緣手勢將不會觸發"
+  "ui.fact.edge.gesture.disable.when.ime.description": "開啟後，當輸入法顯示時，此邊緣手勢將不會觸發",
+
+  "ui.action.show.pie.menu": "PIE 選單",
+  "ui.action.show.pie.menu.desc": "在連續手勢中顯示弧形快捷選單",
+  "ui.action.show.pie.menu.tip": "設定選單項目的圖示、標籤和動作。從螢幕邊緣滑動時，觸控點會出現弧形選單 — 拖動選擇，放開執行。最多支援 12 個項目。弧形方向會根據滑動邊緣自動調整。",
+  "ui.action.show.pie.menu.style": "樣式",
+  "ui.action.show.pie.menu.scale": "縮放",
+  "ui.action.show.pie.menu.arc.span": "弧度範圍",
+  "ui.action.show.pie.menu.ring.count": "圈數",
+  "ui.action.show.pie.menu.label.size": "標籤字型大小",
+  "ui.action.show.pie.menu.pie.color": "扇區顏色",
+  "ui.action.show.pie.menu.icon.color": "圖示顏色",
+  "ui.action.show.pie.menu.add.item": "新增項目",
+  "ui.action.show.pie.menu.item.of": "項目 {index}",
+  "ui.action.show.pie.menu.item.icon": "圖示",
+  "ui.action.show.pie.menu.item.label": "標籤",
+  "ui.action.show.pie.menu.item.action": "動作",
+  "ui.action.show.pie.menu.empty": "請至少新增一個選單項目",
+  "ui.action.show.pie.menu.too.many": "最多支援 12 個項目"
 }

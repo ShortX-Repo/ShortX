@@ -632,6 +632,8 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
                                         iconColor = action.iconColorArgb.takeIf { it != 0 } ?: 0xFF1C1B1F.toInt(),
                                         scalePercent = action.scalePercent.takeIf { it > 0 } ?: 100,
                                         arcSpanDegrees = action.arcSpanDegrees.toFloat().takeIf { it > 0f } ?: 160f,
+                                        ringCount = action.ringCount.takeIf { it > 0 } ?: 1,
+                                        labelSizeSp = action.labelSizeSp.takeIf { it > 0 } ?: 11,
                                     )
                                 }
 
@@ -741,6 +743,8 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
                 iconColor = payload.iconColor,
                 scalePercent = payload.scalePercent,
                 arcSpanDegrees = payload.arcSpanDegrees,
+                ringCount = payload.ringCount,
+                labelSizeSp = payload.labelSizeSp,
             )
         }
     }

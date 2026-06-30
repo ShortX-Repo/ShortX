@@ -2652,6 +2652,8 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setIconColorArgb(iconColorArgb)
                 .setScalePercent(scalePercent)
                 .setArcSpanDegrees(arcSpanDegrees)
+                .setRingCount(ringCount)
+                .setLabelSizeSp(labelSizeSp)
                 .build()
         }
     }

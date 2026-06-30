@@ -2417,6 +2417,9 @@ message ShowPieMenu {
   int32 iconColorArgb = 3;
   int32 scalePercent = 4;
   int32 arcSpanDegrees = 5;
+  int32 ringCount = 6;
+  bool hideLabels = 7;
+  int32 labelSizeSp = 8;
 
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;

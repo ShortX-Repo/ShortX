@@ -44,6 +44,8 @@ sealed interface ContinuousGestureActionPayload {
         val iconColor: Int,
         val scalePercent: Int,
         val arcSpanDegrees: Float,
+        val ringCount: Int,
+        val labelSizeSp: Int,
     ) : ContinuousGestureActionPayload
 }
 

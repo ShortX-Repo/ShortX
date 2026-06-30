@@ -2942,6 +2942,8 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 iconColorArgb = data.iconColorArgb,
                 scalePercent = data.scalePercent,
                 arcSpanDegrees = data.arcSpanDegrees,
+                ringCount = data.ringCount.takeIf { it > 0 } ?: 1,
+                labelSizeSp = data.labelSizeSp.takeIf { it > 0 } ?: 11,
             )
         }
 
