@@ -55,8 +55,8 @@ fun PieMenuItem.toEditorState(): PieMenuItemEditorState {
 
 data class ShowPieMenuSelectorState(
     val items: List<PieMenuItemEditorState> = emptyList(),
-    val pieColorArgb: Int = 0xFF229C8C.toInt(),
-    val iconColorArgb: Int = 0xFFFFFFFF.toInt(),
+    val pieColorArgb: Int = 0xFFCDD7DE.toInt(),
+    val iconColorArgb: Int = 0xFF1C1B1F.toInt(),
     val scalePercent: Int = 100,
     val arcSpanDegrees: Int = 160,
     val id: String = defaultNewActionId(),

@@ -4,9 +4,9 @@ import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.CornerPathEffect
 import android.graphics.Paint
-import android.graphics.PorterDuff
-import android.graphics.PorterDuffXfermode
+import android.graphics.Path
 import android.graphics.RectF
 import android.graphics.Typeface
 import android.graphics.drawable.Drawable
@@ -16,10 +16,8 @@ import android.view.HapticFeedbackConstants
 import android.view.View
 import kotlin.math.atan2
 import kotlin.math.cos
-import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.sin
-import kotlin.math.sqrt
 
 enum class PieEdge(val startAngleDeg: Float) {
     LEFT(-80f),
@@ -44,35 +42,30 @@ class PieMenuArcView(
 ) : View(context) {
 
     companion object {
-        private const val ANIMATION_DURATION_MS = 100L
-        private const val BAND_WIDTH_RATIO = 0.4f
-        private const val ICON_SIZE_RATIO = 0.092f
-        private const val GAP_WIDTH_RATIO = 0.02f
+        private const val ANIMATION_DURATION_MS = 150L
         private const val OUTER_RADIUS_RATIO = 0.93f
+        private const val BAND_WIDTH_RATIO = 0.50f
+        private const val ICON_SIZE_RATIO = 0.065f
+        private const val GAP_DEGREES = 3.5f
+        private const val CORNER_RADIUS_DP = 14f
+        private const val LABEL_TEXT_SP = 11f
     }
 
     private val density = resources.displayMetrics.density
 
-    private val arcPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.STROKE
-        color = pieColor
-    }
+    private val normalColor = pieColor
+    private val selectedColor = blendWithWhite(pieColor, 0.35f)
 
-    private val highlightPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.STROKE
-        color = adjustBrightness(pieColor)
-    }
-
-    private val gapPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.STROKE
-        xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_OUT)
+    private val sectorPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        style = Paint.Style.FILL
+        pathEffect = CornerPathEffect(CORNER_RADIUS_DP * density)
     }
 
     private val labelPaint = TextPaint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.WHITE
+        color = iconColor
         textAlign = Paint.Align.CENTER
-        textSize = 11f * density
-        typeface = Typeface.DEFAULT_BOLD
+        textSize = LABEL_TEXT_SP * density
+        typeface = Typeface.create("sans-serif", Typeface.NORMAL)
     }
 
     private val itemCount: Int = itemDrawables.size.coerceAtLeast(1)
@@ -80,20 +73,18 @@ class PieMenuArcView(
     private val startAngle: Float = edge.startAngleDeg
 
     private val fM: Float
-    private val bandWidth: Int
+    private val outerRadius: Float
+    private val innerRadius: Float
+    private val bandWidth: Float
     private val iconHalf: Int
-    private val gapWidth: Int
-    private val outerRadius: Int
-    private val innerRadius: Int
-    private val midRadius: Int
 
-    private val arcRect: RectF
-    private val iconCenters: FloatArray
+    private val outerRect: RectF
+    private val innerRect: RectF
 
     private var selectedItem: Int = -1
+    private var lastSelectedItem: Int = -1
     private var animProgress: Float = 1f
     private var cancelled: Boolean = false
-    private var lastSelectedItem: Int = -1
 
     private val animProperty = object : Property<PieMenuArcView, Float>(Float::class.java, "animProgress") {
         override fun get(obj: PieMenuArcView): Float = obj.animProgress
@@ -110,29 +101,19 @@ class PieMenuArcView(
         ).toFloat()
         fM = displayMetric * scalePercent.coerceIn(75, 200) / 200f
 
-        bandWidth = (BAND_WIDTH_RATIO * fM + 0.5f).toInt()
-        iconHalf = (ICON_SIZE_RATIO * fM + 0.5f).toInt()
-        gapWidth = (GAP_WIDTH_RATIO * fM + 0.5f).toInt()
-        outerRadius = (OUTER_RADIUS_RATIO * fM + 0.5f).toInt()
+        outerRadius = OUTER_RADIUS_RATIO * fM
+        bandWidth = BAND_WIDTH_RATIO * fM
         innerRadius = outerRadius - bandWidth
-        midRadius = outerRadius - bandWidth / 2
+        iconHalf = (ICON_SIZE_RATIO * fM + 0.5f).toInt()
 
-        val strokeWidth = (bandWidth - gapWidth).toFloat()
-        arcPaint.strokeWidth = strokeWidth
-        highlightPaint.strokeWidth = strokeWidth
-        gapPaint.strokeWidth = gapWidth.toFloat()
-
-        val mid = midRadius.toFloat()
-        arcRect = RectF(centerX - mid, centerY - mid, centerX + mid, centerY + mid)
-
-        iconCenters = FloatArray(itemCount * 2)
-        val firstCenter = startAngle + itemAngle / 2f
-        for (i in 0 until itemCount) {
-            val angleDeg = firstCenter + itemAngle * i
-            val angleRad = Math.toRadians(angleDeg.toDouble())
-            iconCenters[i * 2] = centerX + (cos(angleRad) * midRadius).toFloat()
-            iconCenters[i * 2 + 1] = centerY + (sin(angleRad) * midRadius).toFloat()
-        }
+        outerRect = RectF(
+            centerX - outerRadius, centerY - outerRadius,
+            centerX + outerRadius, centerY + outerRadius
+        )
+        innerRect = RectF(
+            centerX - innerRadius, centerY - innerRadius,
+            centerX + innerRadius, centerY + innerRadius
+        )
 
         if (iconColor != 0) {
             itemDrawables.forEach { it?.setTint(iconColor) }
@@ -153,10 +134,7 @@ class PieMenuArcView(
         val dy = touchY - centerY
         val distSq = dx * dx + dy * dy
 
-        val inner = innerRadius.toFloat()
-        val outer = outerRadius.toFloat()
-
-        if (distSq < inner * inner || distSq > outer * outer) {
+        if (distSq < innerRadius * innerRadius || distSq > outerRadius * outerRadius) {
             if (selectedItem == -1) return false
             selectedItem = -1
             return true
@@ -187,11 +165,7 @@ class PieMenuArcView(
     private fun computeAngle(x: Float, y: Float): Float {
         val dx = x - centerX
         val dy = y - centerY
-        var deg = Math.toDegrees(atan2(dy.toDouble(), dx.toDouble()).toDouble()).toFloat()
-        if (edge == PieEdge.LEFT && deg < -80f) {
-            // no wrap needed
-        }
-        // Normalize to match startAngle range
+        var deg = Math.toDegrees(atan2(dy.toDouble(), dx.toDouble())).toFloat()
         while (deg < startAngle) deg += 360f
         while (deg > startAngle + 360f) deg -= 360f
         return deg
@@ -199,56 +173,51 @@ class PieMenuArcView(
 
     override fun onDraw(canvas: Canvas) {
         if (animProgress <= 0f) return
-
         val alpha = (255 * animProgress).toInt()
-        arcPaint.alpha = alpha
-        highlightPaint.alpha = alpha
-        gapPaint.alpha = 255
+        val effectiveSweep = itemAngle - GAP_DEGREES
 
-        // Draw main arc
-        canvas.drawArc(arcRect, startAngle, arcSpanDegrees, false, arcPaint)
-
-        // Draw highlight for selected item
-        if (selectedItem >= 0 && animProgress >= 1f) {
-            val visualIndex = if (edge.isReversed) (itemCount - 1) - selectedItem else selectedItem
-            val highlightStart = startAngle + visualIndex * itemAngle
-            canvas.drawArc(arcRect, highlightStart, itemAngle, false, highlightPaint)
-        }
-
-        // Draw gap separators between items
-        if (itemCount > 1) {
-            for (i in 1 until itemCount) {
-                val gapAngle = startAngle + i * itemAngle
-                canvas.drawArc(arcRect, gapAngle - 0.5f, 1f, false, gapPaint)
-            }
-        }
-
-        // Draw icons
         for (i in 0 until itemCount) {
+            val sectorStart = startAngle + i * itemAngle + GAP_DEGREES / 2f
+            val path = createSectorPath(sectorStart, effectiveSweep)
+
+            val logicalIndex = if (edge.isReversed) (itemCount - 1) - i else i
+            val isSelected = logicalIndex == selectedItem && animProgress >= 1f
+
+            sectorPaint.color = if (isSelected) selectedColor else normalColor
+            sectorPaint.alpha = alpha
+            canvas.drawPath(path, sectorPaint)
+
+            val midAngle = sectorStart + effectiveSweep / 2f
+            val midAngleRad = Math.toRadians(midAngle.toDouble())
+
             val drawable = if (edge.isReversed) {
                 itemDrawables.getOrNull((itemCount - 1) - i)
             } else {
                 itemDrawables.getOrNull(i)
-            } ?: continue
+            }
+            val iconRadius = innerRadius + bandWidth * 0.58f
+            val iconCx = (centerX + cos(midAngleRad) * iconRadius).toInt()
+            val iconCy = (centerY + sin(midAngleRad) * iconRadius).toInt()
+            drawable?.let {
+                it.alpha = alpha
+                it.setBounds(iconCx - iconHalf, iconCy - iconHalf, iconCx + iconHalf, iconCy + iconHalf)
+                it.draw(canvas)
+            }
 
-            val cx = iconCenters[i * 2].toInt()
-            val cy = iconCenters[i * 2 + 1].toInt()
-            drawable.alpha = alpha
-            drawable.setBounds(cx - iconHalf, cy - iconHalf, cx + iconHalf, cy + iconHalf)
-            drawable.draw(canvas)
-        }
-
-        // Draw selected item label
-        if (selectedItem >= 0 && animProgress >= 1f) {
-            val label = itemLabels.getOrNull(selectedItem)
+            val label = if (edge.isReversed) {
+                itemLabels.getOrNull((itemCount - 1) - i)
+            } else {
+                itemLabels.getOrNull(i)
+            }
             if (!label.isNullOrEmpty()) {
                 labelPaint.alpha = alpha
-                val labelY = centerY + outerRadius + 24 * density
-                canvas.drawText(label, centerX, labelY, labelPaint)
+                val labelRadius = innerRadius + bandWidth * 0.30f
+                val labelCx = (centerX + cos(midAngleRad) * labelRadius).toFloat()
+                val labelCy = (centerY + sin(midAngleRad) * labelRadius).toFloat()
+                canvas.drawText(label, labelCx, labelCy + labelPaint.textSize * 0.35f, labelPaint)
             }
         }
 
-        // Haptic on selection change
         if (selectedItem != lastSelectedItem) {
             lastSelectedItem = selectedItem
             if (selectedItem >= 0) {
@@ -257,17 +226,25 @@ class PieMenuArcView(
         }
     }
 
-    private fun adjustBrightness(color: Int): Int {
-        val a = Color.alpha(color)
-        val r = Color.red(color)
-        val g = Color.green(color)
-        val b = Color.blue(color)
-        val shift = if (r + g + b >= 384) -48 else 48
-        return Color.argb(
-            a,
-            (r + shift).coerceIn(0, 255),
-            (g + shift).coerceIn(0, 255),
-            (b + shift).coerceIn(0, 255),
+    private fun createSectorPath(startDeg: Float, sweepDeg: Float): Path {
+        val path = Path()
+        path.arcTo(outerRect, startDeg, sweepDeg)
+        val endDeg = startDeg + sweepDeg
+        val endRad = Math.toRadians(endDeg.toDouble())
+        path.lineTo(
+            centerX + cos(endRad).toFloat() * innerRadius,
+            centerY + sin(endRad).toFloat() * innerRadius
         )
+        path.arcTo(innerRect, endDeg, -sweepDeg)
+        path.close()
+        return path
+    }
+
+    private fun blendWithWhite(color: Int, ratio: Float): Int {
+        val a = Color.alpha(color)
+        val r = (Color.red(color) * (1 - ratio) + 255 * ratio).toInt()
+        val g = (Color.green(color) * (1 - ratio) + 255 * ratio).toInt()
+        val b = (Color.blue(color) * (1 - ratio) + 255 * ratio).toInt()
+        return Color.argb(a, r.coerceAtMost(255), g.coerceAtMost(255), b.coerceAtMost(255))
     }
 }

@@ -628,8 +628,8 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
                                     val action = actionProto unpack_ ShowPieMenu::class.java
                                     ContinuousGestureActionPayload.PieMenu(
                                         items = action.itemsList,
-                                        pieColor = action.pieColorArgb.takeIf { it != 0 } ?: 0xFF229C8C.toInt(),
-                                        iconColor = action.iconColorArgb,
+                                        pieColor = action.pieColorArgb.takeIf { it != 0 } ?: 0xFFCDD7DE.toInt(),
+                                        iconColor = action.iconColorArgb.takeIf { it != 0 } ?: 0xFF1C1B1F.toInt(),
                                         scalePercent = action.scalePercent.takeIf { it > 0 } ?: 100,
                                         arcSpanDegrees = action.arcSpanDegrees.toFloat().takeIf { it > 0f } ?: 160f,
                                     )
