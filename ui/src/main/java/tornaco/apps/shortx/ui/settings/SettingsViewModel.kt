@@ -480,7 +480,7 @@ class SettingsViewModel @Inject constructor(@ApplicationContext context: Context
     fun importPrebuilts(token: String?) {
         viewModelScope.launch {
             kotlin.runCatching {
-                BackupAgent(context).restore("dev/dev-all.zip", token)
+                BackupAgent(context).restoreFromAssetDir("dev", token)
                 RestoreEventRegistry.dataHasBeenRestore()
                 _restorePerformed.emit(RestoreResult.Success)
             }.onFailure {

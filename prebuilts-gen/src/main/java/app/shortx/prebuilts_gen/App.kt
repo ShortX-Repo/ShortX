@@ -7,7 +7,6 @@ import tornaco.apps.shortx.core.backup.META_FILE_NAME
 import tornaco.apps.shortx.core.backup.RULE_FILE_NAME
 import tornaco.apps.shortx.core.store.BaseDirectActionSettingsStore
 import tornaco.apps.shortx.core.store.BaseRuleSettingsStore
-import tornaco.apps.shortx.core.util.ZipUtils
 import tornaco.apps.shortx.core.util.logAdapter
 import java.io.File
 
@@ -45,9 +44,8 @@ suspend fun exportDev() {
         metaFile.writeText("AUTO GEN")
 
         val destDir = File("../ui/src/main/assets/dev")
-        val zipFile = File(destDir, "dev-all.zip")
-        zipFile.deleteRecursively()
-        ZipUtils.zip(prebuiltDir.absolutePath, destDir.absolutePath, zipFile.name)
+        destDir.mkdirs()
+        prebuiltDir.listFiles()?.forEach { it.copyTo(File(destDir, it.name), overwrite = true) }
     }
 }
 
@@ -74,8 +72,7 @@ suspend fun exportPrebuilt() {
         metaFile.writeText("AUTO GEN")
 
         val destDir = File("../ui/src/main/assets/prebuilt")
-        val zipFile = File(destDir, "prebuilt-all.zip")
-        zipFile.deleteRecursively()
-        ZipUtils.zip(prebuiltDir.absolutePath, destDir.absolutePath, zipFile.name)
+        destDir.mkdirs()
+        prebuiltDir.listFiles()?.forEach { it.copyTo(File(destDir, it.name), overwrite = true) }
     }
 }

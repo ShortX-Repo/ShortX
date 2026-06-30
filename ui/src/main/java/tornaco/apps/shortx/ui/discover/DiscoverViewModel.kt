@@ -97,7 +97,7 @@ data class DiscoverState(
     val discoverSortBy: DASortBy = DASortBy.CreateTime,
 )
 
-const val assetName = "prebuilt/prebuilt-all.zip"
+const val prebuiltAssetDir = "prebuilt"
 
 @SuppressLint("StaticFieldLeak")
 @HiltViewModel
@@ -248,7 +248,7 @@ class DiscoverViewModel @Inject constructor(@ApplicationContext context: Context
         logger.d("loadPrebuiltData.")
         updateState { copy(data = LoadState.Loading) }
         kotlin.runCatching {
-            val content = BackupAgent(context).readBackupPackageContent(assetName)
+            val content = BackupAgent(context).readBackupPackageContentFromAssetDir(prebuiltAssetDir)
             val daUMs = withContext(Dispatchers.IO) {
                 content.das.mapNotNull { directAction ->
                     runCatching {
