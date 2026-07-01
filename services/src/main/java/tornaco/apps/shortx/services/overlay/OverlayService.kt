@@ -1,9 +1,12 @@
 package tornaco.apps.shortx.services.overlay
 
 import android.annotation.ColorInt
+import android.app.ActivityManager
+import android.content.Context
 import android.content.res.Configuration
 import android.os.Handler
 import android.os.Looper
+import android.os.UserHandle
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import tornaco.apps.shortx.core.localvar.LocalVars
@@ -61,6 +64,17 @@ class OverlayService(shortXContext: ShortXContext) :
 
     val sideBarManager by lazy { SideBarManager(context, shortXContext, mainHandler) }
     val actionSidebarManager by lazy { ActionSidebarManager(context, shortXContext, mainHandler) }
+
+    private fun contextForCurrentUser(): Context {
+        val userId = ActivityManager.getCurrentUser()
+        if (userId == 0) return context
+        return try {
+            context.createContextAsUser(UserHandle.of(userId), 0)
+        } catch (e: Exception) {
+            logger.e(e, "Failed to create context for user $userId")
+            context
+        }
+    }
 
     override fun systemReady() {
         super.systemReady()
@@ -126,7 +140,7 @@ class OverlayService(shortXContext: ShortXContext) :
         val posY = store.read(Settings.IntSettings.OverlayButtonPosY(action.tag))
 
         val overlayIns = ComposeOverlay(
-            context = context,
+            context = contextForCurrentUser(),
             action = action,
             localVars = localVars,
             contextData = contextData,
@@ -204,7 +218,7 @@ class OverlayService(shortXContext: ShortXContext) :
         val (fixedPosXL, fixedPosYL) = getInitialFloatWindowPos(action.tag, false)
 
         val float = FloatApi(
-            context, action,
+            contextForCurrentUser(), action,
             initialPosP = fixedPosXP to fixedPosYP,
             initialPosL = fixedPosXL to fixedPosYL,
             onPosChange = { x, y ->

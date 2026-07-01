@@ -10,7 +10,7 @@ public class FloatWindowManager {
     private HashMap<String, FloatWindow> mMapping;
 
     public FloatWindowManager(Context context) {
-        this.mContext = context.getApplicationContext();
+        this.mContext = context;
     }
 
     private void ensureInitMapping() {

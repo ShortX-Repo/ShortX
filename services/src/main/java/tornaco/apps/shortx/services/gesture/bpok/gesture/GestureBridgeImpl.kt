@@ -1,7 +1,9 @@
 package tornaco.apps.shortx.services.gesture.bpok.gesture
 
+import android.app.ActivityManager
 import android.content.Context
 import android.os.SystemClock
+import android.os.UserHandle
 import android.view.InputEvent
 import android.view.MotionEvent
 import kotlinx.coroutines.CoroutineScope
@@ -48,6 +50,17 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
 
     companion object {
         private const val DIAG_PREFIX = "[SX_EDGE_DIAG]"
+    }
+
+    private fun contextForCurrentUser(): Context {
+        val userId = ActivityManager.getCurrentUser()
+        if (userId == 0) return context
+        return try {
+            context.createContextAsUser(UserHandle.of(userId), 0)
+        } catch (e: Exception) {
+            logger.e(e, "Failed to create context for user $userId")
+            context
+        }
     }
 
     private val scope: CoroutineScope = CoroutineScope(SupervisorJob())
@@ -710,16 +723,17 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
     }
 
     override fun createContinuousActionHandler(payload: ContinuousGestureActionPayload): ContinuousActionHandler? {
+        val userContext = contextForCurrentUser()
         return when (payload) {
             is ContinuousGestureActionPayload.Brightness -> BrightnessContinuousHandler(
-                context = context,
+                context = userContext,
                 sensitivityScale = payload.sensitivityScale,
                 minValue = payload.minValue,
                 maxValue = payload.maxValue,
             )
 
             is ContinuousGestureActionPayload.Pointer -> GesturePointerContinuousHandler(
-                context = context,
+                context = userContext,
                 sensitivityScale = payload.sensitivityScale,
                 releaseButton = payload.releaseButton,
                 dragButton = payload.dragButton,
@@ -731,13 +745,13 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
             )
 
             is ContinuousGestureActionPayload.Volume -> VolumeContinuousHandler(
-                context = context,
+                context = userContext,
                 streamType = payload.streamType,
                 sensitivityScale = payload.sensitivityScale,
             )
 
             is ContinuousGestureActionPayload.PieMenu -> PieMenuContinuousHandler(
-                context = context,
+                context = userContext,
                 items = payload.items,
                 pieColor = payload.pieColor,
                 iconColor = payload.iconColor,
