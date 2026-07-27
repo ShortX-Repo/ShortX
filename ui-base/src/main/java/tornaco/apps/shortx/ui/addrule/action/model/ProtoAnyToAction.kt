@@ -1718,6 +1718,15 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 scrollScale = data.scrollScale.takeIf { it > 0f } ?: 1f,
                 cancelRegionRadiusDp = data.cancelRegionRadiusDp.takeIf { it > 0 } ?: 48,
                 enableCenterActionSwitch = data.enableCenterActionSwitch,
+                centerSwitchModes = data.centerSwitchModesList.map { mode ->
+                    when (mode) {
+                        tornaco.apps.shortx.core.proto.action.GesturePointerCenterSwitchMode.GesturePointerCenterSwitchModeLongPress -> GesturePointerCenterSwitchMode.LongPress
+                        tornaco.apps.shortx.core.proto.action.GesturePointerCenterSwitchMode.GesturePointerCenterSwitchModeDoubleClick -> GesturePointerCenterSwitchMode.DoubleClick
+                        tornaco.apps.shortx.core.proto.action.GesturePointerCenterSwitchMode.GesturePointerCenterSwitchModeDrag -> GesturePointerCenterSwitchMode.Drag
+                        tornaco.apps.shortx.core.proto.action.GesturePointerCenterSwitchMode.GesturePointerCenterSwitchModeScroll -> GesturePointerCenterSwitchMode.Scroll
+                        else -> GesturePointerCenterSwitchMode.SingleClick
+                    }
+                },
             )
         }
 

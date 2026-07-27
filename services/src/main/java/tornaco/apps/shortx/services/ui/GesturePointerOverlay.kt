@@ -19,6 +19,8 @@ enum class GesturePointerVisualMode {
     SingleClick,
     LongPress,
     DoubleClick,
+    Drag,
+    Scroll,
 }
 
 class GesturePointerOverlay(private val context: Context) {
@@ -221,6 +223,22 @@ private class GesturePointerOverlayView(context: Context) : View(context) {
             GesturePointerVisualMode.DoubleClick -> {
                 canvas.drawCircle(currentX, currentY, 7f * density, anchorRingPaint)
                 canvas.drawCircle(currentX, currentY, 13f * density, anchorRingPaint)
+            }
+
+            GesturePointerVisualMode.Drag -> {
+                canvas.drawCircle(currentX, currentY, 11f * density, anchorRingPaint)
+                val arrowLen = 6f * density
+                canvas.drawLine(currentX, currentY - 11f * density, currentX - arrowLen, currentY - 11f * density + arrowLen, anchorCrossPaint)
+                canvas.drawLine(currentX, currentY - 11f * density, currentX + arrowLen, currentY - 11f * density + arrowLen, anchorCrossPaint)
+                canvas.drawLine(currentX, currentY + 11f * density, currentX - arrowLen, currentY + 11f * density - arrowLen, anchorCrossPaint)
+                canvas.drawLine(currentX, currentY + 11f * density, currentX + arrowLen, currentY + 11f * density - arrowLen, anchorCrossPaint)
+            }
+
+            GesturePointerVisualMode.Scroll -> {
+                canvas.drawCircle(currentX, currentY, 9f * density, anchorRingPaint)
+                val tickLen = 5f * density
+                canvas.drawLine(currentX, currentY - 9f * density - tickLen, currentX, currentY - 9f * density + tickLen, anchorCrossPaint)
+                canvas.drawLine(currentX, currentY + 9f * density - tickLen, currentX, currentY + 9f * density + tickLen, anchorCrossPaint)
             }
         }
         canvas.drawLine(currentX - crossHalf, currentY, currentX - gap, currentY, anchorCrossPaint)

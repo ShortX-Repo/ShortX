@@ -2332,6 +2332,14 @@ enum GesturePointerScrollMode {
   GesturePointerScrollModeBoth = 3;
 }
 
+enum GesturePointerCenterSwitchMode {
+  GesturePointerCenterSwitchModeSingleClick = 0;
+  GesturePointerCenterSwitchModeLongPress = 1;
+  GesturePointerCenterSwitchModeDoubleClick = 2;
+  GesturePointerCenterSwitchModeDrag = 3;
+  GesturePointerCenterSwitchModeScroll = 4;
+}
+
 message ContinuousGesturePointer {
   float sensitivityScale = 1;
   bool clickOnRelease = 2 [deprecated = true];
@@ -2342,6 +2350,7 @@ message ContinuousGesturePointer {
   float scrollScale = 7;
   int32 cancelRegionRadiusDp = 8;
   bool enableCenterActionSwitch = 9;
+  repeated GesturePointerCenterSwitchMode centerSwitchModes = 10;
 
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;

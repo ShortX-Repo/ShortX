@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import android.os.SystemClock
+import tornaco.apps.shortx.core.proto.action.GesturePointerCenterSwitchMode
 import tornaco.apps.shortx.core.proto.action.GesturePointerDragButton
 import tornaco.apps.shortx.core.proto.action.GesturePointerReleaseButton
 import tornaco.apps.shortx.core.proto.action.GesturePointerScrollMode
@@ -36,6 +37,7 @@ class GesturePointerContinuousHandler(
     private val scrollScale: Float = 1f,
     private val cancelRegionRadiusDp: Int = 48,
     private val enableCenterActionSwitch: Boolean = false,
+    private val centerSwitchModes: List<GesturePointerCenterSwitchMode> = emptyList(),
 ) : ContinuousActionHandler {
     companion object {
         private const val POINTER_ID = -3L
@@ -46,10 +48,12 @@ class GesturePointerContinuousHandler(
         private const val LONG_PRESS_SETTLE_MS = 120L
     }
 
-    private enum class ReleaseMode {
+    private enum class PointerMode {
         SingleClick,
         LongPress,
         DoubleClick,
+        Drag,
+        Scroll,
     }
 
     private val logger = Logger("GesturePointerHandler")
@@ -78,9 +82,14 @@ class GesturePointerContinuousHandler(
     private var lastVisualY = 0f
     private var overlayShown = false
     private var dragActive = false
-    private var releaseMode = ReleaseMode.SingleClick
+    private var pointerMode = PointerMode.SingleClick
+    private var pointerModeIndex = 0
+    private val hasCenterSwitchModes = centerSwitchModes.isNotEmpty()
+    private val isDragViaCenter = centerSwitchModes.any { it == GesturePointerCenterSwitchMode.GesturePointerCenterSwitchModeDrag }
+    private val isScrollViaCenter = centerSwitchModes.any { it == GesturePointerCenterSwitchMode.GesturePointerCenterSwitchModeScroll }
     private var hasExitedCancelRegion = false
     private var switchArmed = false
+    private var dragModeEnteredTime = 0L
 
     override fun onStart(edgeGroup: Int, x: Float, y: Float, time: Long) {
         this.edgeGroup = edgeGroup
@@ -99,7 +108,9 @@ class GesturePointerContinuousHandler(
         lastVisualX = currentX
         lastVisualY = currentY
         dragActive = false
-        releaseMode = ReleaseMode.SingleClick
+        pointerMode = if (hasCenterSwitchModes) centerSwitchModes.first().toPointerMode() else PointerMode.SingleClick
+        pointerModeIndex = 0
+        dragModeEnteredTime = time
         hasExitedCancelRegion = false
         switchArmed = false
         showPointerOverlay()
@@ -117,9 +128,9 @@ class GesturePointerContinuousHandler(
         currentX = (startX + dx).coerceIn(0f, screenWidth.toFloat())
         currentY = (startY + dy).coerceIn(0f, screenHeight.toFloat())
 
-        if (!dragActive && dragButton != GesturePointerDragButton.GesturePointerDragButtonNone) {
+        if (pointerMode == PointerMode.Drag) {
             val holdMs = dragHoldDurationMs.coerceAtLeast(DEFAULT_DRAG_HOLD_MS)
-            if (time - startTime >= holdMs) {
+            if (!dragActive && time - dragModeEnteredTime >= holdMs) {
                 pointerX = currentX
                 pointerY = currentY
                 dragActive = injectPointerAction(
@@ -129,25 +140,60 @@ class GesturePointerContinuousHandler(
                     pressure = 1f,
                     button = dragButton.toMotionButton(),
                 )
+                if (dragActive) {
+                    showDragStartedToast()
+                }
             }
-        }
-
-        if (dragActive) {
-            pointerX = currentX
-            pointerY = currentY
-            injectPointerAction(
-                action = MotionEvent.ACTION_MOVE,
-                x = pointerX,
-                y = pointerY,
-                pressure = 1f,
-                button = dragButton.toMotionButton(),
-            )
-        } else if (scrollMode != GesturePointerScrollMode.GesturePointerScrollModeNone) {
+            if (dragActive) {
+                pointerX = currentX
+                pointerY = currentY
+                injectPointerAction(
+                    action = MotionEvent.ACTION_MOVE,
+                    x = pointerX,
+                    y = pointerY,
+                    pressure = 1f,
+                    button = dragButton.toMotionButton(),
+                )
+            } else {
+                pointerX = currentX
+                pointerY = currentY
+                injectHoverMove(pointerX, pointerY, time)
+            }
+        } else if (pointerMode == PointerMode.Scroll) {
             injectScroll(currentX - lastVisualX, currentY - lastVisualY)
         } else {
-            pointerX = currentX
-            pointerY = currentY
-            injectHoverMove(pointerX, pointerY, time)
+            if (!isDragViaCenter && !dragActive && dragButton != GesturePointerDragButton.GesturePointerDragButtonNone) {
+                val holdMs = dragHoldDurationMs.coerceAtLeast(DEFAULT_DRAG_HOLD_MS)
+                if (time - startTime >= holdMs) {
+                    pointerX = currentX
+                    pointerY = currentY
+                    dragActive = injectPointerAction(
+                        action = MotionEvent.ACTION_DOWN,
+                        x = pointerX,
+                        y = pointerY,
+                        pressure = 1f,
+                        button = dragButton.toMotionButton(),
+                    )
+                }
+            }
+
+            if (dragActive) {
+                pointerX = currentX
+                pointerY = currentY
+                injectPointerAction(
+                    action = MotionEvent.ACTION_MOVE,
+                    x = pointerX,
+                    y = pointerY,
+                    pressure = 1f,
+                    button = dragButton.toMotionButton(),
+                )
+            } else if (!isScrollViaCenter && scrollMode != GesturePointerScrollMode.GesturePointerScrollModeNone) {
+                injectScroll(currentX - lastVisualX, currentY - lastVisualY)
+            } else {
+                pointerX = currentX
+                pointerY = currentY
+                injectHoverMove(pointerX, pointerY, time)
+            }
         }
 
         lastVisualX = currentX
@@ -168,11 +214,12 @@ class GesturePointerContinuousHandler(
                 button = dragButton.toMotionButton(),
             )
             dragActive = false
-        } else if (!shouldCancel && (enableCenterActionSwitch || releaseButton != GesturePointerReleaseButton.GesturePointerReleaseButtonNone)) {
+        } else if (!shouldCancel && pointerMode != PointerMode.Drag && pointerMode != PointerMode.Scroll
+            && (hasCenterSwitchModes || releaseButton != GesturePointerReleaseButton.GesturePointerReleaseButtonNone)) {
             performReleaseAction(pointerX, pointerY)
         }
         hidePointerOverlay()
-        logger.d("onFinish: pointer=($pointerX,$pointerY), shouldCancel=$shouldCancel, releaseMode=$releaseMode")
+        logger.d("onFinish: pointer=($pointerX,$pointerY), shouldCancel=$shouldCancel, pointerMode=$pointerMode")
     }
 
     override fun onCancel() {
@@ -200,7 +247,7 @@ class GesturePointerContinuousHandler(
                 edgeGroup = edgeGroup,
                 x = currentX,
                 y = currentY,
-                pointerMode = releaseMode.toVisualMode(),
+                pointerMode = pointerMode.toVisualMode(),
             )
         }
     }
@@ -228,7 +275,7 @@ class GesturePointerContinuousHandler(
                 currentY = currentY,
                 cancelRegionRadius = cancelRegionRadiusPx,
                 isInCancelRegion = isInCancelRegion(fingerX, fingerY),
-                pointerMode = releaseMode.toVisualMode(),
+                pointerMode = pointerMode.toVisualMode(),
             )
         }
     }
@@ -238,7 +285,7 @@ class GesturePointerContinuousHandler(
     }
 
     private fun updateCenterActionSwitchState() {
-        if (!enableCenterActionSwitch) return
+        if (!hasCenterSwitchModes) return
 
         val distance = hypot(fingerX - startX, fingerY - startY)
         val isOutsideSwitchRegion = distance >= cancelRegionRadiusPx + centerSwitchHysteresisPx
@@ -256,14 +303,30 @@ class GesturePointerContinuousHandler(
         }
 
         if (switchArmed && isOutsideSwitchRegion) {
-            releaseMode = releaseMode.next()
+            val previousMode = pointerMode
+            pointerModeIndex = (pointerModeIndex + 1) % centerSwitchModes.size
+            pointerMode = centerSwitchModes[pointerModeIndex].toPointerMode()
             switchArmed = false
-            logger.d("Center action switch -> $releaseMode")
-            showModeSwitchToast(releaseMode)
+            if (pointerMode == PointerMode.Drag) {
+                dragModeEnteredTime = SystemClock.uptimeMillis()
+                showDragAimingToast()
+            }
+            if (previousMode == PointerMode.Drag && dragActive) {
+                injectPointerAction(
+                    action = MotionEvent.ACTION_UP,
+                    x = pointerX,
+                    y = pointerY,
+                    pressure = 0f,
+                    button = dragButton.toMotionButton(),
+                )
+                dragActive = false
+            }
+            logger.d("Center action switch -> $pointerMode")
+            showModeSwitchToast(pointerMode)
         }
     }
 
-    private fun showModeSwitchToast(mode: ReleaseMode) {
+    private fun showModeSwitchToast(mode: PointerMode) {
         overlayScope.launch {
             Toast.makeText(
                 context,
@@ -273,16 +336,37 @@ class GesturePointerContinuousHandler(
         }
     }
 
+    private fun showDragAimingToast() {
+        overlayScope.launch {
+            Toast.makeText(
+                context,
+                i18NIns[I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_MODE_DRAG_AIMING],
+                Toast.LENGTH_SHORT,
+            ).show()
+        }
+    }
+
+    private fun showDragStartedToast() {
+        overlayScope.launch {
+            Toast.makeText(
+                context,
+                i18NIns[I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_MODE_DRAG_STARTED],
+                Toast.LENGTH_SHORT,
+            ).show()
+        }
+    }
+
     private fun performReleaseAction(x: Float, y: Float) {
-        when (releaseMode) {
-            ReleaseMode.SingleClick -> performSingleReleaseAction(x, y)
-            ReleaseMode.LongPress -> performLongPressReleaseAction(x, y)
-            ReleaseMode.DoubleClick -> performDoubleReleaseAction(x, y)
+        when (pointerMode) {
+            PointerMode.SingleClick -> performSingleReleaseAction(x, y)
+            PointerMode.LongPress -> performLongPressReleaseAction(x, y)
+            PointerMode.DoubleClick -> performDoubleReleaseAction(x, y)
+            PointerMode.Drag, PointerMode.Scroll -> Unit
         }
     }
 
     private fun performSingleReleaseAction(x: Float, y: Float) {
-        if (enableCenterActionSwitch) {
+        if (hasCenterSwitchModes) {
             injectTouchTap(x, y)
             return
         }
@@ -293,7 +377,7 @@ class GesturePointerContinuousHandler(
     }
 
     private fun performLongPressReleaseAction(x: Float, y: Float) {
-        if (enableCenterActionSwitch) {
+        if (hasCenterSwitchModes) {
             injectTouchLongPress(x, y)
             return
         }
@@ -304,7 +388,7 @@ class GesturePointerContinuousHandler(
     }
 
     private fun performDoubleReleaseAction(x: Float, y: Float) {
-        if (enableCenterActionSwitch) {
+        if (hasCenterSwitchModes) {
             injectTouchDoubleTap(x, y)
             return
         }
@@ -517,27 +601,34 @@ class GesturePointerContinuousHandler(
         }
     }
 
-    private fun ReleaseMode.toVisualMode(): GesturePointerVisualMode {
+    private fun PointerMode.toVisualMode(): GesturePointerVisualMode {
         return when (this) {
-            ReleaseMode.SingleClick -> GesturePointerVisualMode.SingleClick
-            ReleaseMode.LongPress -> GesturePointerVisualMode.LongPress
-            ReleaseMode.DoubleClick -> GesturePointerVisualMode.DoubleClick
+            PointerMode.SingleClick -> GesturePointerVisualMode.SingleClick
+            PointerMode.LongPress -> GesturePointerVisualMode.LongPress
+            PointerMode.DoubleClick -> GesturePointerVisualMode.DoubleClick
+            PointerMode.Drag -> GesturePointerVisualMode.Drag
+            PointerMode.Scroll -> GesturePointerVisualMode.Scroll
         }
     }
 
-    private fun ReleaseMode.next(): ReleaseMode {
+    private fun PointerMode.label(): String {
         return when (this) {
-            ReleaseMode.SingleClick -> ReleaseMode.LongPress
-            ReleaseMode.LongPress -> ReleaseMode.DoubleClick
-            ReleaseMode.DoubleClick -> ReleaseMode.SingleClick
+            PointerMode.SingleClick -> i18NIns[I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_MODE_SINGLE]
+            PointerMode.LongPress -> i18NIns[I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_MODE_LONG]
+            PointerMode.DoubleClick -> i18NIns[I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_MODE_DOUBLE]
+            PointerMode.Drag -> i18NIns[I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_MODE_DRAG]
+            PointerMode.Scroll -> i18NIns[I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_MODE_SCROLL]
         }
     }
 
-    private fun ReleaseMode.label(): String {
+    private fun GesturePointerCenterSwitchMode.toPointerMode(): PointerMode {
         return when (this) {
-            ReleaseMode.SingleClick -> i18NIns[I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_MODE_SINGLE]
-            ReleaseMode.LongPress -> i18NIns[I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_MODE_LONG]
-            ReleaseMode.DoubleClick -> i18NIns[I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_MODE_DOUBLE]
+            GesturePointerCenterSwitchMode.GesturePointerCenterSwitchModeSingleClick -> PointerMode.SingleClick
+            GesturePointerCenterSwitchMode.GesturePointerCenterSwitchModeLongPress -> PointerMode.LongPress
+            GesturePointerCenterSwitchMode.GesturePointerCenterSwitchModeDoubleClick -> PointerMode.DoubleClick
+            GesturePointerCenterSwitchMode.GesturePointerCenterSwitchModeDrag -> PointerMode.Drag
+            GesturePointerCenterSwitchMode.GesturePointerCenterSwitchModeScroll -> PointerMode.Scroll
+            else -> PointerMode.SingleClick
         }
     }
 }

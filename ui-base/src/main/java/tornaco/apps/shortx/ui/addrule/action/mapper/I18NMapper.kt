@@ -36,6 +36,7 @@ import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.core.util.fallbackOnEmpty
 import tornaco.apps.shortx.core.util.select
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.action.model.GesturePointerCenterSwitchMode
 import tornaco.apps.shortx.ui.addrule.condition.mapper.labelForConditionSelector
 import tornaco.apps.shortx.ui.addrule.fact.mapper.factLabelKey
 import tornaco.apps.shortx.ui.addrule.fact.mapper.getLabelForKeyCode
@@ -1099,7 +1100,20 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
                     }
                     append(" · ")
                     append("${action.cancelRegionRadiusDp}dp")
-                    if (action.enableCenterActionSwitch) {
+                    if (action.centerSwitchModes.isNotEmpty()) {
+                        append(" · ")
+                        append(
+                            action.centerSwitchModes.joinToString("→") { mode ->
+                                when (mode) {
+                                    GesturePointerCenterSwitchMode.SingleClick -> i18N.get(key = "ui.action.continuous.gesture.pointer.mode.single", fallback = "single click")
+                                    GesturePointerCenterSwitchMode.LongPress -> i18N.get(key = "ui.action.continuous.gesture.pointer.mode.long", fallback = "long press")
+                                    GesturePointerCenterSwitchMode.DoubleClick -> i18N.get(key = "ui.action.continuous.gesture.pointer.mode.double", fallback = "double click")
+                                    GesturePointerCenterSwitchMode.Drag -> i18N.get(key = "ui.action.continuous.gesture.pointer.mode.drag", fallback = "drag")
+                                    GesturePointerCenterSwitchMode.Scroll -> i18N.get(key = "ui.action.continuous.gesture.pointer.mode.scroll", fallback = "scroll")
+                                }
+                            }
+                        )
+                    } else if (action.enableCenterActionSwitch) {
                         append(" · ")
                         append(
                             i18N.get(

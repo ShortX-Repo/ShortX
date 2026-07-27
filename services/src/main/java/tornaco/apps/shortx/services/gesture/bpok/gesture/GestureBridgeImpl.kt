@@ -626,6 +626,13 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
                                         scrollScale = action.scrollScale.takeIf { it > 0f } ?: 1f,
                                         cancelRegionRadiusDp = action.cancelRegionRadiusDp.takeIf { it > 0 } ?: 48,
                                         enableCenterActionSwitch = action.enableCenterActionSwitch,
+                                        centerSwitchModes = action.centerSwitchModesList.ifEmpty {
+                                            if (action.enableCenterActionSwitch) listOf(
+                                                tornaco.apps.shortx.core.proto.action.GesturePointerCenterSwitchMode.GesturePointerCenterSwitchModeSingleClick,
+                                                tornaco.apps.shortx.core.proto.action.GesturePointerCenterSwitchMode.GesturePointerCenterSwitchModeLongPress,
+                                                tornaco.apps.shortx.core.proto.action.GesturePointerCenterSwitchMode.GesturePointerCenterSwitchModeDoubleClick,
+                                            ) else emptyList()
+                                        },
                                     )
                                 }
 
@@ -742,6 +749,7 @@ class GestureBridgeImpl(private val context: Context) : GestureBridge {
                 scrollScale = payload.scrollScale,
                 cancelRegionRadiusDp = payload.cancelRegionRadiusDp,
                 enableCenterActionSwitch = payload.enableCenterActionSwitch,
+                centerSwitchModes = payload.centerSwitchModes,
             )
 
             is ContinuousGestureActionPayload.Volume -> VolumeContinuousHandler(

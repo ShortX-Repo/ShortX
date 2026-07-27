@@ -1532,7 +1532,18 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 )
                 .setScrollScale(scrollScale)
                 .setCancelRegionRadiusDp(cancelRegionRadiusDp)
-                .setEnableCenterActionSwitch(enableCenterActionSwitch)
+                .setEnableCenterActionSwitch(enableCenterActionSwitch || centerSwitchModes.isNotEmpty())
+                .addAllCenterSwitchModes(
+                    centerSwitchModes.map { mode ->
+                        when (mode) {
+                            tornaco.apps.shortx.ui.addrule.action.model.GesturePointerCenterSwitchMode.SingleClick -> tornaco.apps.shortx.core.proto.action.GesturePointerCenterSwitchMode.GesturePointerCenterSwitchModeSingleClick
+                            tornaco.apps.shortx.ui.addrule.action.model.GesturePointerCenterSwitchMode.LongPress -> tornaco.apps.shortx.core.proto.action.GesturePointerCenterSwitchMode.GesturePointerCenterSwitchModeLongPress
+                            tornaco.apps.shortx.ui.addrule.action.model.GesturePointerCenterSwitchMode.DoubleClick -> tornaco.apps.shortx.core.proto.action.GesturePointerCenterSwitchMode.GesturePointerCenterSwitchModeDoubleClick
+                            tornaco.apps.shortx.ui.addrule.action.model.GesturePointerCenterSwitchMode.Drag -> tornaco.apps.shortx.core.proto.action.GesturePointerCenterSwitchMode.GesturePointerCenterSwitchModeDrag
+                            tornaco.apps.shortx.ui.addrule.action.model.GesturePointerCenterSwitchMode.Scroll -> tornaco.apps.shortx.core.proto.action.GesturePointerCenterSwitchMode.GesturePointerCenterSwitchModeScroll
+                        }
+                    }
+                )
                 .build()
             }
 

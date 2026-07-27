@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.services.gesture.bpok.gesture
 
+import tornaco.apps.shortx.core.proto.action.GesturePointerCenterSwitchMode
 import tornaco.apps.shortx.core.proto.action.GesturePointerDragButton
 import tornaco.apps.shortx.core.proto.action.GesturePointerReleaseButton
 import tornaco.apps.shortx.core.proto.action.GesturePointerScrollMode
@@ -31,6 +32,7 @@ sealed interface ContinuousGestureActionPayload {
         val scrollScale: Float,
         val cancelRegionRadiusDp: Int,
         val enableCenterActionSwitch: Boolean,
+        val centerSwitchModes: List<GesturePointerCenterSwitchMode>,
     ) : ContinuousGestureActionPayload
 
     data class Volume(

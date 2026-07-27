@@ -3,12 +3,15 @@
 package tornaco.apps.shortx.ui.addrule.action.selector
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -24,13 +27,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.action.model.Action
+import tornaco.apps.shortx.ui.addrule.action.model.GesturePointerCenterSwitchMode
 import tornaco.apps.shortx.ui.addrule.action.model.GesturePointerDragButton
 import tornaco.apps.shortx.ui.addrule.action.model.GesturePointerReleaseButton
 import tornaco.apps.shortx.ui.addrule.action.model.GesturePointerScrollMode
@@ -60,6 +66,7 @@ class ContinuousGesturePointerDialogState(
     var scrollScale by mutableFloatStateOf(1f)
     var cancelRegionRadiusDp by mutableIntStateOf(48)
     var enableCenterActionSwitch by mutableStateOf(false)
+    val centerSwitchModes = mutableStateListOf<GesturePointerCenterSwitchMode>()
 
     fun show(current: Action.ContinuousGesturePointer? = null) {
         sensitivityScale = current?.sensitivityScale ?: 1f
@@ -70,6 +77,8 @@ class ContinuousGesturePointerDialogState(
         scrollScale = current?.scrollScale ?: 1f
         cancelRegionRadiusDp = current?.cancelRegionRadiusDp ?: 48
         enableCenterActionSwitch = current?.enableCenterActionSwitch ?: false
+        centerSwitchModes.clear()
+        centerSwitchModes.addAll(current?.centerSwitchModes ?: emptyList())
         show()
     }
 }
@@ -126,7 +135,8 @@ private fun ContinuousGesturePointerSelector(dialogState: ContinuousGesturePoint
                                         scrollMode = dialogState.scrollMode,
                                         scrollScale = dialogState.scrollScale,
                                         cancelRegionRadiusDp = dialogState.cancelRegionRadiusDp,
-                                        enableCenterActionSwitch = dialogState.enableCenterActionSwitch,
+                                        enableCenterActionSwitch = dialogState.enableCenterActionSwitch || dialogState.centerSwitchModes.isNotEmpty(),
+                                        centerSwitchModes = dialogState.centerSwitchModes.toList(),
                                     )
                                 )
                                 dialogState.dismiss()
@@ -189,7 +199,8 @@ private fun ContinuousGesturePointerSelector(dialogState: ContinuousGesturePoint
                         }
                     )
 
-                    if (dialogState.dragButton != GesturePointerDragButton.None) {
+                    if (dialogState.dragButton != GesturePointerDragButton.None
+                        && GesturePointerCenterSwitchMode.Drag !in dialogState.centerSwitchModes) {
                         StandardSpacer()
                         FieldTitle(
                             text = LocalI18N.current.get(
@@ -277,21 +288,41 @@ private fun ContinuousGesturePointerSelector(dialogState: ContinuousGesturePoint
                     StandardSpacer()
                     FieldTitle(
                         text = LocalI18N.current.get(
-                            key = I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_CENTER_SWITCH_ENABLED,
-                            fallback = "Center circle action switch"
+                            key = I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_CENTER_SWITCH_MODES,
+                            fallback = "Center circle switch modes"
                         )
                     )
                     MediumSpacer()
                     TipBody(
                         text = LocalI18N.current.get(
-                            key = I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_CENTER_SWITCH_ENABLED_TIP,
-                            fallback = "After leaving the center circle once, pull back into it and leave again to cycle single click, long press, and double click. Releasing inside the center circle still cancels."
+                            key = I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_CENTER_SWITCH_MODES_TIP,
+                            fallback = "Select and reorder modes to cycle through via center circle. Pull out of center, back in, then out again to switch."
                         )
                     )
-                    ShortXSwitch(
-                        checked = dialogState.enableCenterActionSwitch,
-                        onCheckedChange = { dialogState.enableCenterActionSwitch = it }
-                    )
+                    MediumSpacer()
+                    GesturePointerCenterSwitchMode.entries.forEach { mode ->
+                        val checked = mode in dialogState.centerSwitchModes
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        ) {
+                            Checkbox(
+                                checked = checked,
+                                onCheckedChange = { isChecked ->
+                                    if (isChecked) {
+                                        dialogState.centerSwitchModes.add(mode)
+                                    } else {
+                                        dialogState.centerSwitchModes.remove(mode)
+                                    }
+                                }
+                            )
+                            Text(
+                                text = LocalI18N.current.labelFor(mode),
+                                style = MaterialTheme.typography.bodyLarge,
+                            )
+                        }
+                    }
 
                     StandardSpacer()
                     TipBody(text = LocalI18N.current.get(
@@ -406,6 +437,35 @@ private fun tornaco.apps.shortx.core.I18N.labelFor(mode: GesturePointerScrollMod
         GesturePointerScrollMode.Both -> get(
             key = I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_SCROLL_MODE_BOTH,
             fallback = "Two-axis wheel"
+        )
+    }
+}
+
+private fun tornaco.apps.shortx.core.I18N.labelFor(mode: GesturePointerCenterSwitchMode): String {
+    return when (mode) {
+        GesturePointerCenterSwitchMode.SingleClick -> get(
+            key = I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_MODE_SINGLE,
+            fallback = "Single click"
+        )
+
+        GesturePointerCenterSwitchMode.LongPress -> get(
+            key = I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_MODE_LONG,
+            fallback = "Long press"
+        )
+
+        GesturePointerCenterSwitchMode.DoubleClick -> get(
+            key = I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_MODE_DOUBLE,
+            fallback = "Double click"
+        )
+
+        GesturePointerCenterSwitchMode.Drag -> get(
+            key = I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_MODE_DRAG,
+            fallback = "Drag"
+        )
+
+        GesturePointerCenterSwitchMode.Scroll -> get(
+            key = I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_MODE_SCROLL,
+            fallback = "Scroll"
         )
     }
 }

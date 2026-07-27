@@ -102,6 +102,14 @@ enum class GesturePointerScrollMode {
     Both,
 }
 
+enum class GesturePointerCenterSwitchMode {
+    SingleClick,
+    LongPress,
+    DoubleClick,
+    Drag,
+    Scroll,
+}
+
 sealed interface Action : Parcelable {
     val id: String
     val isEnabled: Boolean
@@ -3745,6 +3753,7 @@ sealed interface Action : Parcelable {
         @IntRange(from = 16, to = 160)
         val cancelRegionRadiusDp: Int = 48,
         val enableCenterActionSwitch: Boolean = false,
+        val centerSwitchModes: List<GesturePointerCenterSwitchMode> = emptyList(),
     ) : Action {
         override fun clone(
             id: String,
