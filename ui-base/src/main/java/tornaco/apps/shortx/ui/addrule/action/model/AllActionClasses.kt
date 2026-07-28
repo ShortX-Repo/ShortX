@@ -194,6 +194,7 @@ val allActionClasses = listOf(
     Action.DisplayImage::class,
     Action.ToggleSlot::class,
     Action.ShowRecentApps::class,
+    Action.ShowCustomRecents::class,
     Action.ShowGlobalActionsMenu::class,
     Action.ShowHideInsets::class,
     Action.GetScreenOnTime::class,

@@ -210,6 +210,7 @@ inline fun subscribedOnlyModels(onRes: () -> Unit = {}): Array<KClass<*>> = arra
     Action.RemoveStatusBarIcon::class,
     Action.ToggleSlot::class,
     Action.ShowRecentApps::class,
+    Action.ShowCustomRecents::class,
     Action.ShowGlobalActionsMenu::class,
     Action.WebDavGet::class,
     Action.WebDavPut::class,

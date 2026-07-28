@@ -802,6 +802,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
                 true
             }
 
+            Action.ShowCustomRecents::class -> {
+                addAction(Action.ShowCustomRecents())
+                true
+            }
+
             Action.GetScreenOnTime::class -> {
                 screenTimeDialogState.show()
                 true
@@ -833,6 +838,7 @@ fun SystemActions(
         Action.InjectKeyCode::class,
         Action.InjectCombineKeyCode::class,
         Action.ShowRecentApps::class,
+        Action.ShowCustomRecents::class,
         Action.ShowGlobalActionsMenu::class,
         BuildPropInternal.APP_IS_DEBUG.select(Action.ShowHideInsets::class, null),
         Action.MediaPlayback::class,

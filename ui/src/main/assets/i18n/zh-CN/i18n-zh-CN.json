@@ -1268,6 +1268,7 @@
   "ui.action.recent": "最近",
   "ui.action.recent.apps": "最近任务",
   "ui.action.show.global.action.menu": "电源菜单",
+  "ui.action.show.custom.recents": "自定义最近任务",
   "ui.action.show.hide.insets": "隐藏系统边衬区",
   "ui.action.show.hide.insets.show": "显示",
   "ui.action.show.hide.insets.hide": "隐藏",

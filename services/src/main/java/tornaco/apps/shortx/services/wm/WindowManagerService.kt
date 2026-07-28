@@ -1,11 +1,16 @@
 package tornaco.apps.shortx.services.wm
 
+import android.app.ActivityManager
+import android.app.ActivityTaskManager
+import android.app.IActivityManager
 import android.app.UiAutomation.OnAccessibilityEventListener
 import android.content.ClipData
+import android.content.Context
 import android.graphics.Rect
 import android.os.Binder
 import android.os.Handler
 import android.os.Looper
+import android.os.ServiceManager
 import android.view.KeyEvent
 import android.view.Surface
 import android.view.accessibility.AccessibilityEvent
@@ -47,12 +52,19 @@ import tornaco.apps.shortx.services.rule.actor.impl.ShowListDialog.ServiceGlideC
 import tornaco.apps.shortx.services.rule.fact.trigger.rotationToDegree
 import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.i18NIns
+import tornaco.apps.shortx.services.app.TaskMapping
+import tornaco.apps.shortx.services.app.TaskSnapshotHelper
+import tornaco.apps.shortx.core.util.OsUtils
+import tornaco.apps.shortx.core.util.PkgUtils
+import tornaco.apps.shortx.core.util.activityManager
 import tornaco.apps.shortx.services.watchdog.launchSafety
 import tornaco.apps.shortx.services.watchdog.postSafety
 import tornaco.apps.shortx.ui.clipbord.ClipboardView
 import tornaco.apps.shortx.ui.draw.DrawBoardView
 import tornaco.apps.shortx.ui.overlay.IdViewerView
 import tornaco.apps.shortx.ui.overlay.UniversalCopyView
+import tornaco.apps.shortx.ui.recents.RecentTasksView
+import tornaco.apps.shortx.ui.recents.RecentTaskItem
 import tornaco.apps.shortx.ui.screencap.AreaSelectorView
 import tornaco.apps.shortx.core.i18n.I18N_R
 
@@ -71,6 +83,7 @@ class WindowManagerService(shortXContext: ShortXContext) :
     private val showingDrawerBoard: MutableSet<DrawBoardView> = mutableSetOf()
     private val showingClipboard: MutableSet<ClipboardView> = mutableSetOf()
     private val showingAreaSelector: MutableSet<AreaSelectorView> = mutableSetOf()
+    private val showingRecentTasks: MutableSet<RecentTasksView> = mutableSetOf()
 
     private val mainHandler by lazy {
         Handler(Looper.getMainLooper())
@@ -581,6 +594,69 @@ class WindowManagerService(shortXContext: ShortXContext) :
         }
     }
 
+    fun showRecentTasks(themeMode: UiThemeMode = UiThemeMode.UiThemeMode_System) {
+        logger.w("showRecentTasks start.")
+        disableAllOverlayViews("showRecentTasks") {
+            val am = context.activityManager
+            val recentTasks = am.getRecentTasks(20, ActivityManager.RECENT_IGNORE_UNAVAILABLE)
+                .filter { it.baseIntent != null }
+                .drop(1)
+
+            val taskItems = recentTasks.mapNotNull { taskInfo ->
+                val taskId = if (OsUtils.isQOrAbove()) taskInfo.taskId else taskInfo.persistentId
+                val pkgName = PkgUtils.packageNameOf(taskInfo.baseIntent) ?: return@mapNotNull null
+                val label = shortXContext.appState.getAppLabel(
+                    AppPkg.newBuilder().setPkgName(pkgName).setUserId(taskInfo.userId).build()
+                ) ?: pkgName
+                val snapshot = TaskSnapshotHelper.getTaskSnapshot(taskId)
+                RecentTaskItem(
+                    taskId = taskId,
+                    packageName = pkgName,
+                    label = label,
+                    snapshot = snapshot,
+                )
+            }
+
+            val recentTasksView = RecentTasksView(
+                context = context,
+                i18N = i18NIns,
+                tasks = taskItems,
+                onTaskSelected = { taskId ->
+                    systemServiceScope.launchSafety("switchToTask") {
+                        if (OsUtils.isQOrAbove()) {
+                            ActivityTaskManager.getService().startActivityFromRecents(taskId, null)
+                        } else {
+                            ActivityManager.getService().startActivityFromRecents(taskId, null)
+                        }
+                    }
+                },
+                onTaskDismissed = { taskId ->
+                    systemServiceScope.launchSafety("dismissTask") {
+                        val activity = IActivityManager.Stub.asInterface(
+                            ServiceManager.getService(Context.ACTIVITY_SERVICE)
+                        )
+                        activity.removeTask(taskId)
+                    }
+                },
+                onClearAll = {
+                    systemServiceScope.launchSafety("clearAllTasks") {
+                        val activity = IActivityManager.Stub.asInterface(
+                            ServiceManager.getService(Context.ACTIVITY_SERVICE)
+                        )
+                        taskItems.forEach { activity.removeTask(it.taskId) }
+                    }
+                },
+                onDetach = { showingRecentTasks.remove(it as RecentTasksView) },
+                themeMode = themeMode,
+            )
+            showingRecentTasks.add(recentTasksView)
+            mainHandler.postSafety("RecentTasks.attach") {
+                recentTasksView.attach()
+                logger.w("showRecentTasks attach.")
+            }
+        }
+    }
+
     fun enableIdViewer(themeMode: UiThemeMode = UiThemeMode.UiThemeMode_System) {
         disableAllOverlayViews("enableIdViewer") {
             val idNodes = mutableListOf<ViewNode>()
@@ -733,6 +809,12 @@ class WindowManagerService(shortXContext: ShortXContext) :
                     .onFailure { logger.e(it, "disableClipboard detach fail") }
             }
             showingClipboard.clear()
+
+            showingRecentTasks.toTypedArray().forEach {
+                kotlin.runCatching { it.detach(reason = "disableAllOverlayViews") }
+                    .onFailure { logger.e(it, "disableRecentTasks detach fail") }
+            }
+            showingRecentTasks.clear()
 
             systemServiceScope.launchSafety("disableAllOverlay") {
                 overlayLock.withLock { action() }

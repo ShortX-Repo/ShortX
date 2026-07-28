@@ -129,6 +129,7 @@ import tornaco.apps.shortx.core.proto.action.ShowClipboardView
 import tornaco.apps.shortx.core.proto.action.ShowDanmu
 import tornaco.apps.shortx.core.proto.action.ShowDrawBoard
 import tornaco.apps.shortx.core.proto.action.ShowFloatWindow
+import tornaco.apps.shortx.core.proto.action.ShowCustomRecents
 import tornaco.apps.shortx.core.proto.action.ShowGlobalActionsMenu
 import tornaco.apps.shortx.core.proto.action.ShowHideInsets
 import tornaco.apps.shortx.core.proto.action.ShowListDialog
@@ -2221,6 +2222,16 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
 
         is Action.ShowGlobalActionsMenu -> {
             ShowGlobalActionsMenu.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNote(overrideNote ?: note)
+                .build()
+        }
+
+        is Action.ShowCustomRecents -> {
+            ShowCustomRecents.newBuilder()
                 .setId(overrideId ?: id)
                 .setIsDisabled(!isEnabled)
                 .setActionOnError(actionOnError)

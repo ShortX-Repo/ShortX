@@ -124,6 +124,10 @@ fun labelAndDescriptionForActionSelector(
             i18N["ui.action.show.global.action.menu"] to null
         }
 
+        Action.ShowCustomRecents::class -> {
+            i18N["ui.action.show.custom.recents"] to null
+        }
+
         Action.InputText::class -> {
             i18N["ui.action.input.text"] to null
         }
@@ -1441,6 +1445,10 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
 
         is Action.ShowGlobalActionsMenu -> listOf(
             i18N["ui.action.show.global.action.menu"]
+        )
+
+        is Action.ShowCustomRecents -> listOf(
+            i18N["ui.action.show.custom.recents"]
         )
 
         is Action.ForEachPkgSet -> listOf(

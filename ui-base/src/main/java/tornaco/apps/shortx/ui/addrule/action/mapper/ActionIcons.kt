@@ -740,6 +740,10 @@ fun imageVectorForAction(action: KClass<out Action>): String {
             Remix.System.menu_3_line
         }
 
+        Action.ShowCustomRecents::class -> {
+            Remix.Editor.list_check
+        }
+
         Action.WebDavList::class -> {
             Remix.Document.file_cloud_fill
         }
