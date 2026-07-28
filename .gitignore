@@ -29,3 +29,4 @@ Thumbs.db
 **/out/
 scripts/downloads/
 scripts/__pycache__/
+.serena/
