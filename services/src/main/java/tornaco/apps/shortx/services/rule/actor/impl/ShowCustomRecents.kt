@@ -14,7 +14,15 @@ object ShowCustomRecents : Actor {
     override suspend fun handle(
         params: HandleParams
     ) = with(params) {
-        shortXContext.wm.showRecentTasks()
+        val data = action unpack_ tornaco.apps.shortx.core.proto.action.ShowCustomRecents::class.java
+        shortXContext.wm.showRecentTasks(
+            layoutStyle = data.layoutStyle,
+            scrollOrientation = data.scrollOrientation,
+            gridColumns = data.gridColumns.takeIf { it > 0 } ?: 3,
+            backgroundColor = data.backgroundColor.takeIf { it != 0 } ?: 0x99000000.toInt(),
+            backgroundBlurRadius = data.backgroundBlurRadius,
+            backgroundImagePath = data.backgroundImagePath,
+        )
         Actor.Res.EMPTY
     }
 }

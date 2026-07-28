@@ -459,6 +459,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     )
     MenuDialog(state = showRecentAppsState)
 
+    val showCustomRecentsDialogState = rememberShowCustomRecentsDialogState(
+        onSelected = { addAction(it) }
+    )
+    ShowCustomRecentsDialog(state = showCustomRecentsDialogState)
+
     val screenTimeoutInputDialogState = rememberTextInputState(
         title = LocalI18N.current[I18N_R.UI_ACTION_SET_SCREEN_TIMEOUT],
         message = LocalI18N.current[I18N_R.UI_ACTION_SET_SCREEN_TIMEOUT_MESSAGE],
@@ -803,7 +808,7 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
             }
 
             Action.ShowCustomRecents::class -> {
-                addAction(Action.ShowCustomRecents())
+                showCustomRecentsDialogState.show(source?.getActionAs<Action.ShowCustomRecents>())
                 true
             }
 

@@ -2491,7 +2491,13 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 actionOnError = data.actionOnError,
                 customContextDataKey = data.customContextDataKey,
                 id = data.id,
-                note = data.note
+                note = data.note,
+                layoutStyle = data.layoutStyle,
+                scrollOrientation = data.scrollOrientation,
+                gridColumns = data.gridColumns.takeIf { it > 0 } ?: 3,
+                backgroundColor = data.backgroundColor.takeIf { it != 0 } ?: 0x99000000.toInt(),
+                backgroundBlurRadius = data.backgroundBlurRadius,
+                backgroundImagePath = data.backgroundImagePath,
             )
         }
 

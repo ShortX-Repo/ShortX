@@ -14,6 +14,8 @@ import tornaco.apps.shortx.core.proto.action.MediaPlaybackAction
 import tornaco.apps.shortx.core.proto.action.FindImagePositionOutputType
 import tornaco.apps.shortx.core.proto.action.NavType
 import tornaco.apps.shortx.core.proto.action.OcrDetectOutputType
+import tornaco.apps.shortx.core.proto.action.RecentsLayoutStyle
+import tornaco.apps.shortx.core.proto.action.RecentsScrollOrientation
 import tornaco.apps.shortx.core.proto.action.ScrollViewToLocation
 import tornaco.apps.shortx.core.proto.common.ActionOnError
 import tornaco.apps.shortx.core.proto.common.AndroidIntentComponentType
@@ -1448,7 +1450,8 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
         )
 
         is Action.ShowCustomRecents -> listOf(
-            i18N["ui.action.show.custom.recents"]
+            i18N["ui.action.show.custom.recents"],
+            i18N[action.layoutStyle.labelKey()]
         )
 
         is Action.ForEachPkgSet -> listOf(
@@ -1897,4 +1900,17 @@ fun OCREngine.labelKey(): String {
 
 fun TimeUnit.labelKey(): String {
     return "ui.common.${name.lowercase()}"
+}
+
+fun RecentsLayoutStyle.labelKey() = when (this) {
+    RecentsLayoutStyle.RecentsLayoutStyle_Carousel -> "ui.action.recents.style.carousel"
+    RecentsLayoutStyle.RecentsLayoutStyle_Stack -> "ui.action.recents.style.stack"
+    RecentsLayoutStyle.RecentsLayoutStyle_Grid -> "ui.action.recents.style.grid"
+    RecentsLayoutStyle.UNRECOGNIZED -> "N/A"
+}
+
+fun RecentsScrollOrientation.labelKey() = when (this) {
+    RecentsScrollOrientation.RecentsScrollOrientation_Horizontal -> "ui.action.recents.scroll.horizontal"
+    RecentsScrollOrientation.RecentsScrollOrientation_Vertical -> "ui.action.recents.scroll.vertical"
+    RecentsScrollOrientation.UNRECOGNIZED -> "N/A"
 }

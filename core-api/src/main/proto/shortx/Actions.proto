@@ -2151,12 +2151,30 @@ message ShowRecentApps {
   string id = 100;
 }
 
+enum RecentsLayoutStyle {
+  RecentsLayoutStyle_Carousel = 0;
+  RecentsLayoutStyle_Stack = 1;
+  RecentsLayoutStyle_Grid = 2;
+}
+
+enum RecentsScrollOrientation {
+  RecentsScrollOrientation_Horizontal = 0;
+  RecentsScrollOrientation_Vertical = 1;
+}
+
 message ShowCustomRecents {
   CustomContextDataKey customContextDataKey = 96;
   ActionOnError actionOnError = 97;
   bool isDisabled = 98;
   string note = 99;
   string id = 100;
+
+  RecentsLayoutStyle layoutStyle = 1;
+  RecentsScrollOrientation scrollOrientation = 2;
+  int32 gridColumns = 3;
+  int32 backgroundColor = 4;
+  int32 backgroundBlurRadius = 5;
+  string backgroundImagePath = 6;
 }
 
 message ShowGlobalActionsMenu {

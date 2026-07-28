@@ -2237,6 +2237,12 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setActionOnError(actionOnError)
                 .setCustomContextDataKey(contextData.toCustomContextDataKey())
                 .setNote(overrideNote ?: note)
+                .setLayoutStyle(layoutStyle)
+                .setScrollOrientation(scrollOrientation)
+                .setGridColumns(gridColumns)
+                .setBackgroundColor(backgroundColor)
+                .setBackgroundBlurRadius(backgroundBlurRadius)
+                .setBackgroundImagePath(backgroundImagePath)
                 .build()
         }
 

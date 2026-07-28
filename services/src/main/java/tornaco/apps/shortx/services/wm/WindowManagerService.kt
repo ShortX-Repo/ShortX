@@ -54,6 +54,8 @@ import tornaco.apps.shortx.services.systemServiceScope
 import tornaco.apps.shortx.services.ui.i18NIns
 import tornaco.apps.shortx.services.app.TaskMapping
 import tornaco.apps.shortx.services.app.TaskSnapshotHelper
+import tornaco.apps.shortx.core.proto.action.RecentsLayoutStyle
+import tornaco.apps.shortx.core.proto.action.RecentsScrollOrientation
 import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.core.util.PkgUtils
 import tornaco.apps.shortx.core.util.activityManager
@@ -594,7 +596,15 @@ class WindowManagerService(shortXContext: ShortXContext) :
         }
     }
 
-    fun showRecentTasks(themeMode: UiThemeMode = UiThemeMode.UiThemeMode_System) {
+    fun showRecentTasks(
+        themeMode: UiThemeMode = UiThemeMode.UiThemeMode_System,
+        layoutStyle: RecentsLayoutStyle = RecentsLayoutStyle.RecentsLayoutStyle_Carousel,
+        scrollOrientation: RecentsScrollOrientation = RecentsScrollOrientation.RecentsScrollOrientation_Horizontal,
+        gridColumns: Int = 3,
+        backgroundColor: Int = 0x99000000.toInt(),
+        backgroundBlurRadius: Int = 0,
+        backgroundImagePath: String = "",
+    ) {
         logger.w("showRecentTasks start.")
         disableAllOverlayViews("showRecentTasks") {
             val am = context.activityManager
@@ -621,6 +631,12 @@ class WindowManagerService(shortXContext: ShortXContext) :
                 context = context,
                 i18N = i18NIns,
                 tasks = taskItems,
+                layoutStyle = layoutStyle,
+                scrollOrientation = scrollOrientation,
+                gridColumns = gridColumns,
+                backgroundColor = backgroundColor,
+                backgroundBlurRadius = backgroundBlurRadius,
+                backgroundImagePath = backgroundImagePath,
                 onTaskSelected = { taskId ->
                     systemServiceScope.launchSafety("switchToTask") {
                         if (OsUtils.isQOrAbove()) {
