@@ -59,6 +59,7 @@ import tornaco.apps.shortx.core.I18N
 import tornaco.apps.shortx.core.proto.action.RecentsLayoutStyle
 import tornaco.apps.shortx.core.proto.action.RecentsScrollOrientation
 import tornaco.apps.shortx.core.proto.common.UiThemeMode
+import tornaco.apps.shortx.core.util.OsUtils
 import tornaco.apps.shortx.ui.AttachableComposeView
 import tornaco.apps.shortx.ui.base.AppImageIcon
 import tornaco.apps.shortx.ui.theme.ShortXServiceUITheme
@@ -101,6 +102,14 @@ class RecentTasksView(
     override fun createLayoutParams(): WindowManager.LayoutParams {
         return super.createLayoutParams().apply {
             type = WindowManager.LayoutParams.TYPE_SYSTEM_ALERT
+            if (backgroundBlurRadius > 0 && OsUtils.isSOrAbove()) {
+                flags = flags or WindowManager.LayoutParams.FLAG_BLUR_BEHIND
+                try {
+                    WindowManager.LayoutParams::class.java
+                        .getMethod("setBlurBehindRadius", Int::class.javaPrimitiveType)
+                        .invoke(this, backgroundBlurRadius)
+                } catch (_: Throwable) {}
+            }
         }
     }
 
