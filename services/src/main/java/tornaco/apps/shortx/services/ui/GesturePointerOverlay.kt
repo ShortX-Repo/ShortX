@@ -6,6 +6,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.PixelFormat
+import android.os.UserHandle
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
@@ -25,8 +26,20 @@ enum class GesturePointerVisualMode {
 
 class GesturePointerOverlay(private val context: Context) {
     private val logger = Logger("GesturePointerOverlay")
-    private val windowManager by lazy {
-        context.getSystemService(WindowManager::class.java)
+
+    private fun contextForCurrentUser(): Context {
+        val userId = ActivityManager.getCurrentUser()
+        if (userId == 0) return context
+        return try {
+            context.createContextAsUser(UserHandle.of(userId), 0)
+        } catch (e: Exception) {
+            logger.e(e, "Failed to create context for user $userId")
+            context
+        }
+    }
+
+    private fun windowManagerForCurrentUser(): WindowManager {
+        return contextForCurrentUser().getSystemService(WindowManager::class.java)
     }
 
     private var overlayView: GesturePointerOverlayView? = null
@@ -39,7 +52,7 @@ class GesturePointerOverlay(private val context: Context) {
         val view = GesturePointerOverlayView(context).also {
             it.updatePointer(anchorX = x, anchorY = y, currentX = x, currentY = y, pointerMode = pointerMode)
         }
-        windowManager.addView(view, createLayoutParams())
+        windowManagerForCurrentUser().addView(view, createLayoutParams())
         overlayView = view
     }
 
@@ -66,7 +79,7 @@ class GesturePointerOverlay(private val context: Context) {
 
     fun hide() {
         val view = overlayView ?: return
-        windowManager.removeViewImmediate(view)
+        windowManagerForCurrentUser().removeViewImmediate(view)
         overlayView = null
     }
 

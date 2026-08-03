@@ -1,6 +1,8 @@
 package tornaco.apps.shortx.services.gesture.bpok.gesture.handlers
 
+import android.app.ActivityManager
 import android.content.Context
+import android.os.UserHandle
 import android.view.InputDevice
 import android.view.MotionEvent
 import android.view.ViewConfiguration
@@ -59,7 +61,7 @@ class GesturePointerContinuousHandler(
     private val logger = Logger("GesturePointerHandler")
     private val device by lazy { Device(Options()) }
     private val controller by lazy { Controller(device) }
-    private val pointerOverlay = GesturePointerOverlay(context)
+    private val pointerOverlay by lazy { GesturePointerOverlay(contextForCurrentUser()) }
     private val overlayScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private val cancelRegionRadiusPx = cancelRegionRadiusDp.coerceIn(16, 160) * context.resources.displayMetrics.density
     private val centerSwitchHysteresisPx = CENTER_SWITCH_HYSTERESIS_DP * context.resources.displayMetrics.density
@@ -90,6 +92,17 @@ class GesturePointerContinuousHandler(
     private var hasExitedCancelRegion = false
     private var switchArmed = false
     private var dragModeEnteredTime = 0L
+
+    private fun contextForCurrentUser(): Context {
+        val userId = ActivityManager.getCurrentUser()
+        if (userId == 0) return context
+        return try {
+            context.createContextAsUser(UserHandle.of(userId), 0)
+        } catch (e: Exception) {
+            logger.e(e, "Failed to create context for user $userId")
+            context
+        }
+    }
 
     override fun onStart(edgeGroup: Int, x: Float, y: Float, time: Long) {
         this.edgeGroup = edgeGroup
@@ -329,7 +342,7 @@ class GesturePointerContinuousHandler(
     private fun showModeSwitchToast(mode: PointerMode) {
         overlayScope.launch {
             Toast.makeText(
-                context,
+                contextForCurrentUser(),
                 i18NIns[I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_CENTER_SWITCH_SHORT] + ": " + mode.label(),
                 Toast.LENGTH_SHORT,
             ).show()
@@ -339,7 +352,7 @@ class GesturePointerContinuousHandler(
     private fun showDragAimingToast() {
         overlayScope.launch {
             Toast.makeText(
-                context,
+                contextForCurrentUser(),
                 i18NIns[I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_MODE_DRAG_AIMING],
                 Toast.LENGTH_SHORT,
             ).show()
@@ -349,7 +362,7 @@ class GesturePointerContinuousHandler(
     private fun showDragStartedToast() {
         overlayScope.launch {
             Toast.makeText(
-                context,
+                contextForCurrentUser(),
                 i18NIns[I18N_R.UI_ACTION_CONTINUOUS_GESTURE_POINTER_MODE_DRAG_STARTED],
                 Toast.LENGTH_SHORT,
             ).show()
