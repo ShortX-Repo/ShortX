@@ -2152,14 +2152,10 @@ message ShowRecentApps {
 }
 
 enum RecentsLayoutStyle {
-  RecentsLayoutStyle_Carousel = 0;
-  RecentsLayoutStyle_Stack = 1;
-  RecentsLayoutStyle_Grid = 2;
-}
-
-enum RecentsScrollOrientation {
-  RecentsScrollOrientation_Horizontal = 0;
-  RecentsScrollOrientation_Vertical = 1;
+  RecentsLayoutStyle_TiltStack = 0;
+  RecentsLayoutStyle_Grid = 1;
+  RecentsLayoutStyle_VerticalList = 2;
+  RecentsLayoutStyle_SlimList = 3;
 }
 
 message ShowCustomRecents {
@@ -2170,11 +2166,15 @@ message ShowCustomRecents {
   string id = 100;
 
   RecentsLayoutStyle layoutStyle = 1;
-  RecentsScrollOrientation scrollOrientation = 2;
+  reserved 2;
   int32 gridColumns = 3;
   int32 backgroundColor = 4;
   int32 backgroundBlurRadius = 5;
   string backgroundImagePath = 6;
+  bool miniMode = 7;
+  bool showAppName = 8;
+  bool arcArrangement = 9;
+  bool centerActiveApp = 10;
 }
 
 message ShowGlobalActionsMenu {

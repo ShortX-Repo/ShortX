@@ -15,7 +15,6 @@ import tornaco.apps.shortx.core.proto.action.FindImagePositionOutputType
 import tornaco.apps.shortx.core.proto.action.NavType
 import tornaco.apps.shortx.core.proto.action.OcrDetectOutputType
 import tornaco.apps.shortx.core.proto.action.RecentsLayoutStyle
-import tornaco.apps.shortx.core.proto.action.RecentsScrollOrientation
 import tornaco.apps.shortx.core.proto.action.ScrollViewToLocation
 import tornaco.apps.shortx.core.proto.common.ActionOnError
 import tornaco.apps.shortx.core.proto.common.AndroidIntentComponentType
@@ -1903,14 +1902,9 @@ fun TimeUnit.labelKey(): String {
 }
 
 fun RecentsLayoutStyle.labelKey() = when (this) {
-    RecentsLayoutStyle.RecentsLayoutStyle_Carousel -> "ui.action.recents.style.carousel"
-    RecentsLayoutStyle.RecentsLayoutStyle_Stack -> "ui.action.recents.style.stack"
+    RecentsLayoutStyle.RecentsLayoutStyle_TiltStack -> "ui.action.recents.style.tiltstack"
     RecentsLayoutStyle.RecentsLayoutStyle_Grid -> "ui.action.recents.style.grid"
+    RecentsLayoutStyle.RecentsLayoutStyle_VerticalList -> "ui.action.recents.style.verticallist"
+    RecentsLayoutStyle.RecentsLayoutStyle_SlimList -> "ui.action.recents.style.slimlist"
     RecentsLayoutStyle.UNRECOGNIZED -> "N/A"
-}
-
-fun RecentsScrollOrientation.labelKey() = when (this) {
-    RecentsScrollOrientation.RecentsScrollOrientation_Horizontal -> "ui.action.recents.scroll.horizontal"
-    RecentsScrollOrientation.RecentsScrollOrientation_Vertical -> "ui.action.recents.scroll.vertical"
-    RecentsScrollOrientation.UNRECOGNIZED -> "N/A"
 }

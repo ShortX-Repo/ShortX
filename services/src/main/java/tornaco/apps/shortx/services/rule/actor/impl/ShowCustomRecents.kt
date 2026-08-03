@@ -17,11 +17,14 @@ object ShowCustomRecents : Actor {
         val data = action unpack_ tornaco.apps.shortx.core.proto.action.ShowCustomRecents::class.java
         shortXContext.wm.showRecentTasks(
             layoutStyle = data.layoutStyle,
-            scrollOrientation = data.scrollOrientation,
             gridColumns = data.gridColumns.takeIf { it > 0 } ?: 3,
             backgroundColor = data.backgroundColor.takeIf { it != 0 } ?: 0x99000000.toInt(),
             backgroundBlurRadius = data.backgroundBlurRadius,
             backgroundImagePath = data.backgroundImagePath,
+            miniMode = data.miniMode,
+            showAppName = data.showAppName,
+            arcArrangement = data.arcArrangement,
+            centerActiveApp = data.centerActiveApp,
         )
         Actor.Res.EMPTY
     }

@@ -19,13 +19,15 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -40,7 +42,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.proto.action.RecentsLayoutStyle
-import tornaco.apps.shortx.core.proto.action.RecentsScrollOrientation
 import tornaco.apps.shortx.ui.addrule.action.model.Action
 import tornaco.apps.shortx.ui.addrule.action.mapper.labelKey
 import tornaco.apps.shortx.ui.base.CommonDialogState
@@ -51,7 +52,6 @@ import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.ShortFullScreenXDialog
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.StandardSpacer
-import tornaco.apps.shortx.ui.base.TipBody
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import kotlin.math.roundToInt
@@ -59,22 +59,28 @@ import kotlin.math.roundToInt
 class ShowCustomRecentsDialogState(
     val onSelected: (Action.ShowCustomRecents) -> Unit
 ) : CommonDialogState() {
-    var layoutStyle by mutableStateOf(RecentsLayoutStyle.RecentsLayoutStyle_Carousel)
-    var scrollOrientation by mutableStateOf(RecentsScrollOrientation.RecentsScrollOrientation_Horizontal)
+    var layoutStyle by mutableStateOf(RecentsLayoutStyle.RecentsLayoutStyle_TiltStack)
     var gridColumns by mutableIntStateOf(3)
     var bgAlpha by mutableFloatStateOf(0.6f)
     var backgroundBlurRadius by mutableIntStateOf(0)
     var backgroundImagePath by mutableStateOf("")
+    var miniMode by mutableStateOf(false)
+    var showAppName by mutableStateOf(true)
+    var arcArrangement by mutableStateOf(false)
+    var centerActiveApp by mutableStateOf(false)
 
     fun show(current: Action.ShowCustomRecents? = null) {
-        layoutStyle = current?.layoutStyle ?: RecentsLayoutStyle.RecentsLayoutStyle_Carousel
-        scrollOrientation = current?.scrollOrientation ?: RecentsScrollOrientation.RecentsScrollOrientation_Horizontal
+        layoutStyle = current?.layoutStyle ?: RecentsLayoutStyle.RecentsLayoutStyle_TiltStack
         gridColumns = current?.gridColumns ?: 3
         bgAlpha = if (current != null) {
             ((current.backgroundColor.toLong() and 0xFF000000L) ushr 24).toFloat() / 255f
         } else 0.6f
         backgroundBlurRadius = current?.backgroundBlurRadius ?: 0
         backgroundImagePath = current?.backgroundImagePath ?: ""
+        miniMode = current?.miniMode ?: false
+        showAppName = current?.showAppName ?: true
+        arcArrangement = current?.arcArrangement ?: false
+        centerActiveApp = current?.centerActiveApp ?: false
         show()
     }
 
@@ -126,11 +132,14 @@ private fun ShowCustomRecentsSelector(dialogState: ShowCustomRecentsDialogState)
                                 dialogState.onSelected(
                                     Action.ShowCustomRecents(
                                         layoutStyle = dialogState.layoutStyle,
-                                        scrollOrientation = dialogState.scrollOrientation,
                                         gridColumns = dialogState.gridColumns,
                                         backgroundColor = dialogState.buildBackgroundColor(),
                                         backgroundBlurRadius = dialogState.backgroundBlurRadius,
                                         backgroundImagePath = dialogState.backgroundImagePath,
+                                        miniMode = dialogState.miniMode,
+                                        showAppName = dialogState.showAppName,
+                                        arcArrangement = dialogState.arcArrangement,
+                                        centerActiveApp = dialogState.centerActiveApp,
                                     )
                                 )
                                 dialogState.dismiss()
@@ -144,100 +153,242 @@ private fun ShowCustomRecentsSelector(dialogState: ShowCustomRecentsDialogState)
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(16.dp)
                         .padding(paddingValues)
                         .animateContentSize()
                         .verticalScroll(rememberScrollState())
                 ) {
-                    // Layout style
-                    FieldTitle(text = i18N["ui.action.recents.style"])
-                    MediumSpacer()
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    ) {
-                        RecentsLayoutStyle.entries
-                            .filterNot { it == RecentsLayoutStyle.UNRECOGNIZED }
-                            .forEach { style ->
-                                FilterChip(
-                                    selected = dialogState.layoutStyle == style,
-                                    onClick = { dialogState.layoutStyle = style },
-                                    label = { Text(i18N[style.labelKey()]) },
-                                )
-                            }
-                    }
+                    // ── Layout type section ──
+                    SectionHeader(text = i18N["ui.action.recents.style"])
 
-                    // Scroll orientation (only for Carousel)
-                    if (dialogState.layoutStyle == RecentsLayoutStyle.RecentsLayoutStyle_Carousel) {
-                        StandardSpacer()
-                        FieldTitle(text = i18N["ui.action.recents.scroll"])
-                        MediumSpacer()
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        ) {
-                            RecentsScrollOrientation.entries
-                                .filterNot { it == RecentsScrollOrientation.UNRECOGNIZED }
-                                .forEach { orientation ->
-                                    FilterChip(
-                                        selected = dialogState.scrollOrientation == orientation,
-                                        onClick = { dialogState.scrollOrientation = orientation },
-                                        label = { Text(i18N[orientation.labelKey()]) },
-                                    )
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            RecentsLayoutStyle.entries
+                                .filterNot { it == RecentsLayoutStyle.UNRECOGNIZED }
+                                .forEach { style ->
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable { dialogState.layoutStyle = style }
+                                            .padding(vertical = 4.dp),
+                                    ) {
+                                        RadioButton(
+                                            selected = dialogState.layoutStyle == style,
+                                            onClick = { dialogState.layoutStyle = style },
+                                        )
+                                        Text(
+                                            text = i18N[style.labelKey()],
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            modifier = Modifier.padding(start = 8.dp),
+                                        )
+                                    }
                                 }
                         }
                     }
 
-                    // Grid columns (only for Grid)
-                    if (dialogState.layoutStyle == RecentsLayoutStyle.RecentsLayoutStyle_Grid) {
-                        StandardSpacer()
-                        FieldTitle(text = "${i18N["ui.action.recents.grid.columns"]}: ${dialogState.gridColumns}")
-                        MediumSpacer()
-                        Slider(
-                            value = dialogState.gridColumns.toFloat(),
-                            valueRange = 2f..5f,
-                            steps = 2,
-                            onValueChange = {
-                                dialogState.gridColumns = it.roundToInt()
-                            }
-                        )
-                    }
-
-                    // Background settings
                     StandardSpacer()
-                    FieldTitle(text = "${i18N["ui.action.recents.bg.color"]}: ${(dialogState.bgAlpha * 100).roundToInt()}%")
-                    MediumSpacer()
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+
+                    // ── Detail settings section ──
+                    SectionHeader(text = i18N["ui.action.recents.detail"])
+
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .size(32.dp)
-                                .clip(CircleShape)
-                                .background(Color.Black.copy(alpha = dialogState.bgAlpha))
-                                .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape)
-                        )
-                        Slider(
-                            value = dialogState.bgAlpha,
-                            valueRange = 0f..1f,
-                            onValueChange = {
-                                dialogState.bgAlpha = (it * 20).roundToInt() / 20f
-                            },
-                            modifier = Modifier.weight(1f),
-                        )
+                        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                            // Mini mode — for TiltStack, Grid, SlimList
+                            if (dialogState.layoutStyle != RecentsLayoutStyle.RecentsLayoutStyle_VerticalList) {
+                                SettingSwitch(
+                                    title = i18N["ui.action.recents.minimode"],
+                                    description = i18N["ui.action.recents.minimode.desc"],
+                                    checked = dialogState.miniMode,
+                                    onCheckedChange = { dialogState.miniMode = it },
+                                )
+                                SettingDivider()
+                            }
+
+                            // Arc arrangement — only for VerticalList
+                            if (dialogState.layoutStyle == RecentsLayoutStyle.RecentsLayoutStyle_VerticalList) {
+                                SettingSwitch(
+                                    title = i18N["ui.action.recents.arc"],
+                                    description = i18N["ui.action.recents.arc.desc"],
+                                    checked = dialogState.arcArrangement,
+                                    onCheckedChange = { dialogState.arcArrangement = it },
+                                )
+                                SettingDivider()
+                            }
+
+                            // Center active app — for TiltStack
+                            if (dialogState.layoutStyle == RecentsLayoutStyle.RecentsLayoutStyle_TiltStack) {
+                                SettingSwitch(
+                                    title = i18N["ui.action.recents.centeractive"],
+                                    description = i18N["ui.action.recents.centeractive.desc"],
+                                    checked = dialogState.centerActiveApp,
+                                    onCheckedChange = { dialogState.centerActiveApp = it },
+                                )
+                                SettingDivider()
+                            }
+
+                            // Show app name — for TiltStack, Grid, VerticalList
+                            if (dialogState.layoutStyle != RecentsLayoutStyle.RecentsLayoutStyle_SlimList) {
+                                SettingSwitch(
+                                    title = i18N["ui.action.recents.showappname"],
+                                    description = i18N["ui.action.recents.showappname.desc"],
+                                    checked = dialogState.showAppName,
+                                    onCheckedChange = { dialogState.showAppName = it },
+                                )
+                            }
+
+                            // Grid columns — only for Grid
+                            if (dialogState.layoutStyle == RecentsLayoutStyle.RecentsLayoutStyle_Grid) {
+                                SettingDivider()
+                                Column(modifier = Modifier.padding(vertical = 12.dp)) {
+                                    Text(
+                                        text = "${i18N["ui.action.recents.grid.columns"]}: ${dialogState.gridColumns}",
+                                        style = MaterialTheme.typography.bodyLarge,
+                                    )
+                                    MediumSpacer()
+                                    Slider(
+                                        value = dialogState.gridColumns.toFloat(),
+                                        valueRange = 2f..5f,
+                                        steps = 2,
+                                        onValueChange = {
+                                            dialogState.gridColumns = it.roundToInt()
+                                        }
+                                    )
+                                }
+                            }
+                        }
                     }
 
                     StandardSpacer()
-                    FieldTitle(text = "${i18N["ui.action.recents.bg.blur"]}: ${dialogState.backgroundBlurRadius}")
-                    MediumSpacer()
-                    Slider(
-                        value = dialogState.backgroundBlurRadius.toFloat(),
-                        valueRange = 0f..50f,
-                        onValueChange = {
-                            dialogState.backgroundBlurRadius = it.roundToInt()
+
+                    // ── Background settings ──
+                    SectionHeader(text = i18N["ui.action.recents.bg.color"])
+
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(32.dp)
+                                        .clip(CircleShape)
+                                        .background(Color.Black.copy(alpha = dialogState.bgAlpha))
+                                        .border(
+                                            1.dp,
+                                            MaterialTheme.colorScheme.outline,
+                                            CircleShape
+                                        )
+                                )
+                                Text(
+                                    text = "${(dialogState.bgAlpha * 100).roundToInt()}%",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                )
+                                Slider(
+                                    value = dialogState.bgAlpha,
+                                    valueRange = 0f..1f,
+                                    onValueChange = {
+                                        dialogState.bgAlpha = (it * 20).roundToInt() / 20f
+                                    },
+                                    modifier = Modifier.weight(1f),
+                                )
+                            }
+
+                            SettingDivider()
+
+                            Column(modifier = Modifier.padding(vertical = 8.dp)) {
+                                Text(
+                                    text = "${i18N["ui.action.recents.bg.blur"]}: ${dialogState.backgroundBlurRadius}",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                )
+                                MediumSpacer()
+                                Slider(
+                                    value = dialogState.backgroundBlurRadius.toFloat(),
+                                    valueRange = 0f..50f,
+                                    onValueChange = {
+                                        dialogState.backgroundBlurRadius = it.roundToInt()
+                                    }
+                                )
+                            }
                         }
-                    )
+                    }
+
+                    StandardSpacer()
+                    StandardSpacer()
                 }
             }
         }
     }
+}
+
+@Composable
+private fun SectionHeader(text: String) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.primary,
+        )
+    }
+}
+
+@Composable
+private fun SettingSwitch(
+    title: String,
+    description: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit,
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onCheckedChange(!checked) }
+            .padding(vertical = 12.dp),
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyLarge,
+            )
+            Text(
+                text = description,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+        )
+    }
+}
+
+@Composable
+private fun SettingDivider() {
+    HorizontalDivider(
+        color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f),
+        thickness = 0.5.dp,
+    )
 }

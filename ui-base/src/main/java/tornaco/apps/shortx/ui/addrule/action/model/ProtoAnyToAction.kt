@@ -2493,11 +2493,14 @@ fun ProtoAny.toAction(shortXManager: ShortXManager): Action? {
                 id = data.id,
                 note = data.note,
                 layoutStyle = data.layoutStyle,
-                scrollOrientation = data.scrollOrientation,
                 gridColumns = data.gridColumns.takeIf { it > 0 } ?: 3,
                 backgroundColor = data.backgroundColor.takeIf { it != 0 } ?: 0x99000000.toInt(),
                 backgroundBlurRadius = data.backgroundBlurRadius,
                 backgroundImagePath = data.backgroundImagePath,
+                miniMode = data.miniMode,
+                showAppName = data.showAppName,
+                arcArrangement = data.arcArrangement,
+                centerActiveApp = data.centerActiveApp,
             )
         }
 

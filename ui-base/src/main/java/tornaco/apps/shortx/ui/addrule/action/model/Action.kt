@@ -18,7 +18,6 @@ import tornaco.apps.shortx.core.proto.action.NavType
 import tornaco.apps.shortx.core.proto.action.NotificationButton
 import tornaco.apps.shortx.core.proto.action.OcrDetectOutputType
 import tornaco.apps.shortx.core.proto.action.RecentsLayoutStyle
-import tornaco.apps.shortx.core.proto.action.RecentsScrollOrientation
 import tornaco.apps.shortx.core.proto.action.ScrollViewToLocation
 import tornaco.apps.shortx.core.proto.action.ActionSidebarButton
 import tornaco.apps.shortx.core.proto.action.ActionSidebarDismissBehavior
@@ -5168,12 +5167,15 @@ sealed interface Action : Parcelable {
         override val contextData: List<ContextData> = emptyList(),
         override val note: String = "",
 
-        val layoutStyle: RecentsLayoutStyle = RecentsLayoutStyle.RecentsLayoutStyle_Carousel,
-        val scrollOrientation: RecentsScrollOrientation = RecentsScrollOrientation.RecentsScrollOrientation_Horizontal,
+        val layoutStyle: RecentsLayoutStyle = RecentsLayoutStyle.RecentsLayoutStyle_TiltStack,
         val gridColumns: Int = 3,
         val backgroundColor: Int = 0x99000000.toInt(),
         val backgroundBlurRadius: Int = 0,
         val backgroundImagePath: String = "",
+        val miniMode: Boolean = false,
+        val showAppName: Boolean = true,
+        val arcArrangement: Boolean = false,
+        val centerActiveApp: Boolean = false,
     ) : Action {
         override fun clone(
             id: String,

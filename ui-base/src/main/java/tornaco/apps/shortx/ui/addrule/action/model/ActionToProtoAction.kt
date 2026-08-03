@@ -2238,11 +2238,14 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .setCustomContextDataKey(contextData.toCustomContextDataKey())
                 .setNote(overrideNote ?: note)
                 .setLayoutStyle(layoutStyle)
-                .setScrollOrientation(scrollOrientation)
                 .setGridColumns(gridColumns)
                 .setBackgroundColor(backgroundColor)
                 .setBackgroundBlurRadius(backgroundBlurRadius)
                 .setBackgroundImagePath(backgroundImagePath)
+                .setMiniMode(miniMode)
+                .setShowAppName(showAppName)
+                .setArcArrangement(arcArrangement)
+                .setCenterActiveApp(centerActiveApp)
                 .build()
         }
 
