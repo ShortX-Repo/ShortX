@@ -332,6 +332,8 @@
   "ui.fact.key.gesture.keymultiplepress": "Double Press",
   "ui.fact.key.gesture.keytriplepress": "Triple Press",
   "ui.fact.key.gesture.keylongpress": "Long Press",
+  "ui.fact.key.gesture.keydown": "Key Down",
+  "ui.fact.key.gesture.keyup": "Key Up",
   "ui.fact.screen.gesture": "Screen Gesture",
   "ui.fact.edge.gesture": "Edge Gesture",
   "ui.fact.corner.swipe.to.center": "Corner Swipe To Center",

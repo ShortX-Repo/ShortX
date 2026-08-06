@@ -30,8 +30,12 @@ class SingleKeyRuleTrigger(
     private val logger = Logger("SingleKeyRuleTrigger")
     private val keycodes: MutableList<Int> = mutableListOf()
     private val interceptModeKeyCodes: MutableList<Int> = mutableListOf()
+    private val keyDownKeyCodes: MutableList<Int> = mutableListOf()
+    private val keyUpKeyCodes: MutableList<Int> = mutableListOf()
+    private val keyDownUpInterceptModeKeyCodes: MutableList<Int> = mutableListOf()
 
     fun hasAnyWithInterceptMode(keyCode: Int) = interceptModeKeyCodes.contains(keyCode)
+    fun hasKeyDownUpInterceptMode(keyCode: Int) = keyDownUpInterceptModeKeyCodes.contains(keyCode)
     fun hasAny(keyCode: Int) = keycodes.contains(keyCode)
     fun hasAny() = keycodes.isNotEmpty()
 
@@ -76,14 +80,50 @@ class SingleKeyRuleTrigger(
             rule.triplePressKeyCodeList
         }.flatten().distinct()
 
+        val keyDownCodes = keyEventRules.map { rule ->
+            rule.keyDownKeyCodeList
+        }.flatten().distinct()
+        this.keyDownKeyCodes.clear()
+        this.keyDownKeyCodes.addAll(keyDownCodes)
+
+        val keyUpCodes = keyEventRules.map { rule ->
+            rule.keyUpKeyCodeList
+        }.flatten().distinct()
+        this.keyUpKeyCodes.clear()
+        this.keyUpKeyCodes.addAll(keyUpCodes)
+
+        val keyDownUpInterceptCodes = keyEventRules.flatMap { rule ->
+            rule.factsList.filter { it is_ AdvancedKeyEvent::class.java }
+                .mapNotNull {
+                    val data = (it unpack_ AdvancedKeyEvent::class.java)
+                    if (!data.isDisabled && data.isInterceptMode
+                        && (data.gesture == KeyGesture.KeyDown || data.gesture == KeyGesture.KeyUp)
+                    ) data.keyCode else null
+                }
+        }.distinct()
+        this.keyDownUpInterceptModeKeyCodes.clear()
+        this.keyDownUpInterceptModeKeyCodes.addAll(keyDownUpInterceptCodes)
+
         logger.d("enabledKeycodes: ${this.keycodes}")
         logger.d("enabledInterceptModeKeyCodes: ${this.interceptModeKeyCodes}")
         logger.d("longPressKeyCodes: $longPressKeyCodes")
         logger.d("doublePressKeyCodes: $doublePressKeyCodes")
         logger.d("triplePressKeyCodes: $triplePressKeyCodes")
+        logger.d("keyDownKeyCodes: $keyDownCodes")
+        logger.d("keyUpKeyCodes: $keyUpCodes")
 
         enabledKeycodes.forEach { keyCode ->
-            if (!singleKeyGestureDetector.hasRule(keyCode)) {
+            val needsGestureDetection = longPressKeyCodes.contains(keyCode)
+                    || doublePressKeyCodes.contains(keyCode)
+                    || triplePressKeyCodes.contains(keyCode)
+                    || keyEventRules.any { rule ->
+                rule.factsList.filter { it is_ AdvancedKeyEvent::class.java }
+                    .any {
+                        val data = (it unpack_ AdvancedKeyEvent::class.java)
+                        !data.isDisabled && data.keyCode == keyCode && data.gesture == KeyGesture.KeyPress
+                    }
+            }
+            if (needsGestureDetection && !singleKeyGestureDetector.hasRule(keyCode)) {
                 singleKeyGestureDetector.addRule(
                     SingleKeyRuleImpl(
                         keycode = keyCode,
@@ -95,6 +135,44 @@ class SingleKeyRuleTrigger(
                     )
                 )
                 logger.d("Add SingleKeyRule: $keyCode")
+            }
+        }
+    }
+
+    fun onRawKeyDown(event: KeyEvent) {
+        val keyCode = event.keyCode
+        if (keyDownKeyCodes.contains(keyCode)) {
+            logger.d("onRawKeyDown: $keyCode")
+            val fact = AdvancedKeyEvent.newBuilder()
+                .setKeyCode(keyCode)
+                .setGesture(KeyGesture.KeyDown)
+                .build()
+            shortXContext.rule.publishFactChecked(AdvancedKeyEvent.getDefaultInstance()) {
+                FactPublishData("onKeyDown-$keyCode", fact) {
+                    mapOf(
+                        ContextDataMapping.AdvancedKeyEvent.keyCode.name to keyCode,
+                        ContextDataMapping.AdvancedKeyEvent.pressTimes.name to 0
+                    )
+                }
+            }
+        }
+    }
+
+    fun onRawKeyUp(event: KeyEvent) {
+        val keyCode = event.keyCode
+        if (keyUpKeyCodes.contains(keyCode)) {
+            logger.d("onRawKeyUp: $keyCode")
+            val fact = AdvancedKeyEvent.newBuilder()
+                .setKeyCode(keyCode)
+                .setGesture(KeyGesture.KeyUp)
+                .build()
+            shortXContext.rule.publishFactChecked(AdvancedKeyEvent.getDefaultInstance()) {
+                FactPublishData("onKeyUp-$keyCode", fact) {
+                    mapOf(
+                        ContextDataMapping.AdvancedKeyEvent.keyCode.name to keyCode,
+                        ContextDataMapping.AdvancedKeyEvent.pressTimes.name to 0
+                    )
+                }
             }
         }
     }
@@ -148,6 +226,24 @@ class SingleKeyRuleTrigger(
             .mapNotNull {
                 val data = (it unpack_ AdvancedKeyEvent::class.java)
                 (!data.isDisabled && data.gesture == KeyGesture.KeyTriplePress).select(
+                    data.keyCode,
+                    null
+                )
+            }.distinct()
+    private val Rule.keyDownKeyCodeList
+        get() = this.factsList.filter { it is_ AdvancedKeyEvent::class.java }
+            .mapNotNull {
+                val data = (it unpack_ AdvancedKeyEvent::class.java)
+                (!data.isDisabled && data.gesture == KeyGesture.KeyDown).select(
+                    data.keyCode,
+                    null
+                )
+            }.distinct()
+    private val Rule.keyUpKeyCodeList
+        get() = this.factsList.filter { it is_ AdvancedKeyEvent::class.java }
+            .mapNotNull {
+                val data = (it unpack_ AdvancedKeyEvent::class.java)
+                (!data.isDisabled && data.gesture == KeyGesture.KeyUp).select(
                     data.keyCode,
                     null
                 )

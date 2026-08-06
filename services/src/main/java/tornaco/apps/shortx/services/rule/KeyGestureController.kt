@@ -42,6 +42,12 @@ class KeyGestureController(
     }
 
     fun consumeKeyEvent(event: KeyEvent, interactive: Boolean): Boolean {
+        if (event.action == KeyEvent.ACTION_DOWN && event.repeatCount == 0) {
+            singleKeyRuleTrigger.onRawKeyDown(event)
+        } else if (event.action == KeyEvent.ACTION_UP) {
+            singleKeyRuleTrigger.onRawKeyUp(event)
+        }
+
         val interceptKeyRes = keyCombinationTrigger.interceptKey(event, interactive)
         logger.logOnDebug("keyCombinationTrigger interceptKeyRes: $interceptKeyRes")
         if (interceptKeyRes) {
@@ -57,9 +63,11 @@ class KeyGestureController(
             if (singleKeyRuleTrigger.hasAnyWithInterceptMode(
                     event.keyCode
                 )
-                && singleKeyGestureDetector.isKeyIntercepted(
+                && (singleKeyGestureDetector.isKeyIntercepted(
                     event.keyCode
-                )
+                ) || singleKeyRuleTrigger.hasKeyDownUpInterceptMode(
+                    event.keyCode
+                ))
             ) {
                 logger.w("singleKeyRuleTrigger-consumed: $event")
                 return true

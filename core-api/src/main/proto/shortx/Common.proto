@@ -219,6 +219,8 @@ enum KeyGesture {
   KeyMultiplePress = 1;
   KeyTriplePress = 2;
   KeyLongPress = 3;
+  KeyDown = 4;
+  KeyUp = 5;
 }
 
 message PhoneCellInfo {

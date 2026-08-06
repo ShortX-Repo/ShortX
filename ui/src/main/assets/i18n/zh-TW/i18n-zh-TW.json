@@ -332,6 +332,8 @@
   "ui.fact.key.gesture.keymultiplepress": "雙按",
   "ui.fact.key.gesture.keytriplepress": "三按",
   "ui.fact.key.gesture.keylongpress": "長按",
+  "ui.fact.key.gesture.keydown": "按下",
+  "ui.fact.key.gesture.keyup": "鬆開",
   "ui.fact.screen.gesture": "屏幕手势",
   "ui.fact.edge.gesture": "邊緣手勢",
   "ui.fact.corner.swipe.to.center": "四角向中心滑動",
