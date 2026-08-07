@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.KeyEvent
 import tornaco.apps.shortx.core.context.ContextDataMapping
 import tornaco.apps.shortx.core.proto.common.KeyGesture
+import tornaco.apps.shortx.core.proto.common.KeyGesturePhase
 import tornaco.apps.shortx.core.proto.da.DirectAction
 import tornaco.apps.shortx.core.proto.fact.AdvancedKeyEvent
 import tornaco.apps.shortx.core.proto.factsAndQuitFacts
@@ -20,6 +21,7 @@ import tornaco.apps.shortx.services.rule.FactPublishData
 import tornaco.apps.shortx.services.rule.RuleService
 import tornaco.apps.shortx.services.rule.actor.impl.InjectKeyCode
 import tornaco.apps.shortx.services.rule.fact.trigger.Trigger
+import java.util.concurrent.ConcurrentHashMap
 
 
 class SingleKeyRuleTrigger(
@@ -33,6 +35,9 @@ class SingleKeyRuleTrigger(
     private val keyDownKeyCodes: MutableList<Int> = mutableListOf()
     private val keyUpKeyCodes: MutableList<Int> = mutableListOf()
     private val keyDownUpInterceptModeKeyCodes: MutableList<Int> = mutableListOf()
+
+    // keyCode -> KeyGesture that is pending a GestureUp phase publish on key release
+    private val pendingGestureUp = ConcurrentHashMap<Int, KeyGesture>()
 
     fun hasAnyWithInterceptMode(keyCode: Int) = interceptModeKeyCodes.contains(keyCode)
     fun hasKeyDownUpInterceptMode(keyCode: Int) = keyDownUpInterceptModeKeyCodes.contains(keyCode)
@@ -131,7 +136,8 @@ class SingleKeyRuleTrigger(
                         enableLongPress = longPressKeyCodes.contains(keyCode),
                         enableDoublePress = doublePressKeyCodes.contains(keyCode),
                         enableTriplePress = triplePressKeyCodes.contains(keyCode),
-                        interceptMode = interceptModeKeyCodes.contains(keyCode)
+                        interceptMode = interceptModeKeyCodes.contains(keyCode),
+                        pendingGestureUp = pendingGestureUp
                     )
                 )
                 logger.d("Add SingleKeyRule: $keyCode")
@@ -168,6 +174,24 @@ class SingleKeyRuleTrigger(
                 .build()
             shortXContext.rule.publishFactChecked(AdvancedKeyEvent.getDefaultInstance()) {
                 FactPublishData("onKeyUp-$keyCode", fact) {
+                    mapOf(
+                        ContextDataMapping.AdvancedKeyEvent.keyCode.name to keyCode,
+                        ContextDataMapping.AdvancedKeyEvent.pressTimes.name to 0
+                    )
+                }
+            }
+        }
+
+        val pendingGesture = pendingGestureUp.remove(keyCode)
+        if (pendingGesture != null) {
+            logger.d("onRawKeyUp publishing GestureUp for gesture=$pendingGesture keyCode=$keyCode")
+            val fact = AdvancedKeyEvent.newBuilder()
+                .setKeyCode(keyCode)
+                .setGesture(pendingGesture)
+                .setPhase(KeyGesturePhase.GestureUp)
+                .build()
+            shortXContext.rule.publishFactChecked(AdvancedKeyEvent.getDefaultInstance()) {
+                FactPublishData("onGestureUp-${pendingGesture.name}-$keyCode", fact) {
                     mapOf(
                         ContextDataMapping.AdvancedKeyEvent.keyCode.name to keyCode,
                         ContextDataMapping.AdvancedKeyEvent.pressTimes.name to 0
@@ -296,12 +320,34 @@ private class SingleKeyRuleImpl(
     val enableLongPress: Boolean,
     val enableDoublePress: Boolean,
     val enableTriplePress: Boolean,
-    val interceptMode: Boolean
+    val interceptMode: Boolean,
+    val pendingGestureUp: ConcurrentHashMap<Int, KeyGesture>
 ) : SingleKeyRule(
     keycode,
     if (enableLongPress) SingleKeyGestureDetector.KEY_LONGPRESS else 0
 ) {
     private val logger = Logger("SingleKeyRuleImpl")
+
+    private fun publishGestureFact(
+        gesture: KeyGesture,
+        phase: KeyGesturePhase,
+        reason: String,
+        pressTimes: Int
+    ) {
+        val fact = AdvancedKeyEvent.newBuilder()
+            .setKeyCode(keycode)
+            .setGesture(gesture)
+            .setPhase(phase)
+            .build()
+        ruleService.publishFactChecked(AdvancedKeyEvent.getDefaultInstance()) {
+            FactPublishData(reason, fact) {
+                mapOf(
+                    ContextDataMapping.AdvancedKeyEvent.keyCode.name to keycode,
+                    ContextDataMapping.AdvancedKeyEvent.pressTimes.name to pressTimes
+                )
+            }
+        }
+    }
 
     override fun onPress(downTime: Long) {
         logger.d("singleKeyHandler onPress")
@@ -330,6 +376,9 @@ private class SingleKeyRuleImpl(
         } else if (interceptMode) {
             InjectKeyCode.injectKey(keycode)
         }
+
+        publishGestureFact(KeyGesture.KeyPress, KeyGesturePhase.GestureDown, "onPress-Down-$keycode", 1)
+        publishGestureFact(KeyGesture.KeyPress, KeyGesturePhase.GestureUp, "onPress-Up-$keycode", 1)
     }
 
     override fun onLongPress(eventTime: Long) {
@@ -344,6 +393,9 @@ private class SingleKeyRuleImpl(
                     .build()
             )
         }
+
+        publishGestureFact(KeyGesture.KeyLongPress, KeyGesturePhase.GestureDown, "onLongPress-Down-$keycode", 1)
+        pendingGestureUp[keycode] = KeyGesture.KeyLongPress
     }
 
     override fun onMultiPress(downTime: Long, count: Int) {
@@ -367,6 +419,8 @@ private class SingleKeyRuleImpl(
                     )
                 }
             }
+            publishGestureFact(KeyGesture.KeyMultiplePress, KeyGesturePhase.GestureDown, "onMultiPress-2-Down-$keycode", 2)
+            publishGestureFact(KeyGesture.KeyMultiplePress, KeyGesturePhase.GestureUp, "onMultiPress-2-Up-$keycode", 2)
         } else if (count == 3) {
             ruleService.publishFactChecked(
                 AdvancedKeyEvent.getDefaultInstance()
@@ -384,6 +438,8 @@ private class SingleKeyRuleImpl(
                     )
                 }
             }
+            publishGestureFact(KeyGesture.KeyTriplePress, KeyGesturePhase.GestureDown, "onMultiPress-3-Down-$keycode", 3)
+            publishGestureFact(KeyGesture.KeyTriplePress, KeyGesturePhase.GestureUp, "onMultiPress-3-Up-$keycode", 3)
         }
     }
 

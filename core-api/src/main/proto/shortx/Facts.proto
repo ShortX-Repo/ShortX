@@ -41,6 +41,7 @@ message AdvancedKeyEvent {
   int32 keyCode = 1;
   KeyGesture gesture = 2;
   bool isInterceptMode = 3;
+  KeyGesturePhase phase = 4;
 
   string tag = 97;
   CustomContextDataKey customContextDataKey = 98;

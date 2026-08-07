@@ -22,6 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import tornaco.apps.shortx.core.proto.common.KeyGesture
+import tornaco.apps.shortx.core.proto.common.KeyGesturePhase
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.addrule.fact.mapper.displayNameKey
 import tornaco.apps.shortx.ui.addrule.fact.mapper.getLabelForKeyCode
@@ -55,6 +56,9 @@ class AdvancedKeyEventSelectorState(val selected: (Fact.AdvancedKeyEvent) -> Uni
     private var _isInterceptMode by mutableStateOf(false)
     val isInterceptMode get() = _isInterceptMode
 
+    private var _phase by mutableStateOf(KeyGesturePhase.GestureFull)
+    val phase get() = _phase
+
     fun setKeyCode(code: Int) {
         _keyCode = code
     }
@@ -67,10 +71,15 @@ class AdvancedKeyEventSelectorState(val selected: (Fact.AdvancedKeyEvent) -> Uni
         _isInterceptMode = isInterceptMode
     }
 
+    fun setPhase(phase: KeyGesturePhase) {
+        _phase = phase
+    }
+
     fun show(advancedKeyEvent: Fact.AdvancedKeyEvent? = null) {
         this._keyCode = advancedKeyEvent?.keyCode ?: KeyEvent.KEYCODE_VOLUME_UP
         this._gesture = advancedKeyEvent?.gesture ?: KeyGesture.KeyPress
         this._isInterceptMode = advancedKeyEvent?.isInterceptMode ?: false
+        this._phase = advancedKeyEvent?.phase ?: KeyGesturePhase.GestureFull
 
         show()
     }
@@ -94,7 +103,8 @@ fun AdvancedKeyEventSelector(state: AdvancedKeyEventSelectorState) {
                     Fact.AdvancedKeyEvent(
                         keyCode = state.keyCode,
                         gesture = state.gesture,
-                        isInterceptMode = state.isInterceptMode
+                        isInterceptMode = state.isInterceptMode,
+                        phase = state.phase
                     )
                 )
                 state.dismiss()
@@ -211,8 +221,9 @@ fun AdvancedKeyEventSelector(state: AdvancedKeyEventSelectorState) {
                     }
                     DropdownSelector(
                         state = dropdownState,
-                        items = KeyGesture.entries.filterNot { it == KeyGesture.UNRECOGNIZED }
-                            .map {
+                        items = KeyGesture.entries.filterNot {
+                            it == KeyGesture.UNRECOGNIZED
+                        }.map {
                                 DropdownItem(
                                     labelLines = listOf(i18N[it.displayNameKey()]),
                                     data = it
@@ -224,6 +235,45 @@ fun AdvancedKeyEventSelector(state: AdvancedKeyEventSelectorState) {
                     )
                 }
                 StandardSpacer()
+
+                // Phase.
+                Box {
+                    val dropdownState = rememberDropdownSelectorState()
+                    Column {
+                        FieldTitle(
+                            modifier = Modifier.padding(vertical = 12.dp),
+                            text = i18N[I18N_R.UI_FACT_KEY_EVENT_ADV_DETECTION_MODE]
+                        )
+                        ListItem(
+                            icon = {
+                                RemixIcon(remixName = Remix.System.settings_3_line)
+                            },
+                            title = i18N[state.phase.displayNameKey()],
+                            action1 = {
+                                IconButton(onClick = { dropdownState.open() }) {
+                                    RemixIcon(remixName = Remix.Arrows.arrow_right_s_line)
+                                }
+                            },
+                            onClick = {
+                                dropdownState.open()
+                            })
+                    }
+                    DropdownSelector(
+                        state = dropdownState,
+                        items = KeyGesturePhase.entries.filterNot { it == KeyGesturePhase.UNRECOGNIZED }
+                            .map {
+                                DropdownItem(
+                                    labelLines = listOf(i18N[it.displayNameKey()]),
+                                    data = it
+                                )
+                            },
+                        onSelect = {
+                            state.setPhase(it.data)
+                        }
+                    )
+                }
+                StandardSpacer()
+
                 // isInterceptMode
 
                 Row(

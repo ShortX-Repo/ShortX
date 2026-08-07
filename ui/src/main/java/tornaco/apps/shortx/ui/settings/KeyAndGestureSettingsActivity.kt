@@ -112,7 +112,8 @@ class EdgeGestureSettingsViewModel @javax.inject.Inject constructor(@Application
                     edgeGestureSequenceChildSwipeTriggerOnRelease = shortXManager.isEdgeGestureSequenceChildSwipeTriggerOnRelease(),
                     isEdgeGestureEnabled = shortXManager.isAppFeatureEnabled(AppFeature.AppFeature_EdgeGesture.number),
                     isKeyEventEnabled = shortXManager.isAppFeatureEnabled(AppFeature.AppFeature_KeyEvent.number),
-                    keyDetectorLongPressTimeoutMS = shortXManager.getKeyDetectorLongPressTimeoutMS()
+                    keyDetectorLongPressTimeoutMS = shortXManager.getKeyDetectorLongPressTimeoutMS(),
+                    keyDetectorMultiPressTimeoutMS = shortXManager.getKeyDetectorMultiPressTimeoutMS()
                 )
             }
         }
@@ -221,6 +222,13 @@ class EdgeGestureSettingsViewModel @javax.inject.Inject constructor(@Application
             loadState()
         }
     }
+
+    fun setKeyDetectorMultiPressTimeoutMS(timeout: Long) {
+        viewModelScope.launch {
+            shortXManager.setKeyDetectorMultiPressTimeoutMS(timeout)
+            loadState()
+        }
+    }
 }
 
 data class KeyAndGestureSettings(
@@ -238,6 +246,7 @@ data class KeyAndGestureSettings(
     val isKeyEventEnabled: Boolean = false,
     // Key
     val keyDetectorLongPressTimeoutMS: Long = 0,
+    val keyDetectorMultiPressTimeoutMS: Long = 0,
 )
 
 @Composable
@@ -471,6 +480,18 @@ fun KeyAndGestureSettingsActivity.EdgeGestureSettingsSelector() {
                         value = state.keyDetectorLongPressTimeoutMS.toFloat(),
                         onValueChange = {
                             vm.setKeyDetectorLongPressTimeoutMS(it.roundToLong())
+                        })
+
+                    StandardSpacer()
+
+                    SmallTitle(text = LocalI18N.current[I18N_R.UI_SETTINGS_KEY_MULTI_PRESS_TIMEOUT])
+                    MediumSpacer()
+                    Text(text = "${state.keyDetectorMultiPressTimeoutMS} ms")
+                    Slider(
+                        valueRange = 100f..1000f,
+                        value = state.keyDetectorMultiPressTimeoutMS.toFloat(),
+                        onValueChange = {
+                            vm.setKeyDetectorMultiPressTimeoutMS(it.roundToLong())
                         })
 
                     SectionSpacer()

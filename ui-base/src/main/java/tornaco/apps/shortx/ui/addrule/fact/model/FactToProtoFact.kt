@@ -134,7 +134,7 @@ fun Fact.toProtoFact(
 
         is Fact.AdvancedKeyEvent -> {
             AdvancedKeyEvent.newBuilder().setKeyCode(keyCode).setGesture(gesture)
-                .setIsInterceptMode(isInterceptMode).setId(overrideId ?: id)
+                .setIsInterceptMode(isInterceptMode).setPhase(phase).setId(overrideId ?: id)
                 .setNote(overrideNote ?: note)
                 .setIsDisabled(isDisabled)
                 .setTag(overrideTag ?: tag)

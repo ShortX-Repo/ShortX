@@ -780,6 +780,8 @@ private class InstructionFlowBuilder(
             KeyGesture.KeyLongPress -> "long press"
             KeyGesture.KeyMultiplePress -> "multi press"
             KeyGesture.KeyTriplePress -> "triple press"
+            KeyGesture.KeyDown -> "key down"
+            KeyGesture.KeyUp -> "key up"
             KeyGesture.UNRECOGNIZED -> "unknown"
         }
     }

@@ -60,6 +60,7 @@ fun ProtoAny.toFact(shortXManager: ShortXManager): Fact? {
                 keyCode = data.keyCode,
                 gesture = data.gesture,
                 isInterceptMode = data.isInterceptMode,
+                phase = data.phase,
                 id = data.id, customContextDataKey = data.customContextDataKey,
                 note = data.note,
                 isDisabled = data.isDisabled,

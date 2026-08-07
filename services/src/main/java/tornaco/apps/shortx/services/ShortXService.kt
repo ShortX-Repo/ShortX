@@ -816,6 +816,14 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
             return shortXContext.gesture.getKeyDetectorLongPressTimeoutMS().toLong()
         }
 
+        override fun setKeyDetectorMultiPressTimeoutMS(p0: Long) {
+            shortXContext.gesture.setKeyDetectorMultiPressTimeoutMS(p0.toInt())
+        }
+
+        override fun getKeyDetectorMultiPressTimeoutMS(): Long {
+            return shortXContext.gesture.getKeyDetectorMultiPressTimeoutMS().toLong()
+        }
+
         override fun getInstalledPlugins(): List<ByteArrayWrapper> {
             return emptyList()
         }

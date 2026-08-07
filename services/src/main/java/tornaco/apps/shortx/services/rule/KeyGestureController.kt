@@ -23,6 +23,10 @@ class KeyGestureController(
                 shortXContext.gesture.getKeyDetectorLongPressTimeoutMS().toLong().apply {
                     logger.i("sDefaultLongPressTimeout: $this")
                 }
+            SingleKeyGestureDetector.sMultiPressTimeout =
+                shortXContext.gesture.getKeyDetectorMultiPressTimeoutMS().toLong().apply {
+                    logger.i("sMultiPressTimeout: $this")
+                }
         }
     }
 

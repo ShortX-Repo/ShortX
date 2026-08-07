@@ -14,6 +14,7 @@ import tornaco.apps.shortx.core.ops.opsLabelKey
 import tornaco.apps.shortx.core.platform.PackageNames.mediaProviderPackages
 import tornaco.apps.shortx.core.proto.condition.CalendarDayType
 import tornaco.apps.shortx.core.proto.common.KeyGesture
+import tornaco.apps.shortx.core.proto.common.KeyGesturePhase
 import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.common.ScreenOnTimeStartFrom
 import tornaco.apps.shortx.core.proto.common.ScreenRotateDegree
@@ -488,7 +489,8 @@ fun labelForFact(i18N: I18N, fact: Fact): List<String> {
             getLabelForKeyCode(
                 i18N,
                 keyCode = fact.keyCode
-            ) + " " + i18N[fact.gesture.displayNameKey()],
+            ) + " " + i18N[fact.gesture.displayNameKey()] +
+                    if (fact.phase != KeyGesturePhase.GestureFull) " (${i18N[fact.phase.displayNameKey()]})" else "",
             i18N.keyEventDisabledMessageOrNull()
         )
 
@@ -1223,6 +1225,11 @@ fun Gesture.supportsGestureIndicator(): Boolean {
 
 fun KeyGesture.displayNameKey(): String {
     val prefix = "ui.fact.key.gesture"
+    return "$prefix.${name.lowercase(Locale.ENGLISH)}"
+}
+
+fun KeyGesturePhase.displayNameKey(): String {
+    val prefix = "ui.fact.key.gesture.phase"
     return "$prefix.${name.lowercase(Locale.ENGLISH)}"
 }
 

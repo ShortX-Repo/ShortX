@@ -149,7 +149,7 @@ class FactMatcherImpl(private val shortXContextProvider: () -> ShortXContext) : 
         register(AdvancedKeyEvent::class.java) { actual, rule ->
             val lk = actual as AdvancedKeyEvent
             val rk = rule as AdvancedKeyEvent
-            lk.keyCode == rk.keyCode && lk.gesture == rk.gesture
+            lk.keyCode == rk.keyCode && lk.gesture == rk.gesture && lk.phase == rk.phase
         }
         register(Alarm::class.java) { l, f ->
             val la = l as Alarm

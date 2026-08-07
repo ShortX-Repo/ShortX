@@ -1176,6 +1176,16 @@ class ShortXManager(val service: IShortX) {
         keyDetectorLongPressTimeoutMS
     }
 
+    fun setKeyDetectorMultiPressTimeoutMS(timeout: Long) {
+        invokeService(Unit) {
+            keyDetectorMultiPressTimeoutMS = timeout
+        }
+    }
+
+    fun getKeyDetectorMultiPressTimeoutMS(): Long = invokeService(0) {
+        keyDetectorMultiPressTimeoutMS
+    }
+
     fun setGestureAreaSize(dp: Int) {
         invokeService(Unit) {
             gestureAreaSize = dp

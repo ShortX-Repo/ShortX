@@ -10,6 +10,7 @@ import tornaco.apps.shortx.core.proto.common.CustomContextDataKey
 import tornaco.apps.shortx.core.proto.common.CustomContextMenu
 import tornaco.apps.shortx.core.proto.common.DynamicShortcut
 import tornaco.apps.shortx.core.proto.common.KeyGesture
+import tornaco.apps.shortx.core.proto.common.KeyGesturePhase
 import tornaco.apps.shortx.core.proto.common.OnOffAny
 import tornaco.apps.shortx.core.proto.common.ProcessName
 import tornaco.apps.shortx.core.proto.common.RegexMatchOptions
@@ -186,6 +187,7 @@ sealed interface Fact : Parcelable {
         val keyCode: Int,
         val gesture: KeyGesture,
         val isInterceptMode: Boolean,
+        val phase: KeyGesturePhase = KeyGesturePhase.GestureFull,
         override val note: String = "",
         override val isDisabled: Boolean = false,
         override val tag: String = "",

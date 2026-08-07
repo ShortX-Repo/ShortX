@@ -365,6 +365,17 @@ class GestureService(shortXContext: ShortXContext) :
             }
     }
 
+    fun getKeyDetectorMultiPressTimeoutMS() =
+        store.read(Settings.IntSettings.KeyDetectorMultiPressTimeoutMS)
+
+    fun setKeyDetectorMultiPressTimeoutMS(timeout: Int) {
+        store.write(Settings.IntSettings.KeyDetectorMultiPressTimeoutMS, timeout)
+        SingleKeyGestureDetector.sMultiPressTimeout =
+            shortXContext.gesture.getKeyDetectorMultiPressTimeoutMS().toLong().apply {
+                logger.i("setKeyDetectorMultiPressTimeoutMS, sMultiPressTimeout: $this")
+            }
+    }
+
     fun addGestureRecord(record: GestureRecord) {
         gestureRecordStore.addGestureRecord(record)
     }

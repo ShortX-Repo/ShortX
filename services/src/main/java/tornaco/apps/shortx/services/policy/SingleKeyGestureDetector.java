@@ -59,6 +59,7 @@ public final class SingleKeyGestureDetector {
      */
     public static final int KEY_LONGPRESS = 1 << 1;
     static final long MULTI_PRESS_TIMEOUT = 240;
+    public static long sMultiPressTimeout = MULTI_PRESS_TIMEOUT;
     public static long sDefaultLongPressTimeout;
 
     @Retention(RetentionPolicy.SOURCE)
@@ -236,7 +237,7 @@ public final class SingleKeyGestureDetector {
         }
         final long keyDownInterval = event.getDownTime() - mLastDownTime;
         mLastDownTime = event.getDownTime();
-        if (keyDownInterval >= MULTI_PRESS_TIMEOUT) {
+        if (keyDownInterval >= sMultiPressTimeout) {
             mKeyPressCounter = 1;
         } else {
             mKeyPressCounter++;
@@ -252,7 +253,7 @@ public final class SingleKeyGestureDetector {
                 final Message msg = mHandler.obtainMessage(MSG_KEY_UNHANDLED_DOWN, keyCode, 0,
                         new MsgObj(mActiveRule, event));
                 msg.setAsynchronous(true);
-                mHandler.sendMessageDelayed(msg, MULTI_PRESS_TIMEOUT);
+                mHandler.sendMessageDelayed(msg, sMultiPressTimeout);
             }
 
         } else {
@@ -305,7 +306,7 @@ public final class SingleKeyGestureDetector {
                 Message msg = mHandler.obtainMessage(MSG_KEY_DELAYED_PRESS, mActiveRule.mKeyCode,
                         mKeyPressCounter, new MsgObj(mActiveRule, event));
                 msg.setAsynchronous(true);
-                mHandler.sendMessageDelayed(msg, MULTI_PRESS_TIMEOUT);
+                mHandler.sendMessageDelayed(msg, sMultiPressTimeout);
             }
             return true;
         }

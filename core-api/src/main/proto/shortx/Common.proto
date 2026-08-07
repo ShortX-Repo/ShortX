@@ -223,6 +223,12 @@ enum KeyGesture {
   KeyUp = 5;
 }
 
+enum KeyGesturePhase {
+  GestureFull = 0;
+  GestureDown = 1;
+  GestureUp = 2;
+}
+
 message PhoneCellInfo {
   string mcc = 1;
   string mnc = 2;

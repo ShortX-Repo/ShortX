@@ -126,6 +126,9 @@ sealed class Settings<T>(val key: String, val defaultValue: (Context) -> T) {
         data object KeyDetectorLongPressTimeoutMS :
             IntSettings(key = "KeyDetectorLongPressTimeoutMS", defaultValue = { 499 })
 
+        data object KeyDetectorMultiPressTimeoutMS :
+            IntSettings(key = "KeyDetectorMultiPressTimeoutMS", defaultValue = { 240 })
+
         data class DidSomethingAtDay(val day: String, val what: String) :
             IntSettings(key = "DidSomethingAtDay_${day}_${what}", defaultValue = { 0 })
 

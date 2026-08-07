@@ -338,6 +338,9 @@ interface IShortX {
     void setKeyDetectorLongPressTimeoutMS(long timeout);
     long getKeyDetectorLongPressTimeoutMS();
 
+    void setKeyDetectorMultiPressTimeoutMS(long timeout);
+    long getKeyDetectorMultiPressTimeoutMS();
+
     List<ByteArrayWrapper> getInstalledPlugins();
     List<ByteArrayWrapper> getInstalledPluginActions();
     List<ByteArrayWrapper> getInstalledPluginConditions();
