@@ -1586,7 +1586,22 @@
   "ui.subscription.subscribe.verify.code": "Verify Code",
   "ui.subscription.subscribe.verify.play": "Verify Google Play",
   "ui.subscription.subscribe.verify.play.intro": "**{app_name}** 已在Google Play发布，你可以前往购买下载；如果你已购买，可以通过下方验证按钮验证你的资格",
-  "ui.subscription.subscribe.how.to.page": "### 购买流程 \n1. 支付后发邮件至 **{mail}**\n2. 邮件写 **{app_name}高级版本申请**\n3. 加上带**支付订单号**的支付截图附件\n4. 发送邮件\n\n> Tips:\n> 我们会尽快回复高级版激活码，一般不会超过12小时；\n> 如果超时未收到请检查下垃圾箱，或者联系Q: {qq}；\n> 发邮件时可以使用QQ、163、gmail等邮箱，不要使用手机彩信、outlook邮箱。\n\n<br>\n<br>\n\n\n",
+  "ui.subscription.contact.qq": "Contact customer service QQ",
+  "ui.subscription.contact.qq.message": "QQ is not installed. Customer service QQ: {qq} has been copied, please add it manually and pay directly or send the payment proof.",
+  "ui.subscription.email.alternative": "Alternative: Get activation code via email",
+  "ui.subscription.email.alternative.message": "If you cannot use QQ, you can also get the activation code via email:
+1. After payment, send an email to **{email}**;
+2. Write **{app_name} Premium Application** as the subject;
+3. Attach the payment screenshot **with the order number**;
+4. We will reply with the activation code via email as soon as possible (usually within 12 hours).",
+  "ui.subscription.method.1.action.hint": "Tap to add",
+  "ui.subscription.method.1.desc": "Add customer service QQ {qq} and pay directly, the code will be replied directly in QQ.",
+  "ui.subscription.method.1.title": "Option 1: Pay directly via customer service QQ",
+  "ui.subscription.method.2.action.hint": "Tap to copy QQ",
+  "ui.subscription.method.2.desc": "After paying via WeChat/Alipay, send the payment proof with the order number to customer service QQ {qq}, the code will be replied after verification.",
+  "ui.subscription.method.2.title": "Option 2: Pay via WeChat/Alipay and send the proof to customer service QQ",
+  "ui.subscription.pay.after.send.to.qq": "After payment, send the payment proof (with the order number) to customer service QQ: {qq}, the code will be replied after verification.",
+  "ui.subscription.purchase.process": "Purchase Process",
   "ui.subscription.not.subscribed": "Free trail",
   "ui.subscription.intro.title": "Premium feature",
   "ui.subscription.intro.message": "You are experiencing the free version, upgrade to the premium version to unlock all features",

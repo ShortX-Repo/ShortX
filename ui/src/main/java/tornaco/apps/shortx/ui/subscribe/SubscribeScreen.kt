@@ -23,12 +23,18 @@ import android.content.Context
 import android.content.Intent
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -45,19 +51,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.takeOrElse
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
+import tornaco.apps.shortx.core.i18n.I18N_R
 import tornaco.apps.shortx.core.res.Remix
 import tornaco.apps.shortx.ui.R
 import tornaco.apps.shortx.ui.base.BaseActivity
-import tornaco.apps.shortx.ui.base.ImageDialog
+import tornaco.apps.shortx.ui.base.CommonDialogState
 import tornaco.apps.shortx.ui.base.LargeSpacer
 import tornaco.apps.shortx.ui.base.LargeTitle
 import tornaco.apps.shortx.ui.base.ListItem
@@ -66,7 +74,6 @@ import tornaco.apps.shortx.ui.base.Loading
 import tornaco.apps.shortx.ui.base.LoadingAnimationDot
 import tornaco.apps.shortx.ui.base.LocalAppName
 import tornaco.apps.shortx.ui.base.LocalI18N
-import tornaco.apps.shortx.ui.base.MarkdownText
 import tornaco.apps.shortx.ui.base.MediumSpacer
 import tornaco.apps.shortx.ui.base.MediumTitle
 import tornaco.apps.shortx.ui.base.MenuDialog
@@ -76,6 +83,8 @@ import tornaco.apps.shortx.ui.base.ProgressDialog
 import tornaco.apps.shortx.ui.base.RemixIcon
 import tornaco.apps.shortx.ui.base.SectionSpacer
 import tornaco.apps.shortx.ui.base.ShortXCard
+import tornaco.apps.shortx.ui.base.ShortXDialog
+import tornaco.apps.shortx.ui.base.ShortXTextButton
 import tornaco.apps.shortx.ui.base.ShortXTopAppBar
 import tornaco.apps.shortx.ui.base.SmallSpacer
 import tornaco.apps.shortx.ui.base.StandardSpacer
@@ -93,7 +102,6 @@ import tornaco.apps.shortx.ui.theme.GoogleBlue
 import tornaco.apps.shortx.ui.theme.ShortXTheme
 import tornaco.apps.shortx.ui.theme.VipColorGold
 import tornaco.apps.shortx.ui.util.ClipboardUtils
-import tornaco.apps.shortx.core.i18n.I18N_R
 
 @AndroidEntryPoint
 class SubscribeActivity : BaseActivity() {
@@ -270,6 +278,37 @@ private fun SubscribeIntroUi(config: SubscriptionConfig2) {
         val failNetworkMsg =
             i18N[I18N_R.UI_SUBSCRIPTION_CODE_VERIFY_FAIL_NETWORK]
 
+        val qq = config.qq
+        val appName = LocalAppName.current
+        // 无法拉起 QQ 时的兜底提示
+        val qqServiceDialogState = rememberTipDialogState(
+            title = i18N[I18N_R.UI_SUBSCRIPTION_CONTACT_QQ],
+            tip = i18N[I18N_R.UI_SUBSCRIPTION_CONTACT_QQ_MESSAGE, mapOf("qq" to qq)],
+            textToCopy = qq
+        )
+        TipDialog(state = qqServiceDialogState)
+
+        val openQq: () -> Unit = {
+            kotlin.runCatching {
+                context.startActivity(
+                    Intent(Intent.ACTION_VIEW).apply {
+                        data = ("mqqwpa://im/chat?chat_type=wpa&uin=$qq&version=1&src_type=web&web_src=oicqzone.com")
+                            .toUri()
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }
+                )
+            }.onFailure {
+                // QQ 未安装时，复制 QQ 号并给出提示
+                ClipboardUtils.copyToClipboard(context, "qq", qq)
+                Toast.makeText(
+                    context,
+                    i18N[I18N_R.UI_COMMON_COPIED_TO_CLIPBOARD],
+                    Toast.LENGTH_LONG
+                ).show()
+                qqServiceDialogState.show()
+            }
+        }
+
         val vm = hiltViewModel<SubscribeViewModel>()
         LaunchedEffect(vm) {
             vm.codeVerifyEvent.collectLatest {
@@ -280,7 +319,7 @@ private fun SubscribeIntroUi(config: SubscriptionConfig2) {
 
                     CodeVerifyEvent.Success -> {
                         progressDialog.dismiss()
-                        Toast.makeText(context, "\uD83E\uDD70", Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, "🥰", Toast.LENGTH_LONG).show()
                     }
 
                     CodeVerifyEvent.Fail -> {
@@ -342,28 +381,26 @@ private fun SubscribeIntroUi(config: SubscriptionConfig2) {
         }
         LargeSpacer()
 
-        val textColor = LocalContentColor.current.takeOrElse {
-            MaterialTheme.colorScheme.onPrimaryContainer
-        }
-        val appName = LocalAppName.current
-        MarkdownText(
-            markdown = i18N[I18N_R.UI_SUBSCRIPTION_SUBSCRIBE_HOW_TO_PAGE, mapOf(
-                "mail" to config.email,
-                "qq" to config.qq,
-                "app_name" to appName,
-            )],
-            style = MaterialTheme.typography.bodySmall.copy(
-                color = textColor
-            ),
-            onLinkClicked = {
-                kotlin.runCatching {
-                    context.startActivity(Intent(Intent.ACTION_VIEW).apply {
-                        data = it.toUri()
-                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    })
-                }
+        MediumTitle(text = i18N[I18N_R.UI_SUBSCRIPTION_PURCHASE_PROCESS])
 
-                ClipboardUtils.copyToClipboard(context, "link", it)
+        // 方式一：添加客服QQ直接支付（点击拉起客服QQ）
+        MethodCard(
+            title = i18N[I18N_R.UI_SUBSCRIPTION_METHOD_1_TITLE],
+            desc = i18N[I18N_R.UI_SUBSCRIPTION_METHOD_1_DESC, mapOf("qq" to qq)],
+            iconName = Remix.Logos.qq_fill,
+            hint = i18N[I18N_R.UI_SUBSCRIPTION_METHOD_1_ACTION_HINT],
+            onClick = { openQq() }
+        )
+        StandardSpacer()
+
+        // 方式二：微信/支付宝支付后发凭证给客服QQ（点击复制客服QQ）
+        MethodCard(
+            title = i18N[I18N_R.UI_SUBSCRIPTION_METHOD_2_TITLE],
+            desc = i18N[I18N_R.UI_SUBSCRIPTION_METHOD_2_DESC, mapOf("qq" to qq)],
+            iconName = Remix.Finance.secure_payment_fill,
+            hint = i18N[I18N_R.UI_SUBSCRIPTION_METHOD_2_ACTION_HINT],
+            onClick = {
+                ClipboardUtils.copyToClipboard(context, "qq", qq)
                 Toast.makeText(
                     context,
                     i18N[I18N_R.UI_COMMON_COPIED_TO_CLIPBOARD],
@@ -371,19 +408,44 @@ private fun SubscribeIntroUi(config: SubscriptionConfig2) {
                 ).show()
             }
         )
+        StandardSpacer()
 
         LargeSpacer()
 
-        Fabs(vm)
+        Fabs(vm, config, openQq)
+
+        // 备用方式：邮件获取激活码
+        val emailAltDialogState = rememberTipDialogState(
+            title = i18N[I18N_R.UI_SUBSCRIPTION_EMAIL_ALTERNATIVE],
+            tip = i18N[I18N_R.UI_SUBSCRIPTION_EMAIL_ALTERNATIVE_MESSAGE, mapOf(
+                "email" to config.email,
+                "app_name" to appName
+            )]
+        )
+        TipDialog(state = emailAltDialogState)
+
+        Text(
+            text = i18N[I18N_R.UI_SUBSCRIPTION_EMAIL_ALTERNATIVE],
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.primary,
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp, bottom = 32.dp)
+                .clickable { emailAltDialogState.show() }
+        )
     }
 }
 
 @Composable
 private fun Fabs(
-    vm: SubscribeViewModel
+    vm: SubscribeViewModel,
+    config: SubscriptionConfig2,
+    openQq: () -> Unit
 ) {
     val context = LocalContext.current
     val i18N = LocalI18N.current
+    val qq = config.qq
 
     val verifyCodeInputState = rememberTextInputState(
         title = i18N[I18N_R.UI_SUBSCRIPTION_SUBSCRIBE_VERIFY_CODE],
@@ -395,20 +457,37 @@ private fun Fabs(
     TextInputDialog(state = verifyCodeInputState)
 
     val wechatPayQRDialogState = rememberCommonDialogState()
-    ImageDialog(wechatPayQRDialogState, R.drawable.ui_pay_qr_wechat)
+    PayQrDialog(
+        state = wechatPayQRDialogState,
+        qrResId = R.drawable.ui_pay_qr_wechat,
+        qq = qq,
+        openQq = openQq
+    )
 
     val aliPayQRDialogState = rememberCommonDialogState()
-    ImageDialog(aliPayQRDialogState, R.drawable.ui_pay_qr_alipay)
+    PayQrDialog(
+        state = aliPayQRDialogState,
+        qrResId = R.drawable.ui_pay_qr_alipay,
+        qq = qq,
+        openQq = openQq
+    )
 
+    val paypalUrl = "https://www.paypal.me/tornaco"
     val paypalDialogState = rememberTipDialogState(
-        title = "Paypal",
-        tip = "https://www.paypal.me/tornaco"
+        title = "PayPal",
+        tip = "$paypalUrl\n\n" + i18N[I18N_R.UI_SUBSCRIPTION_PAY_AFTER_SEND_TO_QQ, mapOf("qq" to qq)]
     )
     TipDialog(state = paypalDialogState)
 
     val payMenuDialogState =
-        rememberMenuDialogState<String>(title = LocalI18N.current[I18N_R.UI_SUBSCRIPTION_PAY],
+        rememberMenuDialogState<String>(
+            title = i18N[I18N_R.UI_SUBSCRIPTION_PAY],
             menuItems = listOf(
+                MenuDialogItem(
+                    id = "qq",
+                    title = i18N[I18N_R.UI_SUBSCRIPTION_CONTACT_QQ],
+                    iconName = Remix.Logos.qq_fill
+                ),
                 MenuDialogItem(
                     id = "wechat",
                     title = "Wechat",
@@ -425,8 +504,10 @@ private fun Fabs(
                     iconName = Remix.Logos.paypal_fill
                 )
             ),
-            onItemSelected = { data, id ->
+            onItemSelected = { _, id ->
                 when (id) {
+                    "qq" -> openQq()
+
                     "wechat" -> {
                         wechatPayQRDialogState.show()
                     }
@@ -436,17 +517,13 @@ private fun Fabs(
                     }
 
                     "paypal" -> {
-                        paypalDialogState.show()
-                        ClipboardUtils.copyToClipboard(
-                            context,
-                            "paypal",
-                            "https://www.paypal.me/tornaco"
-                        )
+                        ClipboardUtils.copyToClipboard(context, "paypal", paypalUrl)
                         Toast.makeText(
                             context,
                             i18N[I18N_R.UI_COMMON_COPIED_TO_CLIPBOARD],
                             Toast.LENGTH_LONG
                         ).show()
+                        paypalDialogState.show()
                     }
                 }
             })
@@ -465,7 +542,7 @@ private fun Fabs(
                 payMenuDialogState.show()
             },
             text = {
-                Text(text = LocalI18N.current[I18N_R.UI_SUBSCRIPTION_PAY], color = Color.White)
+                Text(text = i18N[I18N_R.UI_SUBSCRIPTION_PAY], color = Color.White)
             },
             icon = {
                 RemixIcon(
@@ -480,7 +557,7 @@ private fun Fabs(
             onClick = { verifyCodeInputState.show() },
             text = {
                 Text(
-                    text = LocalI18N.current[I18N_R.UI_SUBSCRIPTION_SUBSCRIBE_VERIFY_CODE],
+                    text = i18N[I18N_R.UI_SUBSCRIPTION_SUBSCRIBE_VERIFY_CODE],
                     color = Color.White
                 )
             },
@@ -494,12 +571,99 @@ private fun Fabs(
             onClick = { LVLCheckActivity.start(context) },
             text = {
                 Text(
-                    text = LocalI18N.current[I18N_R.UI_SUBSCRIPTION_SUBSCRIBE_VERIFY_PLAY],
+                    text = i18N[I18N_R.UI_SUBSCRIPTION_SUBSCRIBE_VERIFY_PLAY],
                     color = Color.White
                 )
             },
             icon = {
                 RemixIcon(tint = Color.White, remixName = Remix.Logos.google_play_fill)
             })
+    }
+}
+
+@Composable
+private fun PayQrDialog(
+    state: CommonDialogState,
+    qrResId: Int,
+    qq: String,
+    openQq: () -> Unit
+) {
+    if (state.isShowing) {
+        val i18N = LocalI18N.current
+        ShortXDialog(
+            onDismissRequest = {
+                state.dismiss()
+            },
+            title = {}
+        ) {
+            Image(
+                modifier = Modifier.fillMaxWidth(),
+                painter = painterResource(id = qrResId),
+                contentDescription = ""
+            )
+            SmallSpacer()
+            Text(
+                text = i18N[I18N_R.UI_SUBSCRIPTION_PAY_AFTER_SEND_TO_QQ, mapOf("qq" to qq)],
+                style = MaterialTheme.typography.bodySmall,
+                color = LocalContentColor.current
+            )
+            ShortXTextButton(onClick = openQq) {
+                Text(text = i18N[I18N_R.UI_SUBSCRIPTION_CONTACT_QQ])
+            }
+        }
+    }
+}
+
+@Composable
+private fun MethodCard(
+    title: String,
+    desc: String,
+    iconName: String,
+    hint: String,
+    onClick: () -> Unit
+) {
+    ShortXCard(onClick = onClick) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                RemixIcon(remixName = iconName)
+                Spacer(modifier = Modifier.size(16.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp)
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = desc,
+                        style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
+                        maxLines = 12
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // 底部操作提示（上下排版，靠右对齐）
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = hint,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                RemixIcon(
+                    remixName = Remix.Arrows.arrow_right_line,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(start = 4.dp)
+                )
+            }
+        }
     }
 }

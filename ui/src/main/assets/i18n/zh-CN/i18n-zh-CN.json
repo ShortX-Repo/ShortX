@@ -1583,7 +1583,22 @@
   "ui.subscription.subscribe.verify.code": "验证激活码",
   "ui.subscription.subscribe.verify.play": "验证Google Play",
   "ui.subscription.subscribe.verify.play.intro": "**{app_name}** 已在Google Play发布，你可以前往购买下载；如果你已购买，可以通过下方验证按钮验证你的资格",
-  "ui.subscription.subscribe.how.to.page": "### 购买流程 \n1. 支付后发邮件至 **{mail}**\n2. 邮件写 **{app_name}高级版本申请**\n3. 加上带**支付订单号**的支付截图附件\n4. 发送邮件\n\n> Tips:\n> 我们会尽快回复高级版激活码，一般不会超过12小时；\n> 如果超时未收到请检查下垃圾箱，或者联系Q: {qq}；\n> 发邮件时可以使用QQ、163、gmail等邮箱，不要使用手机彩信、outlook邮箱。\n\n<br>\n<br>\n\n\n",
+  "ui.subscription.contact.qq": "联系客服QQ",
+  "ui.subscription.contact.qq.message": "未检测到QQ，客服QQ：{qq} 已复制，请手动添加后直接支付或发送支付凭证。",
+  "ui.subscription.email.alternative": "备用：通过邮件获取激活码",
+  "ui.subscription.email.alternative.message": "如果不方便使用QQ，也可以通过邮件获取激活码：
+1. 支付后发邮件至 **{email}**；
+2. 邮件标题写 **{app_name} 高级版本申请**；
+3. 附上带**支付订单号**的支付截图；
+4. 我们会尽快通过邮件回复激活码（一般不超过12小时）。",
+  "ui.subscription.method.1.action.hint": "点击添加客服",
+  "ui.subscription.method.1.desc": "添加客服QQ {qq} 直接支付，客服会在QQ直接回复激活码。",
+  "ui.subscription.method.1.title": "方式一：添加客服QQ直接支付",
+  "ui.subscription.method.2.action.hint": "点击复制QQ",
+  "ui.subscription.method.2.desc": "通过微信/支付宝支付后，将带支付订单号的支付凭证发送给客服QQ {qq}，客服核对后回复激活码。",
+  "ui.subscription.method.2.title": "方式二：微信/支付宝支付后发凭证给客服QQ",
+  "ui.subscription.pay.after.send.to.qq": "支付完成后，请将支付凭证（含订单号）发送给客服QQ：{qq}，客服核对后回复激活码。",
+  "ui.subscription.purchase.process": "购买流程",
   "ui.subscription.subscribed": "高级版已激活",
   "ui.subscription.subscribed.only": "高级版",
   "ui.subscription.not.subscribed": "正在免费体验",
