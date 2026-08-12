@@ -383,30 +383,13 @@ private fun SubscribeIntroUi(config: SubscriptionConfig2) {
 
         MediumTitle(text = i18N[I18N_R.UI_SUBSCRIPTION_PURCHASE_PROCESS])
 
-        // 方式一：添加客服QQ直接支付（点击拉起客服QQ）
-        MethodCard(
-            title = i18N[I18N_R.UI_SUBSCRIPTION_METHOD_1_TITLE],
-            desc = i18N[I18N_R.UI_SUBSCRIPTION_METHOD_1_DESC, mapOf("qq" to qq)],
-            iconName = Remix.Logos.qq_fill,
-            hint = i18N[I18N_R.UI_SUBSCRIPTION_METHOD_1_ACTION_HINT],
-            onClick = { openQq() }
-        )
-        StandardSpacer()
-
-        // 方式二：微信/支付宝支付后发凭证给客服QQ（点击复制客服QQ）
+        // 支付后发凭证给客服QQ（点击直接拉起客服QQ添加）
         MethodCard(
             title = i18N[I18N_R.UI_SUBSCRIPTION_METHOD_2_TITLE],
             desc = i18N[I18N_R.UI_SUBSCRIPTION_METHOD_2_DESC, mapOf("qq" to qq)],
             iconName = Remix.Finance.secure_payment_fill,
             hint = i18N[I18N_R.UI_SUBSCRIPTION_METHOD_2_ACTION_HINT],
-            onClick = {
-                ClipboardUtils.copyToClipboard(context, "qq", qq)
-                Toast.makeText(
-                    context,
-                    i18N[I18N_R.UI_COMMON_COPIED_TO_CLIPBOARD],
-                    Toast.LENGTH_LONG
-                ).show()
-            }
+            onClick = { openQq() }
         )
         StandardSpacer()
 
@@ -542,7 +525,7 @@ private fun Fabs(
                 payMenuDialogState.show()
             },
             text = {
-                Text(text = i18N[I18N_R.UI_SUBSCRIPTION_PAY], color = Color.White)
+                Text(text = i18N[I18N_R.UI_SUBSCRIPTION_PAY_QR], color = Color.White)
             },
             icon = {
                 RemixIcon(
