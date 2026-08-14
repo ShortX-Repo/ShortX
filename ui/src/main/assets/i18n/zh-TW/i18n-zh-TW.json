@@ -1594,7 +1594,7 @@
   "ui.subscription.method.1.action.hint": "點擊添加客服",
   "ui.subscription.method.1.desc": "添加客服QQ {qq} 直接支付，客服會在QQ直接回覆啟動碼。",
   "ui.subscription.method.1.title": "方式一：添加客服QQ直接支付",
-  "ui.subscription.method.2.action.hint": "點擊添加客服",
+  "ui.subscription.method.2.action.hint": "點擊複製QQ",
   "ui.subscription.method.2.desc": "通過微信/支付寶支付後，將帶支付訂單號的支付憑證發送給客服QQ {qq}，客服核對後回覆啟動碼。可點擊右下方的按鈕查看對應的付款碼。",
   "ui.subscription.method.2.title": "微信/支付寶支付後發憑證給客服QQ",
   "ui.subscription.pay.after.send.to.qq": "支付完成後，請將支付憑證（含訂單號）發送給客服QQ：{qq}，客服核對後回覆啟動碼。",

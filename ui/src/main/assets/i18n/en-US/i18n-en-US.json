@@ -1598,7 +1598,7 @@
   "ui.subscription.method.1.action.hint": "Tap to add",
   "ui.subscription.method.1.desc": "Add customer service QQ {qq} and pay directly, the code will be replied directly in QQ.",
   "ui.subscription.method.1.title": "Option 1: Pay directly via customer service QQ",
-  "ui.subscription.method.2.action.hint": "Tap to add",
+  "ui.subscription.method.2.action.hint": "Tap to copy QQ",
   "ui.subscription.method.2.desc": "After paying via WeChat/Alipay, send the payment proof with the order number to customer service QQ {qq}, the code will be replied after verification. You can also tap the button at the bottom right to view the corresponding payment QR code.",
   "ui.subscription.method.2.title": "Pay via WeChat/Alipay and send the proof to customer service QQ",
   "ui.subscription.pay.after.send.to.qq": "After payment, send the payment proof (with the order number) to customer service QQ: {qq}, the code will be replied after verification.",

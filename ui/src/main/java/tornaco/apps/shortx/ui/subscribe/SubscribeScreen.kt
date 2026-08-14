@@ -57,7 +57,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
@@ -280,33 +279,15 @@ private fun SubscribeIntroUi(config: SubscriptionConfig2) {
 
         val qq = config.qq
         val appName = LocalAppName.current
-        // 无法拉起 QQ 时的兜底提示
-        val qqServiceDialogState = rememberTipDialogState(
-            title = i18N[I18N_R.UI_SUBSCRIPTION_CONTACT_QQ],
-            tip = i18N[I18N_R.UI_SUBSCRIPTION_CONTACT_QQ_MESSAGE, mapOf("qq" to qq)],
-            textToCopy = qq
-        )
-        TipDialog(state = qqServiceDialogState)
 
-        val openQq: () -> Unit = {
-            kotlin.runCatching {
-                context.startActivity(
-                    Intent(Intent.ACTION_VIEW).apply {
-                        data = ("mqqwpa://im/chat?chat_type=wpa&uin=$qq&version=1&src_type=web&web_src=oicqzone.com")
-                            .toUri()
-                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    }
-                )
-            }.onFailure {
-                // QQ 未安装时，复制 QQ 号并给出提示
-                ClipboardUtils.copyToClipboard(context, "qq", qq)
-                Toast.makeText(
-                    context,
-                    i18N[I18N_R.UI_COMMON_COPIED_TO_CLIPBOARD],
-                    Toast.LENGTH_LONG
-                ).show()
-                qqServiceDialogState.show()
-            }
+        // 点击复制客服 QQ 号（QQ 直聊已被风控，不再拉起 QQ）
+        val copyQq: () -> Unit = {
+            ClipboardUtils.copyToClipboard(context, "qq", qq)
+            Toast.makeText(
+                context,
+                i18N[I18N_R.UI_COMMON_COPIED_TO_CLIPBOARD],
+                Toast.LENGTH_LONG
+            ).show()
         }
 
         val vm = hiltViewModel<SubscribeViewModel>()
@@ -383,19 +364,19 @@ private fun SubscribeIntroUi(config: SubscriptionConfig2) {
 
         MediumTitle(text = i18N[I18N_R.UI_SUBSCRIPTION_PURCHASE_PROCESS])
 
-        // 支付后发凭证给客服QQ（点击直接拉起客服QQ添加）
+        // 支付后发凭证给客服QQ（点击复制客服QQ号）
         MethodCard(
             title = i18N[I18N_R.UI_SUBSCRIPTION_METHOD_2_TITLE],
             desc = i18N[I18N_R.UI_SUBSCRIPTION_METHOD_2_DESC, mapOf("qq" to qq)],
             iconName = Remix.Finance.secure_payment_fill,
             hint = i18N[I18N_R.UI_SUBSCRIPTION_METHOD_2_ACTION_HINT],
-            onClick = { openQq() }
+            onClick = { copyQq() }
         )
         StandardSpacer()
 
         LargeSpacer()
 
-        Fabs(vm, config, openQq)
+        Fabs(vm, config, copyQq)
 
         // 备用方式：邮件获取激活码
         val emailAltDialogState = rememberTipDialogState(
@@ -424,7 +405,7 @@ private fun SubscribeIntroUi(config: SubscriptionConfig2) {
 private fun Fabs(
     vm: SubscribeViewModel,
     config: SubscriptionConfig2,
-    openQq: () -> Unit
+    copyQq: () -> Unit
 ) {
     val context = LocalContext.current
     val i18N = LocalI18N.current
@@ -444,7 +425,7 @@ private fun Fabs(
         state = wechatPayQRDialogState,
         qrResId = R.drawable.ui_pay_qr_wechat,
         qq = qq,
-        openQq = openQq
+        copyQq = copyQq
     )
 
     val aliPayQRDialogState = rememberCommonDialogState()
@@ -452,7 +433,7 @@ private fun Fabs(
         state = aliPayQRDialogState,
         qrResId = R.drawable.ui_pay_qr_alipay,
         qq = qq,
-        openQq = openQq
+        copyQq = copyQq
     )
 
     val paypalUrl = "https://www.paypal.me/tornaco"
@@ -489,7 +470,7 @@ private fun Fabs(
             ),
             onItemSelected = { _, id ->
                 when (id) {
-                    "qq" -> openQq()
+                    "qq" -> copyQq()
 
                     "wechat" -> {
                         wechatPayQRDialogState.show()
@@ -569,7 +550,7 @@ private fun PayQrDialog(
     state: CommonDialogState,
     qrResId: Int,
     qq: String,
-    openQq: () -> Unit
+    copyQq: () -> Unit
 ) {
     if (state.isShowing) {
         val i18N = LocalI18N.current
@@ -590,7 +571,7 @@ private fun PayQrDialog(
                 style = MaterialTheme.typography.bodySmall,
                 color = LocalContentColor.current
             )
-            ShortXTextButton(onClick = openQq) {
+            ShortXTextButton(onClick = copyQq) {
                 Text(text = i18N[I18N_R.UI_SUBSCRIPTION_CONTACT_QQ])
             }
         }
