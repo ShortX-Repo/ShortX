@@ -24,8 +24,8 @@ import android.content.Intent
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -36,6 +36,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -43,6 +44,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -50,11 +52,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -278,11 +280,21 @@ private fun SubscribeIntroUi(config: SubscriptionConfig2) {
             i18N[I18N_R.UI_SUBSCRIPTION_CODE_VERIFY_FAIL_NETWORK]
 
         val qq = config.qq
-        val appName = LocalAppName.current
+        val email = config.email
 
-        // 点击复制客服 QQ 号（QQ 直聊已被风控，不再拉起 QQ）
+        // 点击复制客服 QQ 号（仅超时未回复时咨询）
         val copyQq: () -> Unit = {
             ClipboardUtils.copyToClipboard(context, "qq", qq)
+            Toast.makeText(
+                context,
+                i18N[I18N_R.UI_COMMON_COPIED_TO_CLIPBOARD],
+                Toast.LENGTH_LONG
+            ).show()
+        }
+
+        // 点击复制邮箱
+        val copyEmail: () -> Unit = {
+            ClipboardUtils.copyToClipboard(context, "email", email)
             Toast.makeText(
                 context,
                 i18N[I18N_R.UI_COMMON_COPIED_TO_CLIPBOARD],
@@ -364,40 +376,18 @@ private fun SubscribeIntroUi(config: SubscriptionConfig2) {
 
         MediumTitle(text = i18N[I18N_R.UI_SUBSCRIPTION_PURCHASE_PROCESS])
 
-        // 支付后发凭证给客服QQ（点击复制客服QQ号）
-        MethodCard(
-            title = i18N[I18N_R.UI_SUBSCRIPTION_METHOD_2_TITLE],
-            desc = i18N[I18N_R.UI_SUBSCRIPTION_METHOD_2_DESC, mapOf("qq" to qq)],
-            iconName = Remix.Finance.secure_payment_fill,
-            hint = i18N[I18N_R.UI_SUBSCRIPTION_METHOD_2_ACTION_HINT],
-            onClick = { copyQq() }
+        // 邮箱获取激活码（主方式），QQ 仅超时未回复时咨询
+        EmailMethodCard(
+            email = email,
+            qq = qq,
+            onCopyEmail = { copyEmail() },
+            onCopyQq = { copyQq() }
         )
         StandardSpacer()
 
         LargeSpacer()
 
-        Fabs(vm, config, copyQq)
-
-        // 备用方式：邮件获取激活码
-        val emailAltDialogState = rememberTipDialogState(
-            title = i18N[I18N_R.UI_SUBSCRIPTION_EMAIL_ALTERNATIVE],
-            tip = i18N[I18N_R.UI_SUBSCRIPTION_EMAIL_ALTERNATIVE_MESSAGE, mapOf(
-                "email" to config.email,
-                "app_name" to appName
-            )]
-        )
-        TipDialog(state = emailAltDialogState)
-
-        Text(
-            text = i18N[I18N_R.UI_SUBSCRIPTION_EMAIL_ALTERNATIVE],
-            style = MaterialTheme.typography.labelSmall,
-            color = MaterialTheme.colorScheme.primary,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 8.dp, bottom = 32.dp)
-                .clickable { emailAltDialogState.show() }
-        )
+        Fabs(vm, config, copyEmail)
     }
 }
 
@@ -405,11 +395,11 @@ private fun SubscribeIntroUi(config: SubscriptionConfig2) {
 private fun Fabs(
     vm: SubscribeViewModel,
     config: SubscriptionConfig2,
-    copyQq: () -> Unit
+    copyEmail: () -> Unit
 ) {
     val context = LocalContext.current
     val i18N = LocalI18N.current
-    val qq = config.qq
+    val email = config.email
 
     val verifyCodeInputState = rememberTextInputState(
         title = i18N[I18N_R.UI_SUBSCRIPTION_SUBSCRIBE_VERIFY_CODE],
@@ -424,22 +414,22 @@ private fun Fabs(
     PayQrDialog(
         state = wechatPayQRDialogState,
         qrResId = R.drawable.ui_pay_qr_wechat,
-        qq = qq,
-        copyQq = copyQq
+        email = email,
+        copyEmail = copyEmail
     )
 
     val aliPayQRDialogState = rememberCommonDialogState()
     PayQrDialog(
         state = aliPayQRDialogState,
         qrResId = R.drawable.ui_pay_qr_alipay,
-        qq = qq,
-        copyQq = copyQq
+        email = email,
+        copyEmail = copyEmail
     )
 
     val paypalUrl = "https://www.paypal.me/tornaco"
     val paypalDialogState = rememberTipDialogState(
         title = "PayPal",
-        tip = "$paypalUrl\n\n" + i18N[I18N_R.UI_SUBSCRIPTION_PAY_AFTER_SEND_TO_QQ, mapOf("qq" to qq)]
+        tip = "$paypalUrl\n\n" + i18N[I18N_R.UI_SUBSCRIPTION_PAY_AFTER_SEND_TO_EMAIL, mapOf("email" to email)]
     )
     TipDialog(state = paypalDialogState)
 
@@ -447,11 +437,6 @@ private fun Fabs(
         rememberMenuDialogState<String>(
             title = i18N[I18N_R.UI_SUBSCRIPTION_PAY],
             menuItems = listOf(
-                MenuDialogItem(
-                    id = "qq",
-                    title = i18N[I18N_R.UI_SUBSCRIPTION_CONTACT_QQ],
-                    iconName = Remix.Logos.qq_fill
-                ),
                 MenuDialogItem(
                     id = "wechat",
                     title = "Wechat",
@@ -470,8 +455,6 @@ private fun Fabs(
             ),
             onItemSelected = { _, id ->
                 when (id) {
-                    "qq" -> copyQq()
-
                     "wechat" -> {
                         wechatPayQRDialogState.show()
                     }
@@ -549,8 +532,8 @@ private fun Fabs(
 private fun PayQrDialog(
     state: CommonDialogState,
     qrResId: Int,
-    qq: String,
-    copyQq: () -> Unit
+    email: String,
+    copyEmail: () -> Unit
 ) {
     if (state.isShowing) {
         val i18N = LocalI18N.current
@@ -567,67 +550,148 @@ private fun PayQrDialog(
             )
             SmallSpacer()
             Text(
-                text = i18N[I18N_R.UI_SUBSCRIPTION_PAY_AFTER_SEND_TO_QQ, mapOf("qq" to qq)],
+                text = i18N[I18N_R.UI_SUBSCRIPTION_PAY_AFTER_SEND_TO_EMAIL, mapOf("email" to email)],
                 style = MaterialTheme.typography.bodySmall,
                 color = LocalContentColor.current
             )
-            ShortXTextButton(onClick = copyQq) {
-                Text(text = i18N[I18N_R.UI_SUBSCRIPTION_CONTACT_QQ])
+            ShortXTextButton(onClick = copyEmail) {
+                Text(text = i18N[I18N_R.UI_SUBSCRIPTION_COPY_EMAIL])
             }
         }
     }
 }
 
 @Composable
-private fun MethodCard(
-    title: String,
-    desc: String,
-    iconName: String,
-    hint: String,
-    onClick: () -> Unit
+private fun EmailMethodCard(
+    email: String,
+    qq: String,
+    onCopyEmail: () -> Unit,
+    onCopyQq: () -> Unit
 ) {
-    ShortXCard(onClick = onClick) {
+    val i18N = LocalI18N.current
+    ShortXCard {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(16.dp)
         ) {
+            // 标题行：邮箱图标 + 标题
             Row(verticalAlignment = Alignment.CenterVertically) {
-                RemixIcon(remixName = iconName)
+                RemixIcon(
+                    remixName = Remix.Business.mail_fill,
+                    tint = MaterialTheme.colorScheme.primary
+                )
                 Spacer(modifier = Modifier.size(16.dp))
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = title,
-                        style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp)
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = desc,
-                        style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp),
-                        maxLines = 12
-                    )
-                }
+                Text(
+                    text = i18N[I18N_R.UI_SUBSCRIPTION_EMAIL_METHOD_TITLE],
+                    style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp)
+                )
             }
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            // 底部操作提示（上下排版，靠右对齐）
+            // 邮箱地址（醒目的可复制框）
+            Surface(
+                shape = MaterialTheme.shapes.small,
+                color = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(MaterialTheme.shapes.small)
+                    .clickable(onClick = onCopyEmail)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = email,
+                        style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.W600),
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.weight(1f)
+                    )
+                    RemixIcon(
+                        remixName = Remix.Document.file_copy_line,
+                        tint = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // 编号步骤
+            EmailStep(
+                number = "1",
+                text = i18N[I18N_R.UI_SUBSCRIPTION_EMAIL_STEP_1]
+            )
+            EmailStep(
+                number = "2",
+                text = i18N[I18N_R.UI_SUBSCRIPTION_EMAIL_STEP_2]
+            )
+            EmailStep(
+                number = "3",
+                text = i18N[I18N_R.UI_SUBSCRIPTION_EMAIL_STEP_3]
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            // QQ 咨询行（超时未回复时）
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.End,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onCopyQq),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                RemixIcon(
+                    remixName = Remix.Logos.qq_fill,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+                Spacer(modifier = Modifier.size(8.dp))
                 Text(
-                    text = hint,
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.primary
+                    text = i18N[I18N_R.UI_SUBSCRIPTION_EMAIL_QQ_CONSULT, mapOf("qq" to qq)],
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.weight(1f)
                 )
                 RemixIcon(
-                    remixName = Remix.Arrows.arrow_right_line,
-                    tint = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(start = 4.dp)
+                    remixName = Remix.Document.file_copy_line,
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
+
         }
+    }
+}
+
+@Composable
+private fun EmailStep(
+    number: String,
+    text: String
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .size(22.dp)
+                .clip(CircleShape)
+                .background(MaterialTheme.colorScheme.primary),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = number,
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+        }
+        Spacer(modifier = Modifier.size(12.dp))
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodyMedium.copy(fontSize = 14.sp)
+        )
     }
 }
