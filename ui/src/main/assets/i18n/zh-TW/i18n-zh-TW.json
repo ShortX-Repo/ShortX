@@ -852,6 +852,8 @@
   "ui.action.connect.wifi": "連線wifi",
   "ui.action.disconnect.wifi": "斷開wifi",
   "ui.action.stay.awake": "保持螢幕常亮",
+  "ui.action.stay.awake.v2": "保持螢幕常亮（方案2）",
+  "ui.action.stay.awake.v2.desc": "透過延長系統螢幕逾時時間實現，不依賴喚醒鎖。若「保持螢幕常亮」在你的裝置（如部分三星手機）上不生效，可嘗試此方案。",
   "ui.action.show.danmu": "顯示彈幕",
   "ui.action.danmu.text": "文字",
   "ui.action.danmu.icon": "圖示（可選）",

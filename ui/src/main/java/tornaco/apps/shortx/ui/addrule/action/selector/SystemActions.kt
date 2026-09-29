@@ -500,6 +500,19 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
     )
     MenuDialog(state = stayAwakeSelectorState)
 
+    val stayAwakeV2SelectorState = rememberMenuDialogState<String>(
+        title = LocalI18N.current["ui.action.stay.awake.v2"],
+        menuItems = OnOffToggle.entries.filterNot { it == OnOffToggle.UNRECOGNIZED }
+            .map {
+                MenuDialogItem(id = it.name, title = LocalI18N.current[it.labelKey()])
+            },
+        onItemSelected = { data, id ->
+            val stay = OnOffToggle.valueOf(id)
+            addAction(Action.StayAwakeV2(stay = stay))
+        }
+    )
+    MenuDialog(state = stayAwakeV2SelectorState)
+
     val setMasterSyncSelectorState = rememberMenuDialogState<String>(
         title = LocalI18N.current[I18N_R.UI_ACTION_SYNC],
         menuItems = OnOffToggle.entries.filterNot { it == OnOffToggle.UNRECOGNIZED }
@@ -762,6 +775,11 @@ fun systemActionSelectHandler(addAction: (Action) -> Unit): (ActionSelectSource)
                 true
             }
 
+            Action.StayAwakeV2::class -> {
+                stayAwakeV2SelectorState.show()
+                true
+            }
+
             Action.LockDeviceNow::class -> {
                 addAction(Action.LockDeviceNow())
                 true
@@ -840,6 +858,7 @@ fun SystemActions(
         Action.SleepScreen::class,
         Action.LockDeviceNow::class,
         Action.StayAwake::class,
+        Action.StayAwakeV2::class,
         Action.InjectKeyCode::class,
         Action.InjectCombineKeyCode::class,
         Action.ShowRecentApps::class,

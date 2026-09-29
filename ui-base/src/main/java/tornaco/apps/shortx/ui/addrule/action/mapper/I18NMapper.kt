@@ -354,6 +354,7 @@ fun labelAndDescriptionForActionSelector(
         Action.ConnectWifi::class -> i18N["ui.action.connect.wifi"] to null
         Action.DisconnectCurrentWifi::class -> i18N["ui.action.disconnect.wifi"] to null
         Action.StayAwake::class -> i18N["ui.action.stay.awake"] to null
+        Action.StayAwakeV2::class -> i18N["ui.action.stay.awake.v2"] to i18N["ui.action.stay.awake.v2.desc"]
         Action.Toggle5G::class -> i18N["5G"] to null
         Action.ForEachPkgSet::class -> i18N["ui.action.for.each.pkg.set"] to null
         Action.LockDeviceNow::class -> i18N["ui.action.lock.screen"] to null
@@ -1422,6 +1423,11 @@ fun labelLinesForAction(i18N: I18N, action: Action): List<String> {
 
         is Action.StayAwake -> listOf(
             i18N["ui.action.stay.awake"],
+            i18N[action.stay.labelKey()]
+        )
+
+        is Action.StayAwakeV2 -> listOf(
+            i18N["ui.action.stay.awake.v2"],
             i18N[action.stay.labelKey()]
         )
 

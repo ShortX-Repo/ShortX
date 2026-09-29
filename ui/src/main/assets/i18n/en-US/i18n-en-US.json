@@ -860,6 +860,8 @@
   "ui.action.connect.wifi": "Connect wifi",
   "ui.action.disconnect.wifi": "Disconnect wifi",
   "ui.action.stay.awake": "Stay awake",
+  "ui.action.stay.awake.v2": "Stay awake (Plan 2)",
+  "ui.action.stay.awake.v2.desc": "Alternative implementation that extends the screen timeout instead of using a wake lock. Try this if Stay awake doesn't work on your device (e.g. some Samsung phones).",
   "ui.action.show.danmu": "Show danmu",
   "ui.action.danmu.text": "Message",
   "ui.action.danmu.icon": "Icon (optional)",

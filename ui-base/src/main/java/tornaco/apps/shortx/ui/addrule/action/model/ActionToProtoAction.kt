@@ -2197,6 +2197,17 @@ fun Action.toProtoAction(overrideId: String? = null, overrideNote: String? = nul
                 .build()
         }
 
+        is Action.StayAwakeV2 -> {
+            tornaco.apps.shortx.core.proto.action.StayAwakeV2.newBuilder()
+                .setId(overrideId ?: id)
+                .setIsDisabled(!isEnabled)
+                .setActionOnError(actionOnError)
+                .setCustomContextDataKey(contextData.toCustomContextDataKey())
+                .setNote(overrideNote ?: note)
+                .setIsStay(stay)
+                .build()
+        }
+
         is Action.Toggle5G -> {
             Toggle5G.newBuilder()
                 .setId(overrideId ?: id)

@@ -1818,6 +1818,18 @@ message StayAwake {
   string id = 100;
 }
 
+// Alternative implementation of StayAwake: keeps screen on by extending SCREEN_OFF_TIMEOUT
+// instead of holding a screen-type WakeLock, to work around OEM (e.g. Samsung) restrictions.
+message StayAwakeV2 {
+  OnOffToggle isStay = 1;
+
+  CustomContextDataKey customContextDataKey = 96;
+  ActionOnError actionOnError = 97;
+  bool isDisabled = 98;
+  string note = 99;
+  string id = 100;
+}
+
 message ShowHideInsets {
   bool isHide = 1;
   repeated WindowInsetType type = 2;
