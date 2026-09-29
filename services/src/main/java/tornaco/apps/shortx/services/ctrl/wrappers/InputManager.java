@@ -1,10 +1,12 @@
 package tornaco.apps.shortx.services.ctrl.wrappers;
 
+import android.content.Context;
 import android.view.InputEvent;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import tornaco.apps.shortx.core.AppGlobals;
 import tornaco.apps.shortx.services.ctrl.Ln;
 
 public final class InputManager {
@@ -17,6 +19,13 @@ public final class InputManager {
     private Method injectInputEventMethod;
 
     private static Method setDisplayIdMethod;
+
+
+    static InputManager create() {
+        android.hardware.input.InputManager manager = (android.hardware.input.InputManager) AppGlobals.getContext()
+                .getSystemService(Context.INPUT_SERVICE);
+        return new InputManager(manager);
+    }
 
     public InputManager(android.hardware.input.InputManager manager) {
         this.manager = manager;

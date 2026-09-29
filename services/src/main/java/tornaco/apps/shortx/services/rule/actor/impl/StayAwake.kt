@@ -28,7 +28,7 @@ object StayAwake : Actor {
         params: HandleParams
     ) = with(params) {
         val d = action unpack_ tornaco.apps.shortx.core.proto.action.StayAwake::class.java
-        logger.d("stay? ${d.isStay}")
+        logger.w("StayAwake stay? ${d.isStay}")
         val stay: OnOffToggle = d.isStay
         val isToStay = when (stay) {
             OnOffToggle.OnOffToggle_On -> true
@@ -39,7 +39,7 @@ object StayAwake : Actor {
 
             OnOffToggle.UNRECOGNIZED -> false
         }
-        logger.d("isToStay?: $isToStay")
+        logger.w("StayAwake isToStay?: $isToStay")
 
         if (isToStay) {
             wakeLock?.release()
@@ -51,9 +51,9 @@ object StayAwake : Actor {
                 setReferenceCounted(false)
                 acquire()
             }
-            logger.d("stay, wakeLock: $wakeLock")
+            logger.w("StayAwake stay, wakeLock: $wakeLock")
         } else {
-            logger.d("release, wakeLock: $wakeLock")
+            logger.w("StayAwake release, wakeLock: $wakeLock")
             wakeLock?.release()
             wakeLock = null
         }

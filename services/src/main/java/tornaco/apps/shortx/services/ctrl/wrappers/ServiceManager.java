@@ -72,7 +72,8 @@ public final class ServiceManager {
                 android.hardware.input.InputManager im = (android.hardware.input.InputManager) getInstanceMethod.invoke(null);
                 inputManager = new InputManager(im);
             } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-                throw new AssertionError(e);
+                // fallback to create
+                inputManager = InputManager.create();
             }
         }
         return inputManager;
