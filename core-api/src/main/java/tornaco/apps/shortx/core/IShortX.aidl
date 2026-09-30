@@ -18,6 +18,7 @@ import tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener;
 import tornaco.apps.shortx.core.systemui.IQSTileHost;
 import tornaco.apps.shortx.core.ISensorUsageListener;
 import tornaco.apps.shortx.core.INFCTagEndpointListener;
+import tornaco.apps.shortx.core.IStayAwakeListener;
 import tornaco.apps.shortx.core.IForceDisableListener;
 import tornaco.apps.shortx.core.IRuleFeatureStateListener;
 import tornaco.apps.shortx.core.cv.ICV;
@@ -178,6 +179,11 @@ interface IShortX {
     List<ByteArrayWrapper> getAllAudioRecordFiles();
     void deleteAudioRecordFile(in ByteArrayWrapper file);
     void exportAudioRecordFile(in ByteArrayWrapper file, in ParcelFileDescriptor pfd);
+
+    boolean isStayAwakeEnabled();
+    void disableStayAwake();
+    void registerStayAwakeObs(in IStayAwakeListener obs);
+    void unregisterStayAwakeObs(in IStayAwakeListener obs);
 
     List<ByteArrayWrapper> getBTBondedDevices();
 

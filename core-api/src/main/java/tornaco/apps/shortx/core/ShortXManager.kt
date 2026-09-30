@@ -1411,6 +1411,26 @@ class ShortXManager(val service: IShortX) {
         }
     }
 
+    fun isStayAwakeEnabled(): Boolean {
+        return invokeService(false) { isStayAwakeEnabled }
+    }
+
+    fun disableStayAwake() {
+        invokeService(Unit) { disableStayAwake() }
+    }
+
+    fun registerStayAwakeObs(obs: IStayAwakeListener) {
+        invokeService(Unit) {
+            registerStayAwakeObs(obs)
+        }
+    }
+
+    fun unregisterStayAwakeObs(obs: IStayAwakeListener) {
+        invokeService(Unit) {
+            unregisterStayAwakeObs(obs)
+        }
+    }
+
     fun getAllAudioRecordFiles(): List<AudioRecordFile> {
         return invokeService(emptyList()) {
             allAudioRecordFiles.map { AudioRecordFile.parseFrom(it.byteData) }

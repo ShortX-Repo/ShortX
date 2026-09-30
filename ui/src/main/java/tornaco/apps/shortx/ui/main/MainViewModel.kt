@@ -12,6 +12,7 @@ import kotlinx.coroutines.withContext
 import tornaco.apps.shortx.core.BuildPropInternal
 import tornaco.apps.shortx.core.IAudioRecordingListener
 import tornaco.apps.shortx.core.ISensorUsageListener
+import tornaco.apps.shortx.core.IStayAwakeListener
 import tornaco.apps.shortx.ui.base.ShortXContextViewModel
 import tornaco.apps.shortx.ui.config.config
 import tornaco.apps.shortx.ui.main.model.MainState
@@ -51,6 +52,13 @@ open class MainViewModel @Inject constructor(@ApplicationContext context: Contex
         }
     }
 
+    private val stayAwakeListener = object : IStayAwakeListener.Stub() {
+        override fun onChanged(isStay: Boolean) {
+            logger.d("stayAwakeListener, onChanged: $isStay")
+            updateState { copy(isStayAwake = isStay) }
+        }
+    }
+
     init {
         viewModelScope.launch {
             updateState {
@@ -59,6 +67,7 @@ open class MainViewModel @Inject constructor(@ApplicationContext context: Contex
                     isFrameworkUpdated = shortXManager.isFrameworkUpdated(BuildPropInternal.BUILD_FINGERPRINT),
                     isAudioRecording = shortXManager.isAudioRecording(),
                     hasSensorUsage = shortXManager.querySensorUsage().isNotEmpty(),
+                    isStayAwake = shortXManager.isStayAwakeEnabled(),
                     globalNotice = config.globalNoticeId to config.globalNoticeMessage
                 )
             }
@@ -66,6 +75,7 @@ open class MainViewModel @Inject constructor(@ApplicationContext context: Contex
 
         shortXManager.registerAudioRecordingObs(audioRecordingObs)
         shortXManager.registerSensorUsageListener(sensorListener)
+        shortXManager.registerStayAwakeObs(stayAwakeListener)
 
         viewModelScope.launch {
             pref.privacyStatementAcceptedFlow.collectLatest {
@@ -92,6 +102,7 @@ open class MainViewModel @Inject constructor(@ApplicationContext context: Contex
         super.onCleared()
         shortXManager.unregisterAudioRecordingObs(audioRecordingObs)
         shortXManager.unregisterSensorUsageListener(sensorListener)
+        shortXManager.unregisterStayAwakeObs(stayAwakeListener)
     }
 
 
@@ -103,5 +114,9 @@ open class MainViewModel @Inject constructor(@ApplicationContext context: Contex
         viewModelScope.launch {
             pref.setPrivacyStatementAccepted(true)
         }
+    }
+
+    fun disableStayAwake() {
+        shortXManager.disableStayAwake()
     }
 }

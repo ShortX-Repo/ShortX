@@ -7,6 +7,7 @@ data class MainState(
     val isIgnoreFrameworkUpdate: Boolean = false,
     val isPrivacyStatementAccepted: Boolean = true,
     val isAudioRecording: Boolean = false,
+    val isStayAwake: Boolean = false,
     val hasSensorUsage: Boolean = false,
     val globalNotice: Pair<String, String> = "" to "",
 )

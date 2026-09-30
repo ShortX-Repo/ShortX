@@ -18,6 +18,11 @@ object StayAwake : Actor {
 
     fun isStayAwake(): Boolean = wakeLock?.isHeld ?: false
 
+    fun release() {
+        wakeLock?.release()
+        wakeLock = null
+    }
+
     override fun actionsCanHandle(): Class<out Message> {
         return tornaco.apps.shortx.core.proto.action.StayAwake::class.java
     }
@@ -54,9 +59,9 @@ object StayAwake : Actor {
             logger.w("StayAwake stay, wakeLock: $wakeLock")
         } else {
             logger.w("StayAwake release, wakeLock: $wakeLock")
-            wakeLock?.release()
-            wakeLock = null
+            release()
         }
+        StayAwakeState.notifyChanged()
         Actor.Res.EMPTY
     }
 }

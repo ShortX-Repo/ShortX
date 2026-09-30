@@ -372,6 +372,38 @@ fun MainScaffold(
             UserTip(tipId = state.globalNotice.first, message = state.globalNotice.second)
 
             AnimatedVisibility(
+                visible = state.isStayAwake
+            ) {
+                Card(
+                    modifier = Modifier
+                        .padding(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+                    shape = ShortXCardRoundedCornerShapeXL
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .clickable {
+                                shortXManager.disableStayAwake()
+                            }
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        ColoredIcon(size = 24.dp, color = WarningYellow) {
+                            RemixIcon(
+                                modifier = Modifier.size(16.dp),
+                                remixName = Remix.System.eye_2_fill,
+                                tint = Color.White
+                            )
+                        }
+                        MediumSpacer()
+                        Text(
+                            LocalI18N.current["ui.action.stay.awake.card.text"],
+                        )
+                    }
+                }
+            }
+
+            AnimatedVisibility(
                 visible = state.isAudioRecording
             ) {
                 Card(

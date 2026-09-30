@@ -778,6 +778,7 @@
   "ui.action.audio.recording.stop": "停止錄音",
   "ui.action.audio.recording.summary": "錄製的音訊暫存在shortx內部，你可以透過設定-我的錄音，查看或匯出錄音文件",
   "ui.action.audio.recording.card.text": "正在進行錄音動作，輕觸停止",
+  "ui.action.stay.awake.card.text": "螢幕正在保持常亮，輕觸關閉",
   "ui.action.audio.src": "音訊源",
   "ui.action.audio.src.mic": "麥克風",
   "ui.action.audio.src.internal": "系統",

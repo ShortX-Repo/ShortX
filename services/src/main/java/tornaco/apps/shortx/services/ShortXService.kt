@@ -30,6 +30,7 @@ import tornaco.apps.shortx.core.IRuleFeatureStateListener
 import tornaco.apps.shortx.core.ISensorUsageListener
 import tornaco.apps.shortx.core.IShortX
 import tornaco.apps.shortx.core.IStatusBarTileSettingsChangeListener
+import tornaco.apps.shortx.core.IStayAwakeListener
 import tornaco.apps.shortx.core.ShortXManager
 import tornaco.apps.shortx.core.ShortXManagerNative
 import tornaco.apps.shortx.core.SystemUIClient
@@ -118,6 +119,7 @@ import tornaco.apps.shortx.services.data.read
 import tornaco.apps.shortx.services.data.write
 import tornaco.apps.shortx.services.rule.actor.impl.HttpRequest.handleResponseBody
 import tornaco.apps.shortx.services.rule.actor.impl.HttpRequestLogging
+import tornaco.apps.shortx.services.rule.actor.impl.StayAwakeState
 import tornaco.apps.shortx.services.rule.fact.trigger.BTHelper
 import java.util.UUID
 import tornaco.apps.shortx.services.rule.systemenv.SystemEnvInit
@@ -1025,6 +1027,22 @@ object ShortXService : SystemService(ShortXContextImpl(), "ShortXService") {
 
         override fun unregisterAudioRecordingObs(obs: IAudioRecordingListener) {
             shortXContext.audio.unregisterAudioRecordingObs(obs)
+        }
+
+        override fun isStayAwakeEnabled(): Boolean {
+            return StayAwakeState.isEnabled
+        }
+
+        override fun disableStayAwake() {
+            StayAwakeState.disable(context)
+        }
+
+        override fun registerStayAwakeObs(obs: IStayAwakeListener) {
+            StayAwakeState.register(obs)
+        }
+
+        override fun unregisterStayAwakeObs(obs: IStayAwakeListener) {
+            StayAwakeState.unregister(obs)
         }
 
         override fun getAllAudioRecordFiles(): List<ByteArrayWrapper> {

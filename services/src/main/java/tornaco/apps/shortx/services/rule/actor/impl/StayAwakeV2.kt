@@ -1,5 +1,6 @@
 package tornaco.apps.shortx.services.rule.actor.impl
 
+import android.content.ContentResolver
 import android.provider.Settings
 import com.google.protobuf.Message
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -16,6 +17,14 @@ object StayAwakeV2 : Actor {
     private var isStaying = false
 
     fun isStayAwake(): Boolean = isStaying
+
+    fun release(resolver: ContentResolver) {
+        savedScreenOffTimeout?.let {
+            Settings.System.putInt(resolver, Settings.System.SCREEN_OFF_TIMEOUT, it)
+        }
+        savedScreenOffTimeout = null
+        isStaying = false
+    }
 
     override fun actionsCanHandle(): Class<out Message> {
         return tornaco.apps.shortx.core.proto.action.StayAwakeV2::class.java
@@ -52,12 +61,9 @@ object StayAwakeV2 : Actor {
             logger.w("StayAwakeV2 stay, savedScreenOffTimeout: $savedScreenOffTimeout")
         } else {
             logger.w("StayAwakeV2 release, savedScreenOffTimeout: $savedScreenOffTimeout")
-            savedScreenOffTimeout?.let {
-                Settings.System.putInt(resolver, Settings.System.SCREEN_OFF_TIMEOUT, it)
-            }
-            savedScreenOffTimeout = null
-            isStaying = false
+            release(resolver)
         }
+        StayAwakeState.notifyChanged()
         Actor.Res.EMPTY
     }
 }

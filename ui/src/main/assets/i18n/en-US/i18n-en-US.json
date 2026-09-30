@@ -758,6 +758,7 @@
   "ui.action.audio.recording.stop": "Stop audio recording",
   "ui.action.audio.recording.summary": "Recording file will be saved to ShortX internal dir, you can View and Export these file via Settings - Audio record",
   "ui.action.audio.recording.card.text": "Audio record Action is running, click to stop",
+  "ui.action.stay.awake.card.text": "Screen is being kept awake, click to turn off",
   "ui.action.audio.src": "Source",
   "ui.action.audio.src.mic": "Mic",
   "ui.action.audio.src.internal": "System",
