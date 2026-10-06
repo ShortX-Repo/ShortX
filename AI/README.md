@@ -33,6 +33,64 @@ When adding or changing product translations, update the checked-in JSON assets 
 - [build/buildSrc.md](build/buildSrc.md)
 - [build/prebuilts-gen.md](build/prebuilts-gen.md)
 
+## Release
+
+PRC 发布脚本位于 `scripts/release_prc.py`，用于串起 tag、构建、GitHub Release 和 Telegram 发布流程。
+
+前置条件:
+
+1. 已安装并登录 GitHub CLI: `gh auth status`
+2. 本地可执行 Gradle 构建
+3. `CHANGELOG.md` 已更新本次发布内容
+4. 如果需要发 Telegram，先配置环境变量:
+
+```bash
+export TG_BOT_TOKEN="123456:ABC-DEF"
+export TG_CHAT_ID="-1001234567890"
+export TG_TOPIC_ID="42"
+```
+
+常用命令示例:
+
+```bash
+# 完整发布：创建 tag -> 构建 -> GitHub Release -> Telegram
+python3 scripts/release_prc.py 1.8
+
+# 不传版本号时，自动基于最近 tag 推导下一个 minor
+python3 scripts/release_prc.py
+
+# tag 已存在时跳过 tag 创建
+python3 scripts/release_prc.py 1.8 --skip-tag
+
+# 已经构建过 APK，只补发 GitHub Release 和 Telegram
+python3 scripts/release_prc.py 1.8 --skip-tag --skip-build
+
+# 只发 Telegram，不创建 GitHub Release
+python3 scripts/release_prc.py 1.8 --skip-github
+
+# 不发 Telegram，只做 tag + build + GitHub Release
+python3 scripts/release_prc.py 1.8 --skip-telegram
+
+# GitHub 已发过，只修复 Telegram 消息 caption
+python3 scripts/release_prc.py 1.8 --skip-build --skip-github --tg-edit-message-id 12345
+
+# 通过命令行显式传 Telegram 参数
+python3 scripts/release_prc.py 1.8 \
+	--tg-bot-token "123456:ABC-DEF" \
+	--tg-chat-id "-1001234567890" \
+	--tg-topic-id "42"
+```
+
+关键选项:
+
+- `--skip-tag`: tag 已存在时跳过创建和推送
+- `--skip-build`: 直接使用本地已有 APK
+- `--skip-github`: 跳过 GitHub Release
+- `--skip-telegram`: 跳过 Telegram 发布
+- `--tg-edit-message-id`: 修改已有 Telegram 消息 caption
+
+脚本日志会写到 `out/release_*.log`。
+
 ## Core
 
 - [core/core-api.md](core/core-api.md)

@@ -256,14 +256,23 @@ class ReleaseScript:
 
     # ========== Changelog ==========
     def extract_changelog(self) -> str:
-        """提取 CHANGELOG.md 中最新一个日期段落（纯文本）"""
+        """提取 CHANGELOG.md 中第一条分割线以上的最新内容（纯文本）"""
         if not self.changelog.is_file():
             return ""
 
         text = self.changelog.read_text(encoding="utf-8")
-        # 匹配 YYYY-MM-DD 开头的段落，到下一个日期或文件结尾
-        match = re.search(r"(^\d{4}-\d{2}-\d{2}\b.*?)(?=^\d{4}-\d{2}-\d{2}\b|\Z)", text, re.MULTILINE | re.DOTALL)
-        return match.group(1).strip() if match else ""
+        separator_match = re.search(r"^([=-])\1{3,}\s*$", text, re.MULTILINE)
+        latest_block = text[:separator_match.start()] if separator_match else text
+
+        lines = latest_block.splitlines()
+        while lines and not lines[0].strip():
+            lines.pop(0)
+        if lines and lines[0].strip() == "变更日志":
+            lines.pop(0)
+        while lines and not lines[0].strip():
+            lines.pop(0)
+
+        return "\n".join(lines).strip()
 
     @staticmethod
     def format_changelog(raw: str) -> str:
